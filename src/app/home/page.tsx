@@ -1,11 +1,10 @@
-import { Button } from '@/components/ui/button';
+import { SignIn } from './components/SignIn';
 
 function App() {
   return (
-    <>
-      <h1>Hello, World!</h1>
-      <Button>Click Me!</Button>
-    </>
+    <div className="bg-trip-primary-light/40 flex min-h-screen items-center justify-center">
+      <SignIn />
+    </div>
   );
 }
 
