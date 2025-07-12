@@ -1,4 +1,6 @@
+import { LogIn } from 'lucide-react';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -22,7 +24,9 @@ import {
 } from '@/components/ui/dialog';
 
 export function SignIn() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
@@ -34,6 +38,7 @@ export function SignIn() {
       password: password,
     });
 
+    navigate('/dashboard');
     toast.success('Signed in successfully!');
   };
   return (
@@ -92,6 +97,7 @@ export function SignIn() {
           className="bg-trip-primary hover:bg-trip-primary/70 w-full cursor-pointer"
           form="sign-in-form"
         >
+          <LogIn />
           Sign In
         </Button>
       </CardFooter>
