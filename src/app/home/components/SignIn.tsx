@@ -1,3 +1,5 @@
+import { toast } from 'sonner';
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -31,6 +33,8 @@ export function SignIn() {
       email: email,
       password: password,
     });
+
+    toast.success('Signed in successfully!');
   };
   return (
     <Card className="w-full max-w-sm">

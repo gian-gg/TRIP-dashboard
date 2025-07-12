@@ -6,6 +6,7 @@ import { Toaster } from 'sonner';
 import Loading from '@/components/Loading';
 
 const Home = lazy(() => import('@/app/home/page'));
+const Dashboard = lazy(() => import('@/app/dashboard/page'));
 const NotFound = lazy(() => import('@/app/NotFound'));
 
 createRoot(document.getElementById('root')!).render(
@@ -14,6 +15,7 @@ createRoot(document.getElementById('root')!).render(
       <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
