@@ -12,4 +12,4 @@
 
 ## Tech Stack
 
-![Tech Stack](https://skills-icons.vercel.app/api/icons?i=react,ts,vite,axios,tailwind,shadcn,lucide)
+![Tech Stack](https://skills-icons.vercel.app/api/icons?i=react,ts,vite,axios,tailwind,shadcnui,lucide)
