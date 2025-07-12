@@ -1,5 +1,12 @@
+import { Button } from '@/components/ui/button';
+
 function App() {
-  return <h1>Hello, Ceres!</h1>;
+  return (
+    <>
+      <h1>Hello, World!</h1>
+      <Button>Click Me!</Button>
+    </>
+  );
 }
 
 export default App;
