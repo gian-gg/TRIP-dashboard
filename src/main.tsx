@@ -30,6 +30,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path="fleetStatus" element={<FleetStatus />} />
             <Route path="busRoutes" element={<BusRoutes />} />
             <Route path="maintenance" element={<Maintenance />} />
+            <Route path="*" element={<Overview />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
