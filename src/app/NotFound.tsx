@@ -14,7 +14,7 @@ import { Link } from 'react-router-dom';
 export default function notfound() {
   return (
     <div className="bg-trip-primary-light/40 flex min-h-screen items-center justify-center">
-      <Card className="w-full max-w-sm">
+      <Card className="w-full max-w-sm bg-white">
         <CardHeader>
           <CardTitle className="text-xl font-bold text-red-500">
             Error 404: Page Not Found
@@ -26,7 +26,7 @@ export default function notfound() {
         </CardHeader>
         <CardFooter>
           <Button
-            className="w-full cursor-pointer bg-red-500 hover:bg-red-500/70"
+            className="w-full cursor-pointer bg-red-500 text-white hover:bg-red-500/70"
             asChild
           >
             <Link to="/">

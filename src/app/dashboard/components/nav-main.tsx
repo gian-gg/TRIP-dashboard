@@ -1,4 +1,5 @@
 import { type LucideIcon } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 import {
   SidebarGroup,
@@ -26,9 +27,11 @@ export function NavMain({
       <SidebarGroupLabel>Operator Dashboard</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
-          <SidebarMenuButton key={item.title} tooltip={item.title}>
-            {item.icon && <item.icon />}
-            <span>{item.title}</span>
+          <SidebarMenuButton key={item.title} tooltip={item.title} asChild>
+            <Link to={item.url}>
+              {item.icon && <item.icon />}
+              <span>{item.title}</span>
+            </Link>
           </SidebarMenuButton>
         ))}
       </SidebarMenu>

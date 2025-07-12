@@ -2,7 +2,6 @@ import * as React from 'react';
 import {
   Bus,
   Route,
-  Settings2,
   SquareTerminal,
   CircleDollarSign,
   Wrench,
@@ -34,33 +33,28 @@ const data = {
   navMain: [
     {
       title: 'Overview',
-      url: '#',
+      url: '/dashboard',
       icon: SquareTerminal,
     },
     {
       title: 'Financial',
-      url: '#',
+      url: '/dashboard/financial',
       icon: CircleDollarSign,
     },
     {
       title: 'Fleet Status',
-      url: '#',
+      url: '/dashboard/fleetStatus',
       icon: Bus,
     },
     {
       title: 'Routes',
-      url: '#',
+      url: '/dashboard/busRoutes',
       icon: Route,
     },
     {
       title: 'Maintenance',
-      url: '#',
+      url: '/dashboard/maintenance',
       icon: Wrench,
-    },
-    {
-      title: 'Settings',
-      url: '#',
-      icon: Settings2,
     },
   ],
 };
