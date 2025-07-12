@@ -23,7 +23,7 @@ import { SidebarMenuButton } from '@/components/ui/sidebar';
 const data = {
   company: {
     title: 'Ceres Liners',
-    subtitle: '	Yanson Group of Bus Companies',
+    subtitle: 'Ceres Transport, Inc.',
     logo: '/ceres.jpg',
   },
   user: {

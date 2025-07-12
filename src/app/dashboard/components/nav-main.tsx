@@ -26,7 +26,7 @@ export function NavMain({
       <SidebarGroupLabel>Operator Dashboard</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
-          <SidebarMenuButton tooltip={item.title}>
+          <SidebarMenuButton key={item.title} tooltip={item.title}>
             {item.icon && <item.icon />}
             <span>{item.title}</span>
           </SidebarMenuButton>

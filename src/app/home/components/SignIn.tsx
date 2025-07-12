@@ -42,7 +42,7 @@ export function SignIn() {
     toast.success('Signed in successfully!');
   };
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-sm bg-white">
       <CardHeader>
         <CardTitle className="text-trip-primary text-xl font-bold">
           Sign In to your Account!
@@ -62,6 +62,15 @@ export function SignIn() {
                 name="email"
                 placeholder="xxxx@trip.com"
                 required
+                className="placeholder:text-muted-foreground focus-visible:ring-ring border border-black/20 bg-white text-black shadow-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                style={
+                  {
+                    backgroundColor: 'white',
+                    boxShadow: 'none',
+                    '--ring': '#3b82f6', // override soft yellow focus ring (Tailwind blue-500)
+                    '--input': '#ffffff', // override soft yellow input bg
+                  } as React.CSSProperties
+                }
               />
             </div>
             <div className="grid gap-2">
@@ -72,7 +81,7 @@ export function SignIn() {
                   <DialogTrigger className="hover:text-trip-primary/80 ml-auto inline-block cursor-pointer text-sm underline-offset-4 hover:underline">
                     Forgot your password?
                   </DialogTrigger>
-                  <DialogContent>
+                  <DialogContent className="bg-white">
                     <DialogHeader>
                       <DialogTitle className="text-trip-primary">
                         Forgot your password?
@@ -86,7 +95,21 @@ export function SignIn() {
                   </DialogContent>
                 </Dialog>
               </div>
-              <Input id="password" type="password" name="password" required />
+              <Input
+                id="password"
+                type="password"
+                name="password"
+                required
+                className="placeholder:text-muted-foreground focus-visible:ring-ring border border-black/20 bg-white text-black shadow-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                style={
+                  {
+                    backgroundColor: 'white',
+                    boxShadow: 'none',
+                    '--ring': '#3b82f6', // override soft yellow focus ring (Tailwind blue-500)
+                    '--input': '#ffffff', // override soft yellow input bg
+                  } as React.CSSProperties
+                }
+              />
             </div>
           </div>
         </form>
@@ -94,7 +117,7 @@ export function SignIn() {
       <CardFooter className="flex-col gap-2">
         <Button
           type="submit"
-          className="bg-trip-primary hover:bg-trip-primary/70 w-full cursor-pointer"
+          className="bg-trip-primary hover:bg-trip-primary/70 w-full cursor-pointer text-white"
           form="sign-in-form"
         >
           <LogIn />
