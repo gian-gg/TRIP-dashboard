@@ -1,7 +1,7 @@
 const FleetStatus = () => {
   return (
     <>
-      <h1 className="text-xl font-bold">Fleet Status</h1>
+      <h1 className="text-xl font-bold">Operations</h1>
       <div className="grid auto-rows-min gap-4 md:grid-cols-3">
         <div className="bg-muted aspect-video rounded-xl" />
         <div className="bg-muted aspect-video rounded-xl" />

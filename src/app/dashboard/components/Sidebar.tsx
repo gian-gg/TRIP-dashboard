@@ -2,7 +2,7 @@ import * as React from 'react';
 import {
   Bus,
   Route,
-  SquareTerminal,
+  SquareChartGantt,
   CircleDollarSign,
   Wrench,
 } from 'lucide-react';
@@ -34,7 +34,7 @@ const data = {
     {
       title: 'Overview',
       url: '/dashboard',
-      icon: SquareTerminal,
+      icon: SquareChartGantt,
     },
     {
       title: 'Financial',
@@ -42,8 +42,8 @@ const data = {
       icon: CircleDollarSign,
     },
     {
-      title: 'Fleet Status',
-      url: '/dashboard/fleetStatus',
+      title: 'Operations',
+      url: '/dashboard/operations',
       icon: Bus,
     },
     {
