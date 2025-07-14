@@ -1,4 +1,3 @@
-import { LogIn } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
@@ -23,24 +22,34 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
+import { LogIn } from 'lucide-react';
+
+import { signIn } from '@/lib/auth';
+
 export function SignIn() {
   const navigate = useNavigate();
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
-    console.log('Signed in as: ', {
+    const req = {
       email: email,
       password: password,
-    });
+    };
 
-    navigate('/dashboard');
-    toast.success('Signed in successfully!');
+    toast.promise(signIn(req), {
+      loading: 'Loading...',
+      success: () => {
+        navigate('/dashboard');
+        return 'Sign in successful!';
+      },
+      error: 'Sign in failed. Please check your credentials.',
+    });
   };
+
   return (
     <Card className="w-full max-w-sm bg-white">
       <CardHeader>

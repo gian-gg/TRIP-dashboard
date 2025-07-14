@@ -19,16 +19,13 @@ import {
 
 import { SidebarMenuButton } from '@/components/ui/sidebar';
 
+import type { UserType } from '@/type';
+
 const data = {
   company: {
     title: 'Ceres Liners',
     subtitle: 'Ceres Transport, Inc.',
     logo: '/ceres.jpg',
-  },
-  user: {
-    name: 'Geri Gian Epanto',
-    email: '24100907@usc.edu.ph',
-    avatar: '/user.png',
   },
   navMain: [
     {
@@ -59,7 +56,10 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({
+  UserData,
+  ...props
+}: React.ComponentProps<typeof Sidebar> & { UserData: UserType }) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -82,7 +82,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={UserData} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
