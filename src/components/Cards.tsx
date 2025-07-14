@@ -1,8 +1,10 @@
+import React from 'react';
 import Container from '@/components/ui/Container';
 import { type LucideIcon } from 'lucide-react';
 
 const OverviewCards = (props: {
   card: { title: string; icon: LucideIcon; value: string; subtitle: string };
+  children?: React.ReactNode;
 }) => {
   return (
     <Container>
@@ -16,6 +18,7 @@ const OverviewCards = (props: {
       <p className="text-muted-foreground text-[10px] md:text-xs">
         {props.card.subtitle}
       </p>
+      {props.children && <div className="mt-2">{props.children}</div>}
     </Container>
   );
 };

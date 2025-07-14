@@ -1,8 +1,8 @@
-import OverviewCards from './components/OverviewCards';
-import ReportCard from './components/ReportCard';
+import ReportCard from '@/components/ReportCard';
 import { DollarSign, Users, Bus, Clock } from 'lucide-react';
 import LineGraph from './components/LineGraph';
 import BarGraph from './components/BarGraph';
+import Cards from '@/components/Cards';
 
 const pageData = {
   title: 'Overview',
@@ -44,7 +44,7 @@ const Overview = () => {
       </p>
       <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
         {pageData.overviewCards.map((card, index) => (
-          <OverviewCards key={index} card={card} />
+          <Cards key={index} card={card} />
         ))}
       </div>
       <hr />

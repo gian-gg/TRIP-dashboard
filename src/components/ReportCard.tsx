@@ -21,7 +21,7 @@ import {
 
 const ReportCard = (props: {
   header: { title: string; description: string };
-  link: string;
+  link?: string;
   className?: string;
   children?: React.ReactNode;
 }) => {
@@ -32,20 +32,22 @@ const ReportCard = (props: {
         <CardDescription className="text-xs">
           {props.header.description}
         </CardDescription>
-        <CardAction className="absolute top-0 right-4 text-xs">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="size-8">
-                <Link to={props.link} className="text-muted-foreground ml-1">
-                  <ExternalLink />
-                </Link>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>See Full Report</p>
-            </TooltipContent>
-          </Tooltip>
-        </CardAction>
+        {props.link && (
+          <CardAction className="absolute top-0 right-4 text-xs">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="size-8">
+                  <Link to={props.link} className="text-muted-foreground ml-1">
+                    <ExternalLink />
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>See Full Report</p>
+              </TooltipContent>
+            </Tooltip>
+          </CardAction>
+        )}
         <CardContent className="h-full w-full p-2">
           {props.children}
         </CardContent>
