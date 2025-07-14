@@ -1,11 +1,5 @@
 import * as React from 'react';
-import {
-  Bus,
-  Route,
-  SquareChartGantt,
-  CircleDollarSign,
-  Wrench,
-} from 'lucide-react';
+import { Bus, Route, SquareChartGantt, CircleDollarSign } from 'lucide-react';
 
 import { NavMain } from './nav-main';
 import { NavUser } from './nav-user';
@@ -47,11 +41,6 @@ const data = {
       title: 'Routes',
       url: '/dashboard/busRoutes',
       icon: Route,
-    },
-    {
-      title: 'Maintenance',
-      url: '/dashboard/maintenance',
-      icon: Wrench,
     },
   ],
 };
