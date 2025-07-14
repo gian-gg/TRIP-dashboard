@@ -496,6 +496,10 @@ const FleetStatus = () => {
         </DialogContent>
       </Dialog>
       <h1 className="text-xl font-bold">Operations</h1>
+      <p className="text-muted-foreground text-xs md:text-sm">
+        This page provides an overview of the fleet status, including buses,
+        drivers, and conductors.
+      </p>
       <div className="grid auto-rows-min gap-4 md:grid-cols-3"></div>
       <div className="bg-muted min-h-[100vh] flex-1 rounded-xl md:min-h-min">
         <div className="flex-col gap-3">

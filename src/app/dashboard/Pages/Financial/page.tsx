@@ -10,6 +10,10 @@ const Financial = () => {
   return (
     <>
       <h1 className="text-xl font-bold">Financial</h1>
+      <p className="text-muted-foreground text-xs md:text-sm">
+        This page provides an overview of the financial performance and key
+        metrics.
+      </p>
       <div className="grid auto-rows-min gap-4 md:grid-cols-3">
         <Cards
           card={{
