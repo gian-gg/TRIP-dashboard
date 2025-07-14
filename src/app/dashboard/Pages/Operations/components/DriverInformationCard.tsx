@@ -1,12 +1,4 @@
-import React from 'react';
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { DriverInformationType } from '../type';
 
 function DriverInformationCard(props: {

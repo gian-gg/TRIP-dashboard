@@ -1,11 +1,4 @@
-import React from 'react';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { ConductorInformationType } from '../type';
 
 function ConductorInformationCard(props: {
