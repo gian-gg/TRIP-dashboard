@@ -1,7 +1,8 @@
 import OverviewCards from './components/OverviewCards';
 import ReportCard from './components/ReportCard';
-import RRGraph from './components/RRGraph';
 import { DollarSign, Users, Bus, Clock } from 'lucide-react';
+import LineGraph from './components/LineGraph';
+import BarGraph from './components/BarGraph';
 
 const pageData = {
   title: 'Overview',
@@ -56,16 +57,18 @@ const Overview = () => {
           link="/dashboard/financial"
           className="md:w-3/5"
         >
-          <RRGraph />
+          <LineGraph />
         </ReportCard>
         <ReportCard
           header={{
-            title: 'Alerts',
-            description: 'Recent system alerts and notifications',
+            title: 'Ridership Trends',
+            description: 'Today’s passenger flow',
           }}
-          link="/dashboard/maintenance"
+          link="/dashboard/operations"
           className="md:w-2/5"
-        ></ReportCard>
+        >
+          <BarGraph />
+        </ReportCard>
       </div>
     </>
   );
