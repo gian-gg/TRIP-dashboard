@@ -1,5 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardAction } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import type { ConductorInformationType } from '../type';
+import { User } from 'lucide-react';
 
 function ConductorInformationCard(props: {
   ConductorInfo: ConductorInformationType;
@@ -7,11 +9,14 @@ function ConductorInformationCard(props: {
 }) {
   return (
     <div className="w-full">
-      <Card className="border-outline flex h-full w-full flex-col border-1">
-        <CardHeader>
+      <Card className="bg-white border border-gray-200 flex h-full w-full flex-col">
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-base font-bold md:text-base lg:text-xl">
             Conductor #{props.ConductorInfo.conductor_id}
           </CardTitle>
+          <CardAction>
+            <User className="w-4 h-4" />
+          </CardAction>
         </CardHeader>
         <CardContent className="grid h-full w-full grid-cols-2 grid-rows-2 gap-5 p-3 sm:p-5">
           <div>
@@ -39,6 +44,11 @@ function ConductorInformationCard(props: {
             </p>
           </div>
         </CardContent>
+        <CardFooter>
+          <Button onClick={() => props.OnClick(props.ConductorInfo)} className="w-full">
+            View Details
+          </Button>
+        </CardFooter>
       </Card>
     </div>
   );

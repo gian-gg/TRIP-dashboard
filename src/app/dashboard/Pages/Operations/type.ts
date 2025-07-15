@@ -6,6 +6,7 @@ interface BusInformationType {
   passenger_count: number;
   curr_location: string;
   status: 'active' | 'inactive' | 'in transit';
+  next_maintenance: string;
 }
 
 interface DriverInformationType {
