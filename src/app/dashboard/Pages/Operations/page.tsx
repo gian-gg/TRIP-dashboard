@@ -15,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { X, Plus, Save, Laugh, Frown, Bus, User, Phone, IdCard } from 'lucide-react';
+import { Plus, Save, Laugh, Frown, Bus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Cards from '@/components/Cards';
@@ -232,15 +232,25 @@ const FleetStatus = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedBusId, setSelectedBusId] = useState<number | null>(null);
   const [selectedDriverId, setSelectedDriverId] = useState<number | null>(null);
-  const [selectedConductorId, setSelectedConductorId] = useState<number | null>(null);
+  const [selectedConductorId, setSelectedConductorId] = useState<number | null>(
+    null
+  );
   const [isDriverModalOpen, setIsDriverModalOpen] = useState(false);
   const [isConductorModalOpen, setIsConductorModalOpen] = useState(false);
   const selectedBus =
     selectedBusId !== null
       ? mockBusData.find((bus) => bus.bus_id === selectedBusId)
       : null;
-  const selectedDriver = selectedDriverId !== null ? mockDriverData.find((driver) => driver.driver_id === selectedDriverId) : null;
-  const selectedConductor = selectedConductorId !== null ? mockConductorData.find((conductor) => conductor.conductor_id === selectedConductorId) : null;
+  const selectedDriver =
+    selectedDriverId !== null
+      ? mockDriverData.find((driver) => driver.driver_id === selectedDriverId)
+      : null;
+  const selectedConductor =
+    selectedConductorId !== null
+      ? mockConductorData.find(
+          (conductor) => conductor.conductor_id === selectedConductorId
+        )
+      : null;
 
   return (
     <>
@@ -250,13 +260,6 @@ const FleetStatus = () => {
             <DialogTitle className="text-left">
               <h1 className="text-lg font-semibold text-black">Bus Details</h1>
             </DialogTitle>
-            {/* <Button
-              type="button"
-              variant="outline"
-              onClick={() => setIsModalOpen(false)}
-            >
-              <X className="text-primary" />
-            </Button> */}
           </DialogHeader>
           <DialogDescription className="mt-0">
             {selectedBus ? (
@@ -342,7 +345,9 @@ const FleetStatus = () => {
         <DialogContent>
           <DialogHeader className="mb-1 flex">
             <DialogTitle className="text-left">
-              <h1 className="text-lg font-semibold text-black">Add {currentTab.charAt(0).toUpperCase() + currentTab.slice(1)}</h1>
+              <h1 className="text-lg font-semibold text-black">
+                Add {currentTab.charAt(0).toUpperCase() + currentTab.slice(1)}
+              </h1>
             </DialogTitle>
           </DialogHeader>
           <DialogDescription className="mt-0">
@@ -443,11 +448,13 @@ const FleetStatus = () => {
             )}
             {currentTab === 'driver' && (
               <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="col-span-2 flex flex-col items-center mb-2">
-                  <div className="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300 mb-2 cursor-pointer">
-                    <span className="text-gray-400 text-3xl">+</span>
+                <div className="col-span-2 mb-2 flex flex-col items-center">
+                  <div className="mb-2 flex h-24 w-24 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-gray-300 bg-gray-100">
+                    <span className="text-3xl text-gray-400">+</span>
                   </div>
-                  <span className="text-xs text-muted-foreground">Drag & drop or click to upload profile picture</span>
+                  <span className="text-muted-foreground text-xs">
+                    Drag & drop or click to upload profile picture
+                  </span>
                 </div>
                 <div>
                   <Label htmlFor="driver_id">Driver ID</Label>
@@ -532,11 +539,13 @@ const FleetStatus = () => {
             )}
             {currentTab === 'conductor' && (
               <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="col-span-2 flex flex-col items-center mb-2">
-                  <div className="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300 mb-2 cursor-pointer">
-                    <span className="text-gray-400 text-3xl">+</span>
+                <div className="col-span-2 mb-2 flex flex-col items-center">
+                  <div className="mb-2 flex h-24 w-24 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-gray-300 bg-gray-100">
+                    <span className="text-3xl text-gray-400">+</span>
                   </div>
-                  <span className="text-xs text-muted-foreground">Drag & drop or click to upload profile picture</span>
+                  <span className="text-muted-foreground text-xs">
+                    Drag & drop or click to upload profile picture
+                  </span>
                 </div>
                 <div>
                   <Label htmlFor="conductor_id">Conductor ID</Label>
@@ -616,98 +625,163 @@ const FleetStatus = () => {
         <DialogContent>
           <DialogHeader className="mb-1 flex">
             <DialogTitle className="text-left">
-              <h1 className="text-lg font-semibold text-black">Driver Details</h1>
+              <h1 className="text-lg font-semibold text-black">
+                Driver Details
+              </h1>
             </DialogTitle>
           </DialogHeader>
           <DialogDescription className="mt-0">
             {selectedDriver ? (
-              <div className="flex flex-col items-center mb-4">
-                <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden mb-2">
-                  <span className="text-4xl font-bold text-gray-600">{getInitials(selectedDriver.full_name)}</span>
+              <div className="mb-4 flex flex-col items-center">
+                <div className="mb-2 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gray-200">
+                  <span className="text-4xl font-bold text-gray-600">
+                    {getInitials(selectedDriver.full_name)}
+                  </span>
                 </div>
-                <span className="text-muted-foreground text-xs">Profile Picture</span>
+                <span className="text-muted-foreground text-xs">
+                  Profile Picture
+                </span>
               </div>
             ) : null}
             {selectedDriver ? (
               <table className="border-outline w-full rounded-md border-2">
                 <thead>
                   <tr>
-                    <th colSpan={2} className="bg-neutral border-outline border-2 p-2 text-left text-black sm:text-lg md:p-4 md:text-xl">Driver Information</th>
+                    <th
+                      colSpan={2}
+                      className="bg-neutral border-outline border-2 p-2 text-left text-black sm:text-lg md:p-4 md:text-xl"
+                    >
+                      Driver Information
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white">
                   <tr className="border-outline border-b-2">
-                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">Driver ID</td>
-                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">{selectedDriver.driver_id}</td>
+                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
+                      Driver ID
+                    </td>
+                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
+                      {selectedDriver.driver_id}
+                    </td>
                   </tr>
                   <tr className="border-outline border-b-2">
-                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">Full Name</td>
-                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">{selectedDriver.full_name}</td>
+                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
+                      Full Name
+                    </td>
+                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
+                      {selectedDriver.full_name}
+                    </td>
                   </tr>
                   <tr className="border-outline border-b-2">
-                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">License Number</td>
-                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">{selectedDriver.license_number}</td>
+                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
+                      License Number
+                    </td>
+                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
+                      {selectedDriver.license_number}
+                    </td>
                   </tr>
                   <tr className="border-outline border-b-2">
-                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">Contact Number</td>
-                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">{selectedDriver.contact_number}</td>
+                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
+                      Contact Number
+                    </td>
+                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
+                      {selectedDriver.contact_number}
+                    </td>
                   </tr>
                   <tr className="border-outline">
-                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">Bus ID</td>
-                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">{selectedDriver.bus_id ?? 'N/A'}</td>
+                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
+                      Bus ID
+                    </td>
+                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
+                      {selectedDriver.bus_id ?? 'N/A'}
+                    </td>
                   </tr>
                 </tbody>
               </table>
             ) : (
-              <div className="text-muted-foreground text-center text-sm md:text-lg">No driver selected.</div>
+              <div className="text-muted-foreground text-center text-sm md:text-lg">
+                No driver selected.
+              </div>
             )}
           </DialogDescription>
         </DialogContent>
       </Dialog>
-      <Dialog open={isConductorModalOpen} onOpenChange={setIsConductorModalOpen}>
+      <Dialog
+        open={isConductorModalOpen}
+        onOpenChange={setIsConductorModalOpen}
+      >
         <DialogContent>
           <DialogHeader className="mb-1 flex">
             <DialogTitle className="text-left">
-              <h1 className="text-lg font-semibold text-black">Conductor Details</h1>
+              <h1 className="text-lg font-semibold text-black">
+                Conductor Details
+              </h1>
             </DialogTitle>
           </DialogHeader>
           <DialogDescription className="mt-0">
             {selectedConductor ? (
-              <div className="flex flex-col items-center mb-4">
-                <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden mb-2">
-                  <span className="text-4xl font-bold text-gray-600">{getInitials(selectedConductor.full_name)}</span>
+              <div className="mb-4 flex flex-col items-center">
+                <div className="mb-2 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gray-200">
+                  <span className="text-4xl font-bold text-gray-600">
+                    {getInitials(selectedConductor.full_name)}
+                  </span>
                 </div>
-                <span className="text-muted-foreground text-xs">Profile Picture</span>
+                <span className="text-muted-foreground text-xs">
+                  Profile Picture
+                </span>
               </div>
             ) : null}
             {selectedConductor ? (
               <table className="border-outline w-full rounded-md border-2">
                 <thead>
                   <tr>
-                    <th colSpan={2} className="bg-neutral border-outline border-2 p-2 text-left text-black sm:text-lg md:p-4 md:text-xl">Conductor Information</th>
+                    <th
+                      colSpan={2}
+                      className="bg-neutral border-outline border-2 p-2 text-left text-black sm:text-lg md:p-4 md:text-xl"
+                    >
+                      Conductor Information
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white">
                   <tr className="border-outline border-b-2">
-                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">Conductor ID</td>
-                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">{selectedConductor.conductor_id}</td>
+                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
+                      Conductor ID
+                    </td>
+                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
+                      {selectedConductor.conductor_id}
+                    </td>
                   </tr>
                   <tr className="border-outline border-b-2">
-                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">Full Name</td>
-                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">{selectedConductor.full_name}</td>
+                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
+                      Full Name
+                    </td>
+                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
+                      {selectedConductor.full_name}
+                    </td>
                   </tr>
                   <tr className="border-outline border-b-2">
-                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">Contact Number</td>
-                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">{selectedConductor.contact_number}</td>
+                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
+                      Contact Number
+                    </td>
+                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
+                      {selectedConductor.contact_number}
+                    </td>
                   </tr>
                   <tr className="border-outline">
-                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">Bus ID</td>
-                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">{selectedConductor.bus_id ?? 'N/A'}</td>
+                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
+                      Bus ID
+                    </td>
+                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
+                      {selectedConductor.bus_id ?? 'N/A'}
+                    </td>
                   </tr>
                 </tbody>
               </table>
             ) : (
-              <div className="text-muted-foreground text-center text-sm md:text-lg">No conductor selected.</div>
+              <div className="text-muted-foreground text-center text-sm md:text-lg">
+                No conductor selected.
+              </div>
             )}
           </DialogDescription>
         </DialogContent>
@@ -718,7 +792,7 @@ const FleetStatus = () => {
         drivers, and conductors.
       </p>
       <div className="grid auto-rows-min gap-4 md:grid-cols-3"></div>
-      <div className="bg-white min-h-[100vh] flex-1 rounded-xl md:min-h-min">
+      <div className="min-h-[100vh] flex-1 rounded-xl bg-white md:min-h-min">
         <div className="flex-col gap-3">
           <div className="flex justify-between pr-3 pl-3">
             <div className="inline-flex gap-3">
