@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import BusInformationCard from './components/BusInformationCard';
 import DriverInformationCard from './components/DriverInformationCard';
 import ConductorInformationCard from './components/ConductorInformationCard';
@@ -15,10 +15,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Plus, Save, Laugh, Frown, Bus } from 'lucide-react';
+import { Plus, Save, Laugh, Frown, Bus, Search, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Cards from '@/components/Cards';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu"
 
 const mockBusData: BusInformationType[] = [
   {
@@ -251,6 +257,44 @@ const FleetStatus = () => {
           (conductor) => conductor.conductor_id === selectedConductorId
         )
       : null;
+  const [searchInput, setSearchInput] = useState('');
+  const [filteredBusData, setFilteredBusData] =
+    useState<BusInformationType[]>(mockBusData);
+  const [filteredDriverData, setFilteredDriverData] =
+    useState<DriverInformationType[]>(mockDriverData);
+  const [filteredConductorData, setFilteredConductorData] =
+    useState<ConductorInformationType[]>(mockConductorData);
+  const [busStatusFilter, setBusStatusFilter] = useState('');
+
+  useEffect(() => {
+    if (currentTab === 'bus') {
+      let busData = mockBusData;
+      if (busStatusFilter && busStatusFilter !== 'all') {
+        busData = busData.filter((bus) => bus.status === busStatusFilter);
+      }
+      if (searchInput !== '') {
+        const searchNumber = Number(searchInput);
+        busData = busData.filter((bus) => bus.bus_id === searchNumber);
+      }
+      setFilteredBusData(busData);
+    } else if (currentTab === 'driver') {
+      setFilteredDriverData(
+        mockDriverData.filter(
+          (driver) =>
+            driver.driver_id.toString().includes(searchInput) ||
+            driver.full_name.toLowerCase().includes(searchInput.toLowerCase())
+        )
+      );
+    } else if (currentTab === 'conductor') {
+      setFilteredConductorData(
+        mockConductorData.filter(
+          (conductor) =>
+            conductor.conductor_id.toString().includes(searchInput) ||
+            conductor.full_name.toLowerCase().includes(searchInput.toLowerCase())
+        )
+      );
+    }
+  }, [searchInput, busStatusFilter, currentTab]);
 
   return (
     <>
@@ -448,14 +492,6 @@ const FleetStatus = () => {
             )}
             {currentTab === 'driver' && (
               <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="col-span-2 mb-2 flex flex-col items-center">
-                  <div className="mb-2 flex h-24 w-24 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-gray-300 bg-gray-100">
-                    <span className="text-3xl text-gray-400">+</span>
-                  </div>
-                  <span className="text-muted-foreground text-xs">
-                    Drag & drop or click to upload profile picture
-                  </span>
-                </div>
                 <div>
                   <Label htmlFor="driver_id">Driver ID</Label>
                   <Input
@@ -539,14 +575,6 @@ const FleetStatus = () => {
             )}
             {currentTab === 'conductor' && (
               <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="col-span-2 mb-2 flex flex-col items-center">
-                  <div className="mb-2 flex h-24 w-24 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-gray-300 bg-gray-100">
-                    <span className="text-3xl text-gray-400">+</span>
-                  </div>
-                  <span className="text-muted-foreground text-xs">
-                    Drag & drop or click to upload profile picture
-                  </span>
-                </div>
                 <div>
                   <Label htmlFor="conductor_id">Conductor ID</Label>
                   <Input
@@ -869,6 +897,18 @@ const FleetStatus = () => {
               )}
             </div>
           </div>
+          <div className="relative my-6 w-full">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <Search className="h-5 w-5 text-gray-400" />
+            </span>
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Search..."
+              className="block w-full rounded-xl border border-gray-300 p-2 pl-10 focus:border-primary focus:ring-2 focus:ring-primary/20 transition placeholder:text-gray-400 bg-white"
+            />
+          </div>
           <div className="mt-5">
             {currentTab === 'bus' && (
               <div>
@@ -909,8 +949,36 @@ const FleetStatus = () => {
                   />
                 </div>
                 <hr className="my-4" />
+                <div className="flex justify-start mb-2 mt-2">
+                  <div className="max-w-[180px] w-full rounded-full border border-gray-300 bg-white">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="w-full flex items-center justify-between">
+                          <span>
+                            {busStatusFilter === '' || busStatusFilter === 'all'
+                              ? 'All buses'
+                              : busStatusFilter === 'active'
+                              ? 'Active buses'
+                              : busStatusFilter === 'inactive'
+                              ? 'Inactive buses'
+                              : busStatusFilter === 'in transit'
+                              ? 'In transit buses'
+                              : 'All buses'}
+                          </span>
+                          <ChevronDown className="ml-2 w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onSelect={() => setBusStatusFilter('all')}>All buses</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => setBusStatusFilter('active')}>Active buses</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => setBusStatusFilter('inactive')}>Inactive buses</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => setBusStatusFilter('in transit')}>In transit buses</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </div>
                 <div className="grid w-full grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {mockBusData.map((bus) => (
+                  {filteredBusData.map((bus) => (
                     <BusInformationCard
                       key={bus.bus_id}
                       BusInfo={bus}
@@ -925,7 +993,7 @@ const FleetStatus = () => {
             )}
             {currentTab === 'driver' && (
               <div className="grid w-full grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {mockDriverData.map((driver) => (
+                {filteredDriverData.map((driver) => (
                   <DriverInformationCard
                     key={driver.driver_id}
                     DriverInfo={driver}
@@ -939,7 +1007,7 @@ const FleetStatus = () => {
             )}
             {currentTab === 'conductor' && (
               <div className="grid w-full grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {mockConductorData.map((conductor) => (
+                {filteredConductorData.map((conductor) => (
                   <ConductorInformationCard
                     key={conductor.conductor_id}
                     ConductorInfo={conductor}
