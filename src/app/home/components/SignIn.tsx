@@ -42,8 +42,8 @@ export function SignIn() {
 
     toast.promise(signIn(req), {
       loading: 'Loading...',
-      success: () => {
-        navigate('/dashboard');
+      success: (user) => {
+        navigate('/' + user.role);
         return 'Sign in successful!';
       },
       error: 'Sign in failed. Please check your credentials.',

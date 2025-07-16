@@ -1,5 +1,7 @@
 import { POST, GET } from '@/lib/api';
 import type { GETResponse, UserType } from '@/type';
+import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 const signIn = async (req: { email: string; password: string }) => {
   const response = await POST('/auth/index.php', req);
@@ -35,4 +37,38 @@ const getUser = async () => {
   return res.data as UserType;
 };
 
-export { signIn, signOut, getUser };
+const useAuthorized = () => {
+  const [user, setUser] = useState<UserType | null>(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userData = await getUser();
+        if (!userData) {
+          navigate('/');
+          return;
+        }
+
+        if (userData.role === 'conductor') {
+          navigate('/conductor');
+        } else if (userData.role === 'operator') {
+          navigate('/operator');
+        }
+
+        setUser(userData);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        navigate('/');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }, [navigate]);
+
+  return { user, loading };
+};
+
+export { signIn, signOut, getUser, useAuthorized };

@@ -1,42 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useAuthorized } from '@/lib/auth';
 import { Outlet } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { AppSidebar } from './components/Sidebar';
+import { AppSidebar } from '../components/Sidebar';
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { RotateCcw, LoaderCircle } from 'lucide-react';
-import { getUser } from '@/lib/auth';
-import { useNavigate } from 'react-router-dom';
-import type { UserType } from '@/type';
+import { RotateCcw, LoaderCircle, CloudUpload } from 'lucide-react';
 
-export default function Page() {
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
-  const [userData, setUserData] = useState<UserType>();
+const SideBarData = [
+  {
+    title: 'Upload Trip',
+    url: '/conductor/upload',
+    icon: CloudUpload,
+  },
+];
 
-  useEffect(() => {
-    async function onMount() {
-      try {
-        const user = await getUser();
-        if (!user) {
-          navigate('/');
-          return;
-        }
-        setUserData(user);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        navigate('/');
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    onMount();
-  }, [navigate]);
+export default function Conductor() {
+  const { user, loading } = useAuthorized();
 
-  if (!userData || isLoading) {
+  if (!user || loading) {
     return (
       <div className="flex min-h-screen min-w-screen items-center justify-center">
         <LoaderCircle className="animate-spin" />
@@ -46,7 +30,7 @@ export default function Page() {
 
   return (
     <SidebarProvider>
-      <AppSidebar UserData={userData} />
+      <AppSidebar UserData={user} SideBarData={SideBarData} />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex w-full items-center justify-between gap-2 px-4">
