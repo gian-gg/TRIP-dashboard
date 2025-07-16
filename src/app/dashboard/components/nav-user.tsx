@@ -78,23 +78,49 @@ export function NavUser({ user }: { user: UserType }) {
                 <form className="flex flex-col gap-2">
                   <Label htmlFor="name">Name</Label>
                   <Input id="name" name="name" defaultValue={user.name} />
-                  <Button type="submit" variant="default">Update Name</Button>
+                  <Button type="submit" variant="default">
+                    Update Name
+                  </Button>
                 </form>
                 {/* Change Email Form */}
                 <form className="flex flex-col gap-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" name="email" type="email" defaultValue={user.email} />
-                  <Button type="submit" variant="default">Update Email</Button>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    defaultValue={user.email}
+                  />
+                  <Button type="submit" variant="default">
+                    Update Email
+                  </Button>
                 </form>
                 {/* Change Password Form */}
                 <form className="flex flex-col gap-2">
                   <Label htmlFor="oldPassword">Current Password</Label>
-                  <Input id="oldPassword" name="oldPassword" type="password" autoComplete="current-password" />
+                  <Input
+                    id="oldPassword"
+                    name="oldPassword"
+                    type="password"
+                    autoComplete="current-password"
+                  />
                   <Label htmlFor="newPassword">New Password</Label>
-                  <Input id="newPassword" name="newPassword" type="password" autoComplete="new-password" />
+                  <Input
+                    id="newPassword"
+                    name="newPassword"
+                    type="password"
+                    autoComplete="new-password"
+                  />
                   <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                  <Input id="confirmPassword" name="confirmPassword" type="password" autoComplete="new-password" />
-                  <Button type="submit" variant="default">Update Password</Button>
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    autoComplete="new-password"
+                  />
+                  <Button type="submit" variant="default">
+                    Update Password
+                  </Button>
                 </form>
               </div>
             </DialogDescription>

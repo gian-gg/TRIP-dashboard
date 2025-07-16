@@ -1,25 +1,11 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getUser } from '@/lib/auth';
+import useAuthorized from '@/hooks/use-authorized';
 import { SignIn } from './components/SignIn';
 import Loading from '@/components/Loading';
 
 function App() {
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
+  const { loading } = useAuthorized();
 
-  useEffect(() => {
-    async function onMount() {
-      const user = await getUser();
-      if (user) {
-        navigate('/dashboard');
-      }
-      setIsLoading(false);
-    }
-    onMount();
-  }, [navigate]);
-
-  if (isLoading) {
+  if (loading) {
     return <Loading />;
   }
 

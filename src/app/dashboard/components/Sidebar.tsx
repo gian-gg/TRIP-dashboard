@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Bus, Route, SquareChartGantt, CircleDollarSign } from 'lucide-react';
+import { type LucideIcon } from 'lucide-react';
 
 import { NavMain } from './nav-main';
 import { NavUser } from './nav-user';
@@ -15,40 +15,20 @@ import { SidebarMenuButton } from '@/components/ui/sidebar';
 
 import type { UserType } from '@/type';
 
-const data = {
-  company: {
-    title: 'Ceres Liners',
-    subtitle: 'Ceres Transport, Inc.',
-    logo: '/ceres.jpg',
-  },
-  navMain: [
-    {
-      title: 'Overview',
-      url: '/dashboard',
-      icon: SquareChartGantt,
-    },
-    {
-      title: 'Financial',
-      url: '/dashboard/financial',
-      icon: CircleDollarSign,
-    },
-    {
-      title: 'Operations',
-      url: '/dashboard/operations',
-      icon: Bus,
-    },
-    {
-      title: 'Routes',
-      url: '/dashboard/busRoutes',
-      icon: Route,
-    },
-  ],
+const companyData = {
+  title: 'Ceres Liners',
+  subtitle: 'Ceres Transport, Inc.',
+  logo: '/ceres.jpg',
 };
 
 export function AppSidebar({
   UserData,
+  SideBarData,
   ...props
-}: React.ComponentProps<typeof Sidebar> & { UserData: UserType }) {
+}: React.ComponentProps<typeof Sidebar> & {
+  UserData: UserType;
+  SideBarData: { title: string; url: string; icon: LucideIcon }[];
+}) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -57,18 +37,18 @@ export function AppSidebar({
           className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
         >
           <img
-            src={data.company.logo}
+            src={companyData.logo}
             className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg"
             alt="company logo"
           />
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-bold">{data.company.title}</span>
-            <span className="truncate text-xs">{data.company.subtitle}</span>
+            <span className="truncate font-bold">{companyData.title}</span>
+            <span className="truncate text-xs">{companyData.subtitle}</span>
           </div>
         </SidebarMenuButton>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={SideBarData} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={UserData} />

@@ -10,6 +10,7 @@ interface UserType {
   email: string;
   company_id: string;
   created_at: string;
+  role: 'operator' | 'conductor';
 }
 
 interface CredentialsType {

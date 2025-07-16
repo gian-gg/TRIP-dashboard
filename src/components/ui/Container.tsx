@@ -9,7 +9,7 @@ const Container = (
     <div
       {...rest}
       className={clsx(
-        'border-gray-200 bg-white text-accent-foreground rounded-lg border-1 p-4 md:p-6',
+        'border-border bg-card text-accent-foreground rounded-lg border-1 p-4 md:p-6',
         className
       )}
     >

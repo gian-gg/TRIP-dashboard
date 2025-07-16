@@ -24,10 +24,10 @@ export function NavMain({
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Operator Dashboard</SidebarGroupLabel>
+      <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => (
-          <SidebarMenuButton key={item.title} tooltip={item.title} asChild>
+        {items.map((item, index) => (
+          <SidebarMenuButton key={index} tooltip={item.title} asChild>
             <Link to={item.url}>
               {item.icon && <item.icon />}
               <span>{item.title}</span>

@@ -6,12 +6,23 @@ import { Toaster } from 'sonner';
 import Loading from '@/components/Loading';
 
 const Home = lazy(() => import('@/app/home/page'));
-const Dashboard = lazy(() => import('@/app/dashboard/page'));
+const OperatorDashboard = lazy(() => import('@/app/dashboard/operator/page'));
 const NotFound = lazy(() => import('@/app/NotFound'));
-const Overview = lazy(() => import('@/app/dashboard/Pages/Overview/page'));
-const Financial = lazy(() => import('@/app/dashboard/Pages/Financial/page'));
-const Operations = lazy(() => import('@/app/dashboard/Pages/Operations/page'));
-const BusRoutes = lazy(() => import('@/app/dashboard/Pages/BusRoutes/page'));
+const Overview = lazy(
+  () => import('@/app/dashboard/operator/pages/Overview/page')
+);
+const Financial = lazy(
+  () => import('@/app/dashboard/operator/pages/Financial/page')
+);
+const Operations = lazy(
+  () => import('@/app/dashboard/operator/pages/Operations/page')
+);
+const BusRoutes = lazy(
+  () => import('@/app/dashboard/operator/pages/BusRoutes/page')
+);
+
+const ConductorDashboard = lazy(() => import('@/app/dashboard/conductor/page'));
+const Upload = lazy(() => import('@/app/dashboard/conductor/pages/Upload'));
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -19,12 +30,16 @@ createRoot(document.getElementById('root')!).render(
       <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/dashboard/*" element={<Dashboard />}>
+          <Route path="/operator/*" element={<OperatorDashboard />}>
             <Route index element={<Overview />} />
             <Route path="financial" element={<Financial />} />
             <Route path="operations" element={<Operations />} />
             <Route path="busRoutes" element={<BusRoutes />} />
             <Route path="*" element={<Overview />} />
+          </Route>
+          <Route path="/conductor/*" element={<ConductorDashboard />}>
+            <Route index element={<Upload />} />
+            <Route path="*" element={<Upload />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
