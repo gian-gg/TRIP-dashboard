@@ -1,15 +1,18 @@
 import { Card } from "@/components/ui/card";
-import { Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 const Upload = () => {
   return (
     <div className="">
       <h1 className="text-2xl font-bold mb-2">Upload</h1>
-      <p className="mb-4 text-gray-600">Greetings Conductors! Please upload your file using the form below.</p>
+      <p className="mb-4 text-gray-600">Greetings Conductors! Please upload your files using the form below.</p>
       <hr/>
-      <Input type="file" className="border border-gray-200 rounded-lg mb-4 mt-4" />
+      <div className="grid w-full max-w-sm items-center gap-3">
+        <Label htmlFor="files" className="mb-1 font-bold text-gray-700 font-medium">Upload Trip JSON</Label>
+        <Input id="files" type="file" accept=".json" />
+      </div>
       <hr/>
       <Card className="h-[400px] w-full mt-4 bg-white shadow-md">
         {/* Display file */}
