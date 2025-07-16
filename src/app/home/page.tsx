@@ -1,4 +1,4 @@
-import { useAuthorized } from '@/lib/auth';
+import useAuthorized from '@/hooks/use-authorized';
 import { SignIn } from './components/SignIn';
 import Loading from '@/components/Loading';
 

@@ -1,4 +1,4 @@
-import { useAuthorized } from '@/lib/auth';
+import useAuthorized from '@/hooks/use-authorized';
 import { Outlet } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { AppSidebar } from '../components/Sidebar';
