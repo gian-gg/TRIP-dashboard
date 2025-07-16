@@ -9,7 +9,7 @@ import {
 import { Button } from '@/components/ui/button';
 import type { BusInformationType } from '../type';
 import { Circle } from 'lucide-react';
-import { Badge } from './Badge';
+import { Badge } from '@/components/ui/badge';
 
 function BusInformationCard(props: {
   BusInfo: BusInformationType;
@@ -35,9 +35,11 @@ function BusInformationCard(props: {
   function getDaysLeft(dateString: string) {
     const today = new Date(); // always gets the current date at call time
     const target = new Date(dateString);
-    today.setHours(0,0,0,0);
-    target.setHours(0,0,0,0);
-    const diff = Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    today.setHours(0, 0, 0, 0);
+    target.setHours(0, 0, 0, 0);
+    const diff = Math.ceil(
+      (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+    );
     return diff;
   }
 
@@ -53,17 +55,22 @@ function BusInformationCard(props: {
 
   return (
     <div className="w-full">
-      <Card className="bg-white border border-gray-200 flex h-full w-full flex-col">
+      <Card className="flex h-full w-full flex-col border border-gray-200 bg-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-3 text-base font-bold md:text-base lg:text-xl">
             <div>
-              <Circle className={`h-4 w-4 ${StatusColorClass}`} fill="currentColor" />
+              <Circle
+                className={`h-4 w-4 ${StatusColorClass}`}
+                fill="currentColor"
+              />
             </div>
             Bus #{props.BusInfo['bus_id']}
           </CardTitle>
           <CardAction className="text-sm">
             <Badge variant="default" className={maintenanceBadgeColor}>
-              {daysLeft > 0 ? `${daysLeft} day${daysLeft !== 1 ? 's' : ''} left` : 'Maintenance due!'}
+              {daysLeft > 0
+                ? `${daysLeft} day${daysLeft !== 1 ? 's' : ''} left`
+                : 'Maintenance due!'}
             </Badge>
           </CardAction>
         </CardHeader>
