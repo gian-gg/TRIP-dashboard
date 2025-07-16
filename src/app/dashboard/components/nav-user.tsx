@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -32,7 +32,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 
+import { ConfirmToast } from '@/components/Toasts';
+
 import { signOut } from '@/lib/auth';
+import updateProfile from '@/lib/updateProfile';
+import passwordChecker from '@/lib/passwordChecker';
 
 import type { UserType } from '@/type';
 
@@ -56,13 +60,66 @@ export function NavUser({ user }: { user: UserType }) {
       .slice(0, 2);
   }
 
+  const handleProfileUpdate = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+
+      const formData = new FormData(e.target as HTMLFormElement);
+      const name = formData.get('name') as string | null;
+      const email = formData.get('email') as string | null;
+      const oldPassword = formData.get('oldPassword') as string | null;
+      const newPassword = formData.get('newPassword') as string | null;
+      const confirmPassword = formData.get('confirmPassword') as string | null;
+
+      if (name === user.name || email === user.email) {
+        console.warn('No changes detected for name or email.');
+        return;
+      }
+
+      if (newPassword && confirmPassword) {
+        if (newPassword !== confirmPassword) {
+          toast.error('New password and confirmation do not match');
+          return;
+        }
+
+        const passwordError = passwordChecker(newPassword);
+        if (passwordError) {
+          toast.error(passwordError);
+          return;
+        }
+      }
+
+      const requestBody = {
+        user_id: user.user_id,
+        name: name,
+        email: email,
+        current_password: oldPassword,
+        new_password: newPassword,
+      };
+
+      setOpenProfileDialog(false);
+
+      ConfirmToast('Edit Profile', () =>
+        toast.promise(updateProfile(requestBody), {
+          loading: 'Updating profile...',
+          success: () => {
+            // window.location.reload();
+            return 'Profile updated successfully';
+          },
+          error: (err) => err.message,
+        })
+      );
+    },
+    [user]
+  );
+
   return (
     <>
       <Dialog open={openProfileDialog} onOpenChange={setOpenProfileDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Settings</DialogTitle>
-            <DialogDescription>
+            <DialogDescription asChild>
               <div className="mb-4 flex flex-col items-center">
                 <div className="mb-2 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gray-200">
                   <span className="text-4xl font-bold text-gray-600">
@@ -73,58 +130,71 @@ export function NavUser({ user }: { user: UserType }) {
                   {user.name}
                 </span>
               </div>
-              <div className="flex flex-col justify-start gap-3">
-                {/* Change Name Form */}
-                <form className="flex flex-col gap-2">
-                  <Label htmlFor="name">Name</Label>
-                  <Input id="name" name="name" defaultValue={user.name} />
-                  <Button type="submit" variant="default">
-                    Update Name
-                  </Button>
-                </form>
-                {/* Change Email Form */}
-                <form className="flex flex-col gap-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    defaultValue={user.email}
-                  />
-                  <Button type="submit" variant="default">
-                    Update Email
-                  </Button>
-                </form>
-                {/* Change Password Form */}
-                <form className="flex flex-col gap-2">
-                  <Label htmlFor="oldPassword">Current Password</Label>
-                  <Input
-                    id="oldPassword"
-                    name="oldPassword"
-                    type="password"
-                    autoComplete="current-password"
-                  />
-                  <Label htmlFor="newPassword">New Password</Label>
-                  <Input
-                    id="newPassword"
-                    name="newPassword"
-                    type="password"
-                    autoComplete="new-password"
-                  />
-                  <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                  <Input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    autoComplete="new-password"
-                  />
-                  <Button type="submit" variant="default">
-                    Update Password
-                  </Button>
-                </form>
-              </div>
             </DialogDescription>
           </DialogHeader>
+          <div className="flex flex-col justify-start gap-3">
+            {/* Change Name Form */}
+            <form
+              className="flex flex-col gap-2"
+              onSubmit={handleProfileUpdate}
+            >
+              <Label htmlFor="name">Name</Label>
+              <Input id="name" name="name" defaultValue={user.name} required />
+              <Button type="submit" variant="default">
+                Update Name
+              </Button>
+            </form>
+            {/* Change Email Form */}
+            <form
+              className="flex flex-col gap-2"
+              onSubmit={handleProfileUpdate}
+            >
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                defaultValue={user.email}
+                required
+              />
+              <Button type="submit" variant="default">
+                Update Email
+              </Button>
+            </form>
+            {/* Change Password Form */}
+            <form
+              className="flex flex-col gap-2"
+              onSubmit={handleProfileUpdate}
+            >
+              <Label htmlFor="oldPassword">Current Password</Label>
+              <Input
+                id="oldPassword"
+                name="oldPassword"
+                type="password"
+                autoComplete="current-password"
+                required
+              />
+              <Label htmlFor="newPassword">New Password</Label>
+              <Input
+                id="newPassword"
+                name="newPassword"
+                required
+                type="password"
+                autoComplete="new-password"
+              />
+              <Label htmlFor="confirmPassword">Confirm New Password</Label>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                autoComplete="new-password"
+                required
+              />
+              <Button type="submit" variant="default">
+                Update Password
+              </Button>
+            </form>
+          </div>
         </DialogContent>
       </Dialog>
 
