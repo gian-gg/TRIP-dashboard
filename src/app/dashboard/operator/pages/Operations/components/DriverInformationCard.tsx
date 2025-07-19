@@ -11,9 +11,15 @@ function DriverInformationCard(props: {
     <div className="w-full">
       <Card className="bg-white border border-gray-200 flex h-full w-full flex-col">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-base font-bold md:text-base lg:text-xl">
-            Driver #{props.DriverInfo.driver_id}
-          </CardTitle>
+          <div className="flex items-center gap-2">
+            <span
+              className={`inline-block h-3 w-3 rounded-full border ${props.DriverInfo.status === 'active' ? 'bg-green-500 border-green-600' : 'bg-red-500 border-red-600'}`}
+              title={props.DriverInfo.status.charAt(0).toUpperCase() + props.DriverInfo.status.slice(1)}
+            ></span>
+            <CardTitle className="text-base font-bold md:text-base lg:text-xl">
+              Driver #{props.DriverInfo.driver_id}
+            </CardTitle>
+          </div>
           <CardAction>
             <User className="w-4 h-4" />
           </CardAction>

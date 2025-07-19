@@ -5,7 +5,7 @@ interface BusInformationType {
   conductor_id: number;
   passenger_count: number;
   curr_location: string;
-  status: 'active' | 'inactive' | 'in transit';
+  status: 'active' | 'inactive' | 'in maintenance' | 'in transit';
   next_maintenance: string;
 }
 
@@ -15,6 +15,7 @@ interface DriverInformationType {
   license_number: string;
   contact_number: string;
   bus_id?: number;
+  status: 'active' | 'inactive';
 }
 
 interface ConductorInformationType {
@@ -22,6 +23,7 @@ interface ConductorInformationType {
   full_name: string;
   contact_number: string;
   bus_id?: number;
+  status: 'active' | 'inactive';
 }
 
 export type {
