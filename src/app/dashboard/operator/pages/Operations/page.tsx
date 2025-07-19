@@ -15,7 +15,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Plus, Save, Laugh, Frown, Bus, Search, ChevronDown } from 'lucide-react';
+import {
+  Plus,
+  Save,
+  Laugh,
+  Frown,
+  Bus,
+  Search,
+  ChevronDown,
+} from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Cards from '@/components/Cards';
@@ -24,7 +32,9 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
   DropdownMenuItem,
-} from "@/components/ui/dropdown-menu"
+} from '@/components/ui/dropdown-menu';
+
+import { getInitials } from '@/lib/misc';
 
 const mockBusData: BusInformationType[] = [
   {
@@ -221,15 +231,6 @@ const mockConductorData: ConductorInformationType[] = [
   },
 ];
 
-// Helper function to get initials from a name
-function getInitials(name: string) {
-  return name
-    .split(' ')
-    .map((n) => n[0]?.toUpperCase() || '')
-    .join('')
-    .slice(0, 2);
-}
-
 const FleetStatus = () => {
   const [currentTab, setCurrentTab] = useState<'bus' | 'driver' | 'conductor'>(
     'bus'
@@ -290,7 +291,9 @@ const FleetStatus = () => {
         mockConductorData.filter(
           (conductor) =>
             conductor.conductor_id.toString().includes(searchInput) ||
-            conductor.full_name.toLowerCase().includes(searchInput.toLowerCase())
+            conductor.full_name
+              .toLowerCase()
+              .includes(searchInput.toLowerCase())
         )
       );
     }
@@ -898,7 +901,7 @@ const FleetStatus = () => {
             </div>
           </div>
           <div className="relative my-6 w-full">
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
               <Search className="h-5 w-5 text-gray-400" />
             </span>
             <input
@@ -906,7 +909,7 @@ const FleetStatus = () => {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Search..."
-              className="block w-full rounded-xl border border-gray-300 p-2 pl-10 focus:border-primary focus:ring-2 focus:ring-primary/20 transition placeholder:text-gray-400 bg-white"
+              className="focus:border-primary focus:ring-primary/20 block w-full rounded-xl border border-gray-300 bg-white p-2 pl-10 transition placeholder:text-gray-400 focus:ring-2"
             />
           </div>
           <div className="mt-5">
@@ -949,30 +952,49 @@ const FleetStatus = () => {
                   />
                 </div>
                 <hr className="my-4" />
-                <div className="flex justify-start mb-2 mt-2">
-                  <div className="max-w-[180px] w-full rounded-full border border-gray-300 bg-white">
+                <div className="mt-2 mb-2 flex justify-start">
+                  <div className="w-full max-w-[180px] rounded-full border border-gray-300 bg-white">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="w-full flex items-center justify-between">
+                        <Button
+                          variant="outline"
+                          className="flex w-full items-center justify-between"
+                        >
                           <span>
                             {busStatusFilter === '' || busStatusFilter === 'all'
                               ? 'All buses'
                               : busStatusFilter === 'active'
-                              ? 'Active buses'
-                              : busStatusFilter === 'inactive'
-                              ? 'Inactive buses'
-                              : busStatusFilter === 'in transit'
-                              ? 'In transit buses'
-                              : 'All buses'}
+                                ? 'Active buses'
+                                : busStatusFilter === 'inactive'
+                                  ? 'Inactive buses'
+                                  : busStatusFilter === 'in transit'
+                                    ? 'In transit buses'
+                                    : 'All buses'}
                           </span>
-                          <ChevronDown className="ml-2 w-4 h-4" />
+                          <ChevronDown className="ml-2 h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onSelect={() => setBusStatusFilter('all')}>All buses</DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => setBusStatusFilter('active')}>Active buses</DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => setBusStatusFilter('inactive')}>Inactive buses</DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => setBusStatusFilter('in transit')}>In transit buses</DropdownMenuItem>
+                        <DropdownMenuItem
+                          onSelect={() => setBusStatusFilter('all')}
+                        >
+                          All buses
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onSelect={() => setBusStatusFilter('active')}
+                        >
+                          Active buses
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onSelect={() => setBusStatusFilter('inactive')}
+                        >
+                          Inactive buses
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onSelect={() => setBusStatusFilter('in transit')}
+                        >
+                          In transit buses
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>

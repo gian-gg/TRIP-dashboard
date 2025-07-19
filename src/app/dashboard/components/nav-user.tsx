@@ -40,6 +40,8 @@ import APICall from '@/lib/api';
 
 import type { UserType } from '@/type';
 
+import { getInitials } from '@/lib/misc';
+
 export function NavUser({ user }: { user: UserType }) {
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
@@ -52,14 +54,6 @@ export function NavUser({ user }: { user: UserType }) {
     toast.success('Signed out successfully');
     navigate('/');
   };
-
-  function getInitials(name: string) {
-    return name
-      .split(' ')
-      .map((n) => n[0]?.toUpperCase() || '')
-      .join('')
-      .slice(0, 2);
-  }
 
   const handleProfileUpdate = useCallback(
     async (e: React.FormEvent) => {
