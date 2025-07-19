@@ -12,6 +12,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -20,7 +21,7 @@ import {
   Save,
   Laugh,
   Frown,
-  Bus,
+  Wrench,
   Search,
   ChevronDown,
 } from 'lucide-react';
@@ -64,7 +65,7 @@ const mockBusData: BusInformationType[] = [
     conductor_id: 203,
     passenger_count: 18,
     curr_location: '5th Ave.',
-    status: 'in transit',
+    status: 'in maintenance',
     next_maintenance: '2025-07-25',
   },
   {
@@ -94,7 +95,7 @@ const mockBusData: BusInformationType[] = [
     conductor_id: 206,
     passenger_count: 40,
     curr_location: 'Broadway',
-    status: 'in transit',
+    status: 'in maintenance',
     next_maintenance: '2024-07-30',
   },
   {
@@ -119,7 +120,6 @@ const mockBusData: BusInformationType[] = [
   },
 ];
 
-// Add mock driver data
 const mockDriverData: DriverInformationType[] = [
   {
     driver_id: 101,
@@ -127,6 +127,7 @@ const mockDriverData: DriverInformationType[] = [
     license_number: 'A1234567',
     contact_number: '09171234567',
     bus_id: 1,
+    status: 'active',
   },
   {
     driver_id: 102,
@@ -134,6 +135,7 @@ const mockDriverData: DriverInformationType[] = [
     license_number: 'B2345678',
     contact_number: '09179876543',
     bus_id: 2,
+    status: 'inactive',
   },
   {
     driver_id: 103,
@@ -141,6 +143,7 @@ const mockDriverData: DriverInformationType[] = [
     license_number: 'C3456789',
     contact_number: '09177654321',
     bus_id: 3,
+    status: 'active',
   },
   {
     driver_id: 104,
@@ -148,6 +151,7 @@ const mockDriverData: DriverInformationType[] = [
     license_number: 'D4567890',
     contact_number: '09175551234',
     bus_id: 4,
+    status: 'inactive',
   },
   {
     driver_id: 105,
@@ -155,6 +159,7 @@ const mockDriverData: DriverInformationType[] = [
     license_number: 'E5678901',
     contact_number: '09176662345',
     bus_id: 5,
+    status: 'active',
   },
   {
     driver_id: 106,
@@ -162,6 +167,7 @@ const mockDriverData: DriverInformationType[] = [
     license_number: 'F6789012',
     contact_number: '09177773456',
     bus_id: 6,
+    status: 'inactive',
   },
   {
     driver_id: 107,
@@ -169,6 +175,7 @@ const mockDriverData: DriverInformationType[] = [
     license_number: 'G7890123',
     contact_number: '09178884567',
     bus_id: 7,
+    status: 'active',
   },
   {
     driver_id: 108,
@@ -176,58 +183,66 @@ const mockDriverData: DriverInformationType[] = [
     license_number: 'H8901234',
     contact_number: '09179995678',
     bus_id: 8,
+    status: 'inactive',
   },
 ];
 
-// Add mock conductor data
 const mockConductorData: ConductorInformationType[] = [
   {
     conductor_id: 201,
     full_name: 'Maria Cruz',
     contact_number: '09181234567',
     bus_id: 1,
+    status: 'active',
   },
   {
     conductor_id: 202,
     full_name: 'Pedro Santos',
     contact_number: '09182345678',
     bus_id: 2,
+    status: 'inactive',
   },
   {
     conductor_id: 203,
     full_name: 'Liza Reyes',
     contact_number: '09183456789',
     bus_id: 3,
+    status: 'active',
   },
   {
     conductor_id: 204,
     full_name: 'Ramon Garcia',
     contact_number: '09184567890',
     bus_id: 4,
+    status: 'inactive',
   },
   {
     conductor_id: 205,
     full_name: 'Jessica Chan',
     contact_number: '09185678901',
     bus_id: 5,
+    status: 'active',
   },
   {
     conductor_id: 206,
     full_name: 'Brian Ong',
     contact_number: '09186789012',
     bus_id: 6,
+    status: 'inactive',
   },
   {
     conductor_id: 207,
     full_name: 'Sofia Mendoza',
     contact_number: '09187890123',
     bus_id: 7,
+    status: 'active',
   },
   {
     conductor_id: 208,
     full_name: 'Diana Lopez',
     contact_number: '09188901234',
     bus_id: 8,
+    status: 'inactive',
   },
 ];
 
@@ -266,6 +281,12 @@ const FleetStatus = () => {
   const [filteredConductorData, setFilteredConductorData] =
     useState<ConductorInformationType[]>(mockConductorData);
   const [busStatusFilter, setBusStatusFilter] = useState('');
+  const [driverStatusFilter, setDriverStatusFilter] = useState('all');
+  const [conductorStatusFilter, setConductorStatusFilter] = useState('all');
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editBus, setEditBus] = useState<BusInformationType | null>(null);
+  const [editDriver, setEditDriver] = useState<DriverInformationType | null>(null);
+  const [editConductor, setEditConductor] = useState<ConductorInformationType | null>(null);
 
   useEffect(() => {
     if (currentTab === 'bus') {
@@ -279,25 +300,31 @@ const FleetStatus = () => {
       }
       setFilteredBusData(busData);
     } else if (currentTab === 'driver') {
+      let driverData = mockDriverData;
+      if (driverStatusFilter && driverStatusFilter !== 'all') {
+        driverData = driverData.filter((driver) => driver.status === driverStatusFilter);
+      }
       setFilteredDriverData(
-        mockDriverData.filter(
+        driverData.filter(
           (driver) =>
             driver.driver_id.toString().includes(searchInput) ||
             driver.full_name.toLowerCase().includes(searchInput.toLowerCase())
         )
       );
     } else if (currentTab === 'conductor') {
+      let conductorData = mockConductorData;
+      if (conductorStatusFilter && conductorStatusFilter !== 'all') {
+        conductorData = conductorData.filter((conductor) => conductor.status === conductorStatusFilter);
+      }
       setFilteredConductorData(
-        mockConductorData.filter(
+        conductorData.filter(
           (conductor) =>
             conductor.conductor_id.toString().includes(searchInput) ||
-            conductor.full_name
-              .toLowerCase()
-              .includes(searchInput.toLowerCase())
+            conductor.full_name.toLowerCase().includes(searchInput.toLowerCase())
         )
       );
     }
-  }, [searchInput, busStatusFilter, currentTab]);
+  }, [searchInput, busStatusFilter, currentTab, driverStatusFilter, conductorStatusFilter]);
 
   return (
     <>
@@ -375,7 +402,25 @@ const FleetStatus = () => {
                       Status
                     </td>
                     <td className="text-muted-foreground p-2 text-end text-sm capitalize md:text-lg">
-                      {selectedBus.status}
+                      <span className={
+                        selectedBus.status === 'active'
+                          ? 'text-green-600 font-semibold'
+                          : selectedBus.status === 'inactive'
+                            ? 'text-red-600 font-semibold'
+                            : selectedBus.status === 'in maintenance'
+                              ? 'text-yellow-500 font-semibold'
+                              : ''
+                      }>
+                        {selectedBus.status.charAt(0).toUpperCase() + selectedBus.status.slice(1)}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr className="border-outline">
+                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
+                      Next Maintenance
+                    </td>
+                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
+                      {selectedBus.next_maintenance}
                     </td>
                   </tr>
                 </tbody>
@@ -386,6 +431,21 @@ const FleetStatus = () => {
               </div>
             )}
           </DialogDescription>
+          <DialogFooter>
+            <Button
+              variant='default'
+              className='w-full'
+              onClick={() => {
+                if (selectedBus) {
+                  setEditBus(selectedBus);
+                  setIsEditModalOpen(true);
+                  setIsModalOpen(false);
+                }
+              }}
+            >
+              Edit
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
@@ -412,33 +472,45 @@ const FleetStatus = () => {
                 </div>
                 <div>
                   <Label htmlFor="route_id">Route ID</Label>
-                  <Input
-                    type="number"
+                  <select
                     id="route_id"
                     name="route_id"
                     required
-                    className="mt-2 border border-gray-400"
-                  />
+                    className="mt-2 w-full rounded border border-gray-400 p-2"
+                  >
+                    <option value="">Select Route</option>
+                    {Array.from(new Set(mockBusData.map((bus) => bus.route_id))).map((route) => (
+                      <option key={route} value={route}>{route}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <Label htmlFor="driver_id">Driver ID</Label>
-                  <Input
-                    type="number"
+                  <select
                     id="driver_id"
                     name="driver_id"
                     required
-                    className="mt-2 border border-gray-400"
-                  />
+                    className="mt-2 w-full rounded border border-gray-400 p-2"
+                  >
+                    <option value="">Select Driver</option>
+                    {mockDriverData.map((driver) => (
+                      <option key={driver.driver_id} value={driver.driver_id}>{driver.driver_id} - {driver.full_name}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <Label htmlFor="conductor_id">Conductor ID</Label>
-                  <Input
-                    type="number"
+                  <select
                     id="conductor_id"
                     name="conductor_id"
                     required
-                    className="mt-2 border border-gray-400"
-                  />
+                    className="mt-2 w-full rounded border border-gray-400 p-2"
+                  >
+                    <option value="">Select Conductor</option>
+                    {mockConductorData.map((conductor) => (
+                      <option key={conductor.conductor_id} value={conductor.conductor_id}>{conductor.conductor_id} - {conductor.full_name}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <Label htmlFor="passenger_count">Passenger Count</Label>
@@ -470,8 +542,18 @@ const FleetStatus = () => {
                   >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
-                    <option value="in transit">In Transit</option>
+                    <option value="in maintenance">In Maintenance</option>
                   </select>
+                </div>
+                <div>
+                  <Label htmlFor="next_maintenance">Next Maintenance</Label>
+                  <Input
+                    type="date"
+                    id="next_maintenance"
+                    name="next_maintenance"
+                    required
+                    className="mt-2 border border-gray-400"
+                  />
                 </div>
                 <div className="mt-4 flex justify-end gap-3 md:col-span-2">
                   <Button
@@ -528,9 +610,11 @@ const FleetStatus = () => {
                 <div>
                   <Label htmlFor="contact_number">Contact Number</Label>
                   <Input
-                    type="text"
+                    type="tel"
                     id="contact_number"
                     name="contact_number"
+                    pattern="[0-9]+"
+                    inputMode="numeric"
                     required
                     className="mt-2 border border-gray-400"
                   />
@@ -601,9 +685,11 @@ const FleetStatus = () => {
                 <div>
                   <Label htmlFor="contact_number">Contact Number</Label>
                   <Input
-                    type="text"
+                    type="tel"
                     id="contact_number"
                     name="contact_number"
+                    pattern="[0-9]+"
+                    inputMode="numeric"
                     required
                     className="mt-2 border border-gray-400"
                   />
@@ -643,6 +729,323 @@ const FleetStatus = () => {
                     className="px-2 md:px-4"
                     type="button"
                     onClick={() => setIsAddModalOpen(false)}
+                  >
+                    <span>Cancel</span>
+                  </Button>
+                </div>
+              </form>
+            )}
+          </DialogDescription>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {`Edit ${currentTab} `}
+              {currentTab === 'bus' && editBus && `(ID: ${editBus.bus_id})`}
+              {currentTab === 'driver' && editDriver && `(ID: ${editDriver.driver_id})`}
+              {currentTab === 'conductor' && editConductor && `(ID: ${editConductor.conductor_id})`}
+            </DialogTitle>
+          </DialogHeader>
+          <DialogDescription>
+            {currentTab === 'bus' && editBus && (
+              <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <Label htmlFor="edit_route_id">Route ID</Label>
+                  <select
+                    id="edit_route_id"
+                    name="route_id"
+                    value={editBus.route_id}
+                    onChange={(e) => setEditBus({ ...editBus, route_id: e.target.value })}
+                    required
+                    className="mt-2 w-full rounded border border-gray-400 p-2"
+                  >
+                    <option value="">Select Route</option>
+                    {Array.from(new Set(mockBusData.map((bus) => bus.route_id))).map((route) => (
+                      <option key={route} value={route}>{route}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <Label htmlFor="edit_driver_id">Driver ID</Label>
+                  <select
+                    id="edit_driver_id"
+                    name="driver_id"
+                    value={editBus.driver_id}
+                    onChange={(e) => setEditBus({ ...editBus, driver_id: Number(e.target.value) })}
+                    required
+                    className="mt-2 w-full rounded border border-gray-400 p-2"
+                  >
+                    <option value="">Select Driver</option>
+                    {mockDriverData.map((driver) => (
+                      <option key={driver.driver_id} value={driver.driver_id}>{driver.driver_id} - {driver.full_name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <Label htmlFor="edit_conductor_id">Conductor ID</Label>
+                  <select
+                    id="edit_conductor_id"
+                    name="conductor_id"
+                    value={editBus.conductor_id}
+                    onChange={(e) => setEditBus({ ...editBus, conductor_id: Number(e.target.value) })}
+                    required
+                    className="mt-2 w-full rounded border border-gray-400 p-2"
+                  >
+                    <option value="">Select Conductor</option>
+                    {mockConductorData.map((conductor) => (
+                      <option key={conductor.conductor_id} value={conductor.conductor_id}>{conductor.conductor_id} - {conductor.full_name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <Label htmlFor="passenger_count">Passenger Count</Label>
+                  <Input
+                    type="number"
+                    id="passenger_count"
+                    name="passenger_count"
+                    value={editBus.passenger_count}
+                    onChange={(e) => setEditBus({ ...editBus, passenger_count: Number(e.target.value) })}
+                    required
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="curr_location">Current Location</Label>
+                  <Input
+                    type="text"
+                    id="curr_location"
+                    name="curr_location"
+                    value={editBus.curr_location}
+                    onChange={(e) => setEditBus({ ...editBus, curr_location: e.target.value })}
+                    required
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="status">Status</Label>
+                  <select
+                    id="status"
+                    name="status"
+                    value={editBus.status}
+                    onChange={(e) => setEditBus({ ...editBus, status: e.target.value as BusInformationType['status'] })}
+                    className="mt-2 w-full rounded border border-gray-400 p-2"
+                    required
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="in maintenance">In Maintenance</option>
+                  </select>
+                </div>
+                <div>
+                  <Label htmlFor="next_maintenance">Next Maintenance</Label>
+                  <Input
+                    type="date"
+                    id="next_maintenance"
+                    name="next_maintenance"
+                    value={editBus.next_maintenance}
+                    onChange={(e) => setEditBus({ ...editBus, next_maintenance: e.target.value })}
+                    required
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+                <div className="mt-4 flex justify-end gap-3 md:col-span-2">
+                  <Button
+                    variant="default"
+                    className="px-2 md:px-4"
+                    type="submit"
+                  >
+                    <Save className="mr-0 md:mr-2" />
+                    <span>Save Bus</span>
+                  </Button>
+                  <Button
+                    variant="default"
+                    className="px-2 md:px-4"
+                    type="button"
+                    onClick={() => setIsEditModalOpen(false)}
+                  >
+                    <span>Cancel</span>
+                  </Button>
+                </div>
+              </form>
+            )}
+            {currentTab === 'driver' && editDriver && (
+              <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <Label htmlFor="driver_id">Driver ID</Label>
+                  <Input
+                    type="number"
+                    id="driver_id"
+                    name="driver_id"
+                    value={editDriver.driver_id}
+                    onChange={(e) => setEditDriver({ ...editDriver, driver_id: Number(e.target.value) })}
+                    required
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="full_name">Full Name</Label>
+                  <Input
+                    type="text"
+                    id="full_name"
+                    name="full_name"
+                    value={editDriver.full_name}
+                    onChange={(e) => setEditDriver({ ...editDriver, full_name: e.target.value })}
+                    required
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="license_number">License Number</Label>
+                  <Input
+                    type="text"
+                    id="license_number"
+                    name="license_number"
+                    value={editDriver.license_number}
+                    onChange={(e) => setEditDriver({ ...editDriver, license_number: e.target.value })}
+                    required
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="contact_number">Contact Number</Label>
+                  <Input
+                    type="tel"
+                    id="contact_number"
+                    name="contact_number"
+                    pattern="[0-9]+"
+                    inputMode="numeric"
+                    value={editDriver.contact_number}
+                    onChange={(e) => setEditDriver({ ...editDriver, contact_number: e.target.value.replace(/[^0-9]/g, '') })}
+                    required
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="status">Status</Label>
+                  <select
+                    id="status"
+                    name="status"
+                    value={editDriver.status}
+                    onChange={(e) => setEditDriver({ ...editDriver, status: e.target.value as DriverInformationType['status'] })}
+                    className="mt-2 w-full rounded border border-gray-400 p-2"
+                    required
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+                </div>
+                <div>
+                  <Label htmlFor="bus_id">Bus ID</Label>
+                  <Input
+                    type="number"
+                    id="bus_id"
+                    name="bus_id"
+                    value={editDriver.bus_id}
+                    onChange={(e) => setEditDriver({ ...editDriver, bus_id: Number(e.target.value) })}
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+                <div className="mt-4 flex justify-end gap-3 md:col-span-2">
+                  <Button
+                    variant="default"
+                    className="px-2 md:px-4"
+                    type="submit"
+                  >
+                    <Save className="mr-0 md:mr-2" />
+                    <span>Save Driver</span>
+                  </Button>
+                  <Button
+                    variant="default"
+                    className="px-2 md:px-4"
+                    type="button"
+                    onClick={() => setIsEditModalOpen(false)}
+                  >
+                    <span>Cancel</span>
+                  </Button>
+                </div>
+              </form>
+            )}
+            {currentTab === 'conductor' && editConductor && (
+              <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <Label htmlFor="conductor_id">Conductor ID</Label>
+                  <Input
+                    type="number"
+                    id="conductor_id"
+                    name="conductor_id"
+                    value={editConductor.conductor_id}
+                    onChange={(e) => setEditConductor({ ...editConductor, conductor_id: Number(e.target.value) })}
+                    required
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="full_name">Full Name</Label>
+                  <Input
+                    type="text"
+                    id="full_name"
+                    name="full_name"
+                    value={editConductor.full_name}
+                    onChange={(e) => setEditConductor({ ...editConductor, full_name: e.target.value })}
+                    required
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="contact_number">Contact Number</Label>
+                  <Input
+                    type="tel"
+                    id="contact_number"
+                    name="contact_number"
+                    pattern="[0-9]+"
+                    inputMode="numeric"
+                    value={editConductor.contact_number}
+                    onChange={(e) => setEditConductor({ ...editConductor, contact_number: e.target.value.replace(/[^0-9]/g, '') })}
+                    required
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="status">Status</Label>
+                  <select
+                    id="status"
+                    name="status"
+                    value={editConductor.status}
+                    onChange={(e) => setEditConductor({ ...editConductor, status: e.target.value as ConductorInformationType['status'] })}
+                    className="mt-2 w-full rounded border border-gray-400 p-2"
+                    required
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+                </div>
+                <div>
+                  <Label htmlFor="bus_id">Bus ID</Label>
+                  <Input
+                    type="number"
+                    id="bus_id"
+                    name="bus_id"
+                    value={editConductor.bus_id}
+                    onChange={(e) => setEditConductor({ ...editConductor, bus_id: Number(e.target.value) })}
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+                <div className="mt-4 flex justify-end gap-3 md:col-span-2">
+                  <Button
+                    variant="default"
+                    className="px-2 md:px-4"
+                    type="submit"
+                  >
+                    <Save className="mr-0 md:mr-2" />
+                    <span>Save Conductor</span>
+                  </Button>
+                  <Button
+                    variant="default"
+                    className="px-2 md:px-4"
+                    type="button"
+                    onClick={() => setIsEditModalOpen(false)}
                   >
                     <span>Cancel</span>
                   </Button>
@@ -721,6 +1124,16 @@ const FleetStatus = () => {
                   </tr>
                   <tr className="border-outline">
                     <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
+                      Status
+                    </td>
+                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
+                      <span className={selectedDriver.status === 'active' ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'}>
+                        {selectedDriver.status.charAt(0).toUpperCase() + selectedDriver.status.slice(1)}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr className="border-outline">
+                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
                       Bus ID
                     </td>
                     <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
@@ -735,6 +1148,21 @@ const FleetStatus = () => {
               </div>
             )}
           </DialogDescription>
+          <DialogFooter>
+            <Button
+              variant='default'
+              className='w-full'
+              onClick={() => {
+                if (selectedDriver) {
+                  setEditDriver(selectedDriver);
+                  setIsEditModalOpen(true);
+                  setIsDriverModalOpen(false);
+                }
+              }}
+            >
+              Edit
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
       <Dialog
@@ -801,6 +1229,16 @@ const FleetStatus = () => {
                   </tr>
                   <tr className="border-outline">
                     <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
+                      Status
+                    </td>
+                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
+                      <span className={selectedConductor.status === 'active' ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'}>
+                        {selectedConductor.status.charAt(0).toUpperCase() + selectedConductor.status.slice(1)}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr className="border-outline">
+                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
                       Bus ID
                     </td>
                     <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
@@ -815,6 +1253,21 @@ const FleetStatus = () => {
               </div>
             )}
           </DialogDescription>
+          <DialogFooter>
+            <Button
+              variant='default'
+              className='w-full'
+              onClick={() => {
+                if (selectedConductor) {
+                  setEditConductor(selectedConductor);
+                  setIsEditModalOpen(true);
+                  setIsConductorModalOpen(false);
+                }
+              }}
+            >
+              Edit
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
       <h1 className="text-xl font-bold">Operations</h1>
@@ -941,13 +1394,12 @@ const FleetStatus = () => {
                   />
                   <Cards
                     card={{
-                      title: 'In Transit',
-                      icon: Bus,
+                      title: 'In Maintenance',
+                      icon: Wrench,
                       value: String(
-                        mockBusData.filter((bus) => bus.status === 'in transit')
-                          .length
+                        mockBusData.filter((bus) => bus.status === 'in maintenance').length
                       ),
-                      subtitle: 'Buses on the road',
+                      subtitle: 'Buses currently in maintenance',
                     }}
                   />
                 </div>
@@ -967,8 +1419,8 @@ const FleetStatus = () => {
                                 ? 'Active buses'
                                 : busStatusFilter === 'inactive'
                                   ? 'Inactive buses'
-                                  : busStatusFilter === 'in transit'
-                                    ? 'In transit buses'
+                                  : busStatusFilter === 'in maintenance'
+                                    ? 'In maintenance buses'
                                     : 'All buses'}
                           </span>
                           <ChevronDown className="ml-2 h-4 w-4" />
@@ -991,9 +1443,9 @@ const FleetStatus = () => {
                           Inactive buses
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onSelect={() => setBusStatusFilter('in transit')}
+                          onSelect={() => setBusStatusFilter('in maintenance')}
                         >
-                          In transit buses
+                          In maintenance buses
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -1014,32 +1466,144 @@ const FleetStatus = () => {
               </div>
             )}
             {currentTab === 'driver' && (
-              <div className="grid w-full grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {filteredDriverData.map((driver) => (
-                  <DriverInformationCard
-                    key={driver.driver_id}
-                    DriverInfo={driver}
-                    OnClick={() => {
-                      setSelectedDriverId(driver.driver_id);
-                      setIsDriverModalOpen(true);
+              <>
+                <hr className="my-4" />
+                <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-2">
+                  <Cards
+                    card={{
+                      title: 'Active',
+                      icon: Laugh,
+                      value: String(mockDriverData.filter((driver) => driver.status === 'active').length),
+                      subtitle: 'Active drivers',
                     }}
                   />
-                ))}
-              </div>
+                  <Cards
+                    card={{
+                      title: 'Inactive',
+                      icon: Frown,
+                      value: String(mockDriverData.filter((driver) => driver.status === 'inactive').length),
+                      subtitle: 'Inactive drivers',
+                    }}
+                  />
+                </div>
+                <hr className="my-4" />
+                <div className="mt-2 mb-2 flex justify-start">
+                  <div className="w-full max-w-[180px] rounded-full border border-gray-300 bg-white">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="flex w-full items-center justify-between"
+                        >
+                          <span>
+                            {driverStatusFilter === '' || driverStatusFilter === 'all'
+                              ? 'All drivers'
+                              : driverStatusFilter === 'active'
+                                ? 'Active drivers'
+                                : driverStatusFilter === 'inactive'
+                                  ? 'Inactive drivers'
+                                  : 'All drivers'}
+                          </span>
+                          <ChevronDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onSelect={() => setDriverStatusFilter('all')}>
+                          All drivers
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => setDriverStatusFilter('active')}>
+                          Active drivers
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => setDriverStatusFilter('inactive')}>
+                          Inactive drivers
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </div>
+                <div className="grid w-full grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {filteredDriverData.map((driver) => (
+                    <DriverInformationCard
+                      key={driver.driver_id}
+                      DriverInfo={driver}
+                      OnClick={() => {
+                        setSelectedDriverId(driver.driver_id);
+                        setIsDriverModalOpen(true);
+                      }}
+                    />
+                  ))}
+                </div>
+              </>
             )}
             {currentTab === 'conductor' && (
-              <div className="grid w-full grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {filteredConductorData.map((conductor) => (
-                  <ConductorInformationCard
-                    key={conductor.conductor_id}
-                    ConductorInfo={conductor}
-                    OnClick={() => {
-                      setSelectedConductorId(conductor.conductor_id);
-                      setIsConductorModalOpen(true);
+              <>
+                <hr className="my-4" />
+                <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-2">
+                  <Cards
+                    card={{
+                      title: 'Active',
+                      icon: Laugh,
+                      value: String(mockConductorData.filter((conductor) => conductor.status === 'active').length),
+                      subtitle: 'Active conductors',
                     }}
                   />
-                ))}
-              </div>
+                  <Cards
+                    card={{
+                      title: 'Inactive',
+                      icon: Frown,
+                      value: String(mockConductorData.filter((conductor) => conductor.status === 'inactive').length),
+                      subtitle: 'Inactive conductors',
+                    }}
+                  />
+                </div>
+                <hr className="my-4" />
+                <div className="mt-2 mb-2 flex justify-start">
+                  <div className="w-full max-w-[180px] rounded-full border border-gray-300 bg-white">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="flex w-full items-center justify-between"
+                        >
+                          <span>
+                            {conductorStatusFilter === '' || conductorStatusFilter === 'all'
+                              ? 'All conductors'
+                              : conductorStatusFilter === 'active'
+                                ? 'Active conductors'
+                                : conductorStatusFilter === 'inactive'
+                                  ? 'Inactive conductors'
+                                  : 'All conductors'}
+                          </span>
+                          <ChevronDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onSelect={() => setConductorStatusFilter('all')}>
+                          All conductors
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => setConductorStatusFilter('active')}>
+                          Active conductors
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => setConductorStatusFilter('inactive')}>
+                          Inactive conductors
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </div>
+                <div className="grid w-full grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {filteredConductorData.map((conductor) => (
+                    <ConductorInformationCard
+                      key={conductor.conductor_id}
+                      ConductorInfo={conductor}
+                      OnClick={() => {
+                        setSelectedConductorId(conductor.conductor_id);
+                        setIsConductorModalOpen(true);
+                      }}
+                    />
+                  ))}
+                </div>
+              </>
             )}
           </div>
         </div>
