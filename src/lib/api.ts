@@ -34,10 +34,64 @@ async function GET<T = unknown, P = Record<string, unknown>>(
 
 async function PUT<T = unknown, D = Record<string, unknown>>(
   url: string,
-  data: D
+  data?: D
 ): Promise<T> {
   const response: AxiosResponse<T> = await Fetch.put<T>(url, data);
   return response.data;
 }
 
-export { Fetch, POST, GET, PUT };
+type APIResponse<T> = {
+  status: 'success' | 'error';
+  data: T;
+  message?: string;
+};
+
+type APICallOptions<T> = {
+  type: 'GET' | 'POST' | 'PUT';
+  url: string;
+  body?: object;
+  success: (data: T) => void;
+  error: (error: Error) => void;
+  consoleLabel?: string;
+};
+
+const APICall = async <T>(options: APICallOptions<T>) => {
+  try {
+    let res: APIResponse<T>;
+    switch (options.type) {
+      case 'GET':
+        res = (await GET(options.url)) as APIResponse<T>;
+        break;
+      case 'POST':
+        if (!options.body) {
+          throw new Error('Body is required for POST requests');
+        }
+        res = (await POST(options.url, options.body)) as APIResponse<T>;
+        break;
+      case 'PUT':
+        if (options.body) {
+          res = (await PUT(options.url, options.body)) as APIResponse<T>;
+        } else {
+          res = (await PUT(options.url)) as APIResponse<T>;
+        }
+        break;
+      default:
+        throw new Error(`Unsupported method: ${options.type}`);
+    }
+
+    if (options.consoleLabel) {
+      console.log(options.consoleLabel, JSON.stringify(res, null, 2));
+    }
+
+    if (res.status === 'error') {
+      throw new Error(res.message);
+    }
+
+    options.success(res.data);
+  } catch (error) {
+    options.error(error instanceof Error ? error : new Error('Unknown error'));
+  }
+};
+
+export default APICall;
+export { POST, GET, PUT };

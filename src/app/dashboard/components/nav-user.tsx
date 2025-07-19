@@ -35,8 +35,8 @@ import {
 import { ConfirmToast } from '@/components/Toasts';
 
 import { signOut } from '@/lib/auth';
-import updateProfile from '@/lib/updateProfile';
 import passwordChecker from '@/lib/passwordChecker';
+import APICall from '@/lib/api';
 
 import type { UserType } from '@/type';
 
@@ -44,6 +44,7 @@ export function NavUser({ user }: { user: UserType }) {
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
 
+  const [currentUser, setCurrentUser] = useState<UserType>(user); // for optimistic UI updates
   const [openProfileDialog, setOpenProfileDialog] = useState<boolean>(false);
 
   const handleSignOut = () => {
@@ -62,8 +63,6 @@ export function NavUser({ user }: { user: UserType }) {
 
   const handleProfileUpdate = useCallback(
     async (e: React.FormEvent) => {
-      e.preventDefault();
-
       const formData = new FormData(e.target as HTMLFormElement);
       const name = formData.get('name') as string | null;
       const email = formData.get('email') as string | null;
@@ -71,46 +70,52 @@ export function NavUser({ user }: { user: UserType }) {
       const newPassword = formData.get('newPassword') as string | null;
       const confirmPassword = formData.get('confirmPassword') as string | null;
 
-      if (name === user.name || email === user.email) {
-        console.warn('No changes detected for name or email.');
-        return;
+      console.log(currentUser);
+
+      if (name === currentUser.name || email === currentUser.email) {
+        throw new Error('No changes detected for name or email.');
       }
 
       if (newPassword && confirmPassword) {
         if (newPassword !== confirmPassword) {
-          toast.error('New password and confirmation do not match');
-          return;
+          throw new Error('New password and confirmation do not match');
         }
 
         const passwordError = passwordChecker(newPassword);
         if (passwordError) {
-          toast.error(passwordError);
-          return;
+          throw new Error(passwordError);
         }
       }
 
       const requestBody = {
-        user_id: user.user_id,
+        user_id: currentUser.user_id,
         name: name,
         email: email,
         current_password: oldPassword,
         new_password: newPassword,
       };
 
-      setOpenProfileDialog(false);
-
-      ConfirmToast('Edit Profile', () =>
-        toast.promise(updateProfile(requestBody), {
+      toast.promise(
+        async () => {
+          await APICall<UserType>({
+            type: 'PUT',
+            url: '/users/index.php',
+            body: requestBody,
+            consoleLabel: 'Profile Update Response',
+            success: (data) => setCurrentUser(data),
+            error: (error) => {
+              throw new Error(error.message);
+            },
+          });
+        },
+        {
           loading: 'Updating profile...',
-          success: () => {
-            // window.location.reload();
-            return 'Profile updated successfully';
-          },
+          success: 'Profile updated successfully',
           error: (err) => err.message,
-        })
+        }
       );
     },
-    [user]
+    [currentUser, setCurrentUser]
   );
 
   return (
@@ -123,11 +128,11 @@ export function NavUser({ user }: { user: UserType }) {
               <div className="mb-4 flex flex-col items-center">
                 <div className="mb-2 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gray-200">
                   <span className="text-4xl font-bold text-gray-600">
-                    {getInitials(user.name)}
+                    {getInitials(currentUser.name)}
                   </span>
                 </div>
                 <span className="text-muted-foreground text-xs">
-                  {user.name}
+                  {currentUser.name}
                 </span>
               </div>
             </DialogDescription>
@@ -136,10 +141,19 @@ export function NavUser({ user }: { user: UserType }) {
             {/* Change Name Form */}
             <form
               className="flex flex-col gap-2"
-              onSubmit={handleProfileUpdate}
+              onSubmit={(e) => {
+                e.preventDefault();
+                setOpenProfileDialog(false);
+                ConfirmToast('Edit Profile', () => handleProfileUpdate(e));
+              }}
             >
               <Label htmlFor="name">Name</Label>
-              <Input id="name" name="name" defaultValue={user.name} required />
+              <Input
+                id="name"
+                name="name"
+                defaultValue={currentUser.name}
+                required
+              />
               <Button type="submit" variant="default">
                 Update Name
               </Button>
@@ -147,14 +161,18 @@ export function NavUser({ user }: { user: UserType }) {
             {/* Change Email Form */}
             <form
               className="flex flex-col gap-2"
-              onSubmit={handleProfileUpdate}
+              onSubmit={(e) => {
+                e.preventDefault();
+                setOpenProfileDialog(false);
+                ConfirmToast('Edit Profile', () => handleProfileUpdate(e));
+              }}
             >
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                defaultValue={user.email}
+                defaultValue={currentUser.email}
                 required
               />
               <Button type="submit" variant="default">
@@ -164,7 +182,11 @@ export function NavUser({ user }: { user: UserType }) {
             {/* Change Password Form */}
             <form
               className="flex flex-col gap-2"
-              onSubmit={handleProfileUpdate}
+              onSubmit={(e) => {
+                e.preventDefault();
+                setOpenProfileDialog(false);
+                ConfirmToast('Edit Profile', () => handleProfileUpdate(e));
+              }}
             >
               <Label htmlFor="oldPassword">Current Password</Label>
               <Input
@@ -208,7 +230,7 @@ export function NavUser({ user }: { user: UserType }) {
               >
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarFallback className="rounded-lg">
-                    {user.name
+                    {currentUser.name
                       .split(' ')
                       .map((n) => n[0])
                       .join('')
@@ -216,8 +238,10 @@ export function NavUser({ user }: { user: UserType }) {
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate font-medium">
+                    {currentUser.name}
+                  </span>
+                  <span className="truncate text-xs">{currentUser.email}</span>
                 </div>
                 <ChevronsUpDown className="ml-auto size-4" />
               </SidebarMenuButton>
@@ -232,7 +256,7 @@ export function NavUser({ user }: { user: UserType }) {
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarFallback className="rounded-lg">
-                      {user.name
+                      {currentUser.name
                         .split(' ')
                         .map((n) => n[0])
                         .join('')
@@ -240,8 +264,12 @@ export function NavUser({ user }: { user: UserType }) {
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">{user.name}</span>
-                    <span className="truncate text-xs">{user.email}</span>
+                    <span className="truncate font-medium">
+                      {currentUser.name}
+                    </span>
+                    <span className="truncate text-xs">
+                      {currentUser.email}
+                    </span>
                   </div>
                 </div>
               </DropdownMenuLabel>
