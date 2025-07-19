@@ -69,7 +69,7 @@ export function SignIn() {
                 id="email"
                 type="email"
                 name="email"
-                placeholder="xxxx@trip.com"
+                placeholder="Enter your email"
                 required
                 className="placeholder:text-muted-foreground focus-visible:ring-ring border border-black/20 bg-white text-black shadow-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
                 style={
@@ -117,6 +117,7 @@ export function SignIn() {
                 id="password"
                 type="password"
                 name="password"
+                placeholder="Enter your password"
                 required
                 className="placeholder:text-muted-foreground focus-visible:ring-ring border border-black/20 bg-white text-black shadow-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
                 style={
