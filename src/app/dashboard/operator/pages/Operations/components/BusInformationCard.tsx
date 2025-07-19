@@ -27,6 +27,9 @@ function BusInformationCard(props: {
     case 'in transit':
       StatusColorClass = 'text-yellow-500';
       break;
+    case 'in maintenance':
+      StatusColorClass = 'text-gray-400';
+      break;
     default:
       StatusColorClass = 'text-black';
   }
@@ -59,10 +62,20 @@ function BusInformationCard(props: {
         <CardHeader>
           <CardTitle className="flex items-center gap-3 text-base font-bold md:text-base lg:text-xl">
             <div>
-              <Circle
-                className={`h-4 w-4 ${StatusColorClass}`}
-                fill="currentColor"
-              />
+              <span
+                className={`inline-block h-3 w-3 rounded-full border ${
+                  props.BusInfo.status === 'active'
+                    ? 'bg-green-500 border-green-600'
+                    : props.BusInfo.status === 'inactive'
+                      ? 'bg-red-500 border-red-600'
+                      : props.BusInfo.status === 'in maintenance'
+                        ? 'bg-gray-400 border-gray-500'
+                        : props.BusInfo.status === 'in transit'
+                          ? 'bg-yellow-400 border-yellow-500'
+                          : ''
+                }`}
+                title={props.BusInfo.status.charAt(0).toUpperCase() + props.BusInfo.status.slice(1)}
+              ></span>
             </div>
             Bus #{props.BusInfo['bus_id']}
           </CardTitle>

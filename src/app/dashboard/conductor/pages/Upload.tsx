@@ -10,7 +10,7 @@ const Upload = () => {
       <p className="mb-4 text-gray-600">Greetings Conductors! Please upload your files using the form below.</p>
       <hr/>
       <div className="grid w-full max-w-sm items-center gap-3">
-        <Label htmlFor="files" className="mb-1 font-bold text-gray-700 font-medium">Upload Trip JSON</Label>
+        <Label htmlFor="files" className="mb-1 font-bold text-gray-700 font-medium">Upload Trip JSON:</Label>
         <Input id="files" type="file" accept=".json" />
       </div>
       <hr/>
