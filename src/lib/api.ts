@@ -94,4 +94,3 @@ const APICall = async <T>(options: APICallOptions<T>) => {
 };
 
 export default APICall;
-export { POST, GET, PUT };

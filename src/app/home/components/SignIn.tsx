@@ -42,11 +42,11 @@ export function SignIn() {
 
     toast.promise(signIn(req), {
       loading: 'Loading...',
-      success: (user) => {
-        navigate('/' + user.role);
+      success: (role) => {
+        navigate('/' + role);
         return 'Sign in successful!';
       },
-      error: 'Sign in failed. Please check your credentials.',
+      error: (err) => err.message,
     });
   };
 

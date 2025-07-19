@@ -1,17 +1,23 @@
-import { POST, GET } from '@/lib/api';
-import type { GETResponse, UserType } from '@/type';
+import APICall from '@/lib/api';
+import type { UserType } from '@/type';
 
 const signIn = async (req: { email: string; password: string }) => {
-  const response = await POST('/auth/index.php', req);
-  const res = response as GETResponse;
+  let role: UserType['role'] | null = null;
+  await APICall<{ token: string; role: string }>({
+    type: 'POST',
+    url: '/auth/index.php',
+    body: req,
+    consoleLabel: 'Sign In Response',
+    success: (data) => {
+      localStorage.setItem('token', data.token);
+      role = data.role as UserType['role'] | null;
+    },
+    error: (error) => {
+      throw new Error(error.message || 'Unknown error');
+    },
+  });
 
-  if (res.status !== 'success') {
-    throw new Error('Sign in failed: ' + (res.message || 'Unknown error'));
-  }
-
-  localStorage.setItem('token', (res.data as { token: string }).token);
-
-  return res.data as UserType;
+  return role;
 };
 
 const signOut = () => {
@@ -23,16 +29,20 @@ const getUser = async () => {
   if (!token) {
     return null;
   }
+  let user: UserType | null = null;
+  await APICall<UserType>({
+    type: 'GET',
+    url: '/auth/index.php?token=' + token,
+    consoleLabel: 'Get User Response',
+    success: (data) => {
+      user = data as UserType | null;
+    },
+    error: (error) => {
+      throw new Error(error.message || 'Unknown error');
+    },
+  });
 
-  const response = await GET('/auth/index.php?token=' + token);
-
-  const res = response as GETResponse;
-
-  if (res.status !== 'success') {
-    throw new Error('Get user failed: ' + (res.message || 'Unknown error'));
-  }
-
-  return res.data as UserType;
+  return user;
 };
 
 export { signIn, signOut, getUser };
