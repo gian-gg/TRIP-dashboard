@@ -93,12 +93,21 @@ export function SignIn() {
                   <DialogContent className="bg-white">
                     <DialogHeader>
                       <DialogTitle className="text-trip-primary">
-                        Forgot your password?
+                        Reset Your Password
                       </DialogTitle>
                       <DialogDescription>
-                        Lorem ipsum dolor sit amet consectetur, adipisicing
-                        elit. Accusamus rerum eaque ad quia itaque eos tenetur
-                        reprehenderit illum voluptatibus eligendi.
+                        To reset your password, please email us at{' '}
+                        <strong className="text-trip-primary">
+                          support@trip.com
+                        </strong>{' '}
+                        with:
+                        <ul className="mt-2 list-disc pl-5">
+                          <li>Your registered email address</li>
+                          <li>A brief description of your issue</li>
+                        </ul>
+                        <p className="mt-2">
+                          We'll send you a secure link to create a new password.
+                        </p>
                       </DialogDescription>
                     </DialogHeader>
                   </DialogContent>
