@@ -29,6 +29,7 @@ const getUser = async () => {
   if (!token) {
     return null;
   }
+
   let user: UserType | null = null;
   await APICall<UserType>({
     type: 'GET',

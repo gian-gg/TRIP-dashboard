@@ -13,13 +13,13 @@ const useAuthorized = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const userData = await getUser();
+        const userData = (await getUser()) as UserType | null;
         if (!userData) {
           navigate('/');
           return;
         }
 
-        if (!pathname.startsWith(`/${userData.role}`)) {
+        if (userData.role && !pathname.startsWith(`/${userData.role}`)) {
           navigate(`/${userData.role}`);
           return;
         }
