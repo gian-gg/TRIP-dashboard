@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
@@ -27,7 +29,10 @@ import { LogIn } from 'lucide-react';
 import { signIn } from '@/lib/auth';
 
 export function SignIn() {
+  const [isLoading, setIsLoading] = useState(false); // for form
+
   const navigate = useNavigate();
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -40,13 +45,18 @@ export function SignIn() {
       password: password,
     };
 
+    setIsLoading(true);
     toast.promise(signIn(req), {
       loading: 'Loading...',
       success: (role) => {
         navigate('/' + role);
+        setIsLoading(false);
         return 'Sign in successful!';
       },
-      error: (err) => err.message,
+      error: (err) => {
+        setIsLoading(false);
+        return err.message;
+      },
     });
   };
 
@@ -140,6 +150,7 @@ export function SignIn() {
           type="submit"
           className="bg-trip-primary hover:bg-trip-primary/70 w-full cursor-pointer text-white"
           form="sign-in-form"
+          disabled={isLoading}
         >
           <LogIn />
           Sign In
