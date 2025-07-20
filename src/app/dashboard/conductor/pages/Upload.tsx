@@ -5,6 +5,8 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import APICall from '@/lib/api';
+import { getUser } from '@/lib/auth';
+import type { UserType } from '@/type';
 
 interface TRIPSummaryType {
   trip_details: {
@@ -72,11 +74,17 @@ const Upload = () => {
         throw new Error('Please upload a valid file first.');
       }
 
+      const userResult = await getUser();
+      if (!userResult) {
+        throw new Error('User not authenticated. Please log in.');
+      }
+      const user = userResult as UserType;
+
       await APICall({
         type: 'POST',
         url: '/trip/index.php',
         body: {
-          conductor_id: 10,
+          conductor_id: user.user_id,
           token: encryptedToken,
         },
         consoleLabel: 'Upload Trip:',
