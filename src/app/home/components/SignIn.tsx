@@ -87,7 +87,7 @@ export function SignIn() {
                 <Label htmlFor="password">Password</Label>
 
                 <Dialog>
-                  <DialogTrigger className="hover:text-trip-primary/80 ml-auto inline-block cursor-pointer text-sm underline-offset-4 hover:underline">
+                  <DialogTrigger className="hover:text-trip-primary/80 ml-auto inline-block cursor-pointer text-xs underline-offset-4 hover:underline">
                     Forgot your password?
                   </DialogTrigger>
                   <DialogContent className="bg-white">
@@ -101,10 +101,12 @@ export function SignIn() {
                           support@trip.com
                         </strong>{' '}
                         with:
-                        <ul className="mt-2 list-disc pl-5">
-                          <li>Your registered email address</li>
-                          <li>A brief description of your issue</li>
-                        </ul>
+                        <div className="flex w-full flex-col items-center justify-center sm:items-start">
+                          <ul className="mt-2 list-disc pl-4 text-left">
+                            <li>Your registered email address</li>
+                            <li>A brief description of your issue</li>
+                          </ul>
+                        </div>
                         <p className="mt-2">
                           We'll send you a secure link to create a new password.
                         </p>
