@@ -8,32 +8,12 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import type { BusInformationType } from '../type';
-import { Circle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 function BusInformationCard(props: {
   BusInfo: BusInformationType;
   OnClick: (data: BusInformationType) => void;
 }) {
-  const status = props.BusInfo['status'];
-  let StatusColorClass = 'text-black';
-  switch (status) {
-    case 'active':
-      StatusColorClass = 'text-green-600';
-      break;
-    case 'inactive':
-      StatusColorClass = 'text-red-600';
-      break;
-    case 'in transit':
-      StatusColorClass = 'text-yellow-500';
-      break;
-    case 'in maintenance':
-      StatusColorClass = 'text-gray-400';
-      break;
-    default:
-      StatusColorClass = 'text-black';
-  }
-
   // Calculate days left until next maintenance
   function getDaysLeft(dateString: string) {
     const today = new Date(); // always gets the current date at call time
@@ -65,16 +45,19 @@ function BusInformationCard(props: {
               <span
                 className={`inline-block h-3 w-3 rounded-full border ${
                   props.BusInfo.status === 'active'
-                    ? 'bg-green-500 border-green-600'
+                    ? 'border-green-600 bg-green-500'
                     : props.BusInfo.status === 'inactive'
-                      ? 'bg-red-500 border-red-600'
+                      ? 'border-red-600 bg-red-500'
                       : props.BusInfo.status === 'in maintenance'
-                        ? 'bg-gray-400 border-gray-500'
+                        ? 'border-gray-500 bg-gray-400'
                         : props.BusInfo.status === 'in transit'
-                          ? 'bg-yellow-400 border-yellow-500'
+                          ? 'border-yellow-500 bg-yellow-400'
                           : ''
                 }`}
-                title={props.BusInfo.status.charAt(0).toUpperCase() + props.BusInfo.status.slice(1)}
+                title={
+                  props.BusInfo.status.charAt(0).toUpperCase() +
+                  props.BusInfo.status.slice(1)
+                }
               ></span>
             </div>
             Bus #{props.BusInfo['bus_id']}
