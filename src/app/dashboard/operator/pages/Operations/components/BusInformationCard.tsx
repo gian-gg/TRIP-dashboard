@@ -83,22 +83,6 @@ function BusInformationCard(props: {
             </p>
             <p className="text-xs md:text-sm">{props.BusInfo['driver_id']}</p>
           </div>
-          <div>
-            <p className="text-xs font-semibold md:text-sm lg:text-base">
-              Current Location:
-            </p>
-            <p className="text-xs md:text-sm">
-              {props.BusInfo['curr_location']}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs font-semibold md:text-sm lg:text-base">
-              Passenger Count:
-            </p>
-            <p className="text-xs md:text-sm">
-              {props.BusInfo['passenger_count']}
-            </p>
-          </div>
         </CardContent>
         <CardFooter>
           <Button

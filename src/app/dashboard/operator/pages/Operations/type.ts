@@ -1,10 +1,8 @@
 interface BusInformationType {
-  bus_id: number;
+  bus_id: string;
   route_id: string;
   driver_id: number;
   conductor_id: number;
-  passenger_count: number;
-  curr_location: string;
   status: 'active' | 'inactive' | 'in maintenance' | 'in transit';
   next_maintenance: string;
 }
@@ -20,9 +18,10 @@ interface DriverInformationType {
 
 interface ConductorInformationType {
   conductor_id: number;
-  full_name: string;
+  name: string;
   contact_number: string;
-  bus_id?: number;
+  email: string;
+  bus_id: number;
   status: 'active' | 'inactive';
 }
 
