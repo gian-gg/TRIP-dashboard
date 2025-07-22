@@ -8,9 +8,13 @@ import type {
   ConductorInformationType,
 } from './type';
 
+import useAuthorized from '@/hooks/use-authorized';
+
 import APICall from '@/lib/api';
 
 const Operations = () => {
+  const { user, loading } = useAuthorized();
+
   const [busData, setBusData] = useState<BusInformationType[]>();
   const [driverData, setDriverData] = useState<DriverInformationType[]>();
   const [conductorData, setConductorData] =
@@ -62,7 +66,7 @@ const Operations = () => {
     fetchConductorData();
   }, []);
 
-  if (!busData || !driverData || !conductorData) {
+  if (!busData || !driverData || !conductorData || loading || !user) {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <div className="text-muted-foreground text-lg">Loading...</div>
@@ -78,6 +82,7 @@ const Operations = () => {
         drivers, and conductors.
       </p>
       <FleetStatus
+        userData={user}
         currentBusData={busData}
         currentDriverData={driverData}
         currentConductorData={conductorData}

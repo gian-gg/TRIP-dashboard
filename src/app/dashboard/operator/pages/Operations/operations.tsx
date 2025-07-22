@@ -35,9 +35,18 @@ import {
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
 
+import {
+  handleAddConductor,
+  handleAddDriver,
+  handleAddBus,
+} from '@/lib/addOperations';
+
 import { getInitials } from '@/lib/misc';
 
+import type { UserType } from '@/type';
+
 const FleetStatus = (props: {
+  userData: UserType;
   currentBusData: BusInformationType[];
   currentDriverData: DriverInformationType[];
   currentConductorData: ConductorInformationType[];
@@ -49,7 +58,7 @@ const FleetStatus = (props: {
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [selectedBusId, setSelectedBusId] = useState<number | null>(null);
+  const [selectedBusId, setSelectedBusId] = useState<string | null>(null);
   const [selectedDriverId, setSelectedDriverId] = useState<number | null>(null);
   const [selectedConductorId, setSelectedConductorId] = useState<number | null>(
     null
@@ -97,8 +106,7 @@ const FleetStatus = (props: {
         busData = busData.filter((bus) => bus.status === busStatusFilter);
       }
       if (searchInput !== '') {
-        const searchNumber = Number(searchInput);
-        busData = busData.filter((bus) => bus.bus_id === searchNumber);
+        busData = busData.filter((bus) => bus.bus_id === searchInput);
       }
       setFilteredBusData(busData);
     } else if (currentTab === 'driver') {
@@ -262,89 +270,23 @@ const FleetStatus = (props: {
           </DialogDescription>
 
           {currentTab === 'bus' && (
-            <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <form
+              onSubmit={handleAddBus}
+              className="grid grid-cols-1 gap-4 md:grid-cols-2"
+            >
+              <Input
+                type="hidden"
+                id="company_id"
+                name="company_id"
+                defaultValue={props.userData.company_id}
+                required
+              />
               <div>
                 <Label htmlFor="bus_id">Bus ID</Label>
                 <Input
-                  type="number"
+                  type="text"
                   id="bus_id"
                   name="bus_id"
-                  required
-                  className="mt-2 border border-gray-400"
-                />
-              </div>
-              <div>
-                <Label htmlFor="route_id">Route ID</Label>
-                <select
-                  id="route_id"
-                  name="route_id"
-                  required
-                  className="mt-2 w-full rounded border border-gray-400 p-2"
-                >
-                  <option value="">Select Route</option>
-                  {Array.from(
-                    new Set(currentBusData.map((bus) => bus.route_id))
-                  ).map((route) => (
-                    <option key={route} value={route}>
-                      {route}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <Label htmlFor="driver_id">Driver ID</Label>
-                <select
-                  id="driver_id"
-                  name="driver_id"
-                  required
-                  className="mt-2 w-full rounded border border-gray-400 p-2"
-                >
-                  <option value="">Select Driver</option>
-                  {currentDriverData.map((driver) => (
-                    <option key={driver.driver_id} value={driver.driver_id}>
-                      {driver.driver_id} - {driver.full_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <Label htmlFor="conductor_id">Conductor ID</Label>
-                <select
-                  id="conductor_id"
-                  name="conductor_id"
-                  required
-                  className="mt-2 w-full rounded border border-gray-400 p-2"
-                >
-                  <option value="">Select Conductor</option>
-                  {currentConductorData.map((conductor) => (
-                    <option
-                      key={conductor.conductor_id}
-                      value={conductor.conductor_id}
-                    >
-                      {conductor.conductor_id} - {conductor.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <Label htmlFor="status">Status</Label>
-                <select
-                  id="status"
-                  name="status"
-                  className="mt-2 w-full rounded border border-gray-400 p-2"
-                  required
-                >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                  <option value="in maintenance">In Maintenance</option>
-                </select>
-              </div>
-              <div>
-                <Label htmlFor="next_maintenance">Next Maintenance</Label>
-                <Input
-                  type="date"
-                  id="next_maintenance"
-                  name="next_maintenance"
                   required
                   className="mt-2 border border-gray-400"
                 />
@@ -370,17 +312,17 @@ const FleetStatus = (props: {
             </form>
           )}
           {currentTab === 'driver' && (
-            <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <Label htmlFor="driver_id">Driver ID</Label>
-                <Input
-                  type="number"
-                  id="driver_id"
-                  name="driver_id"
-                  required
-                  className="mt-2 border border-gray-400"
-                />
-              </div>
+            <form
+              onSubmit={handleAddDriver}
+              className="grid grid-cols-1 gap-4 md:grid-cols-2"
+            >
+              <Input
+                type="hidden"
+                id="company_id"
+                name="company_id"
+                defaultValue={props.userData.company_id}
+                required
+              />
               <div>
                 <Label htmlFor="full_name">Full Name</Label>
                 <Input
@@ -413,27 +355,6 @@ const FleetStatus = (props: {
                   className="mt-2 border border-gray-400"
                 />
               </div>
-              <div>
-                <Label htmlFor="status">Status</Label>
-                <select
-                  id="status"
-                  name="status"
-                  className="mt-2 w-full rounded border border-gray-400 p-2"
-                  required
-                >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-              </div>
-              <div>
-                <Label htmlFor="bus_id">Bus ID</Label>
-                <Input
-                  type="number"
-                  id="bus_id"
-                  name="bus_id"
-                  className="mt-2 border border-gray-400"
-                />
-              </div>
               <div className="mt-4 flex justify-end gap-3 md:col-span-2">
                 <Button
                   variant="default"
@@ -455,60 +376,51 @@ const FleetStatus = (props: {
             </form>
           )}
           {currentTab === 'conductor' && (
-            <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <Label htmlFor="conductor_id">Conductor ID</Label>
+            <form onSubmit={handleAddConductor}>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <Input
-                  type="number"
-                  id="conductor_id"
-                  name="conductor_id"
+                  type="hidden"
+                  id="company_id"
+                  name="company_id"
+                  defaultValue={props.userData.company_id}
                   required
-                  className="mt-2 border border-gray-400"
                 />
+                <div>
+                  <Label htmlFor="full_name">Full Name</Label>
+                  <Input
+                    type="text"
+                    id="full_name"
+                    name="full_name"
+                    required
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="contact_number">Contact Number</Label>
+                  <Input
+                    type="tel"
+                    id="contact_number"
+                    name="contact_number"
+                    pattern="[0-9]+"
+                    inputMode="numeric"
+                    required
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="full_name">Full Name</Label>
-                <Input
-                  type="text"
-                  id="full_name"
-                  name="full_name"
-                  required
-                  className="mt-2 border border-gray-400"
-                />
-              </div>
-              <div>
-                <Label htmlFor="contact_number">Contact Number</Label>
-                <Input
-                  type="tel"
-                  id="contact_number"
-                  name="contact_number"
-                  pattern="[0-9]+"
-                  inputMode="numeric"
-                  required
-                  className="mt-2 border border-gray-400"
-                />
-              </div>
-              <div>
-                <Label htmlFor="status">Status</Label>
-                <select
-                  id="status"
-                  name="status"
-                  className="mt-2 w-full rounded border border-gray-400 p-2"
-                  required
-                >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-              </div>
-              <div>
-                <Label htmlFor="bus_id">Bus ID</Label>
-                <Input
-                  type="number"
-                  id="bus_id"
-                  name="bus_id"
-                  className="mt-2 border border-gray-400"
-                />
-              </div>
+              <p className="text-muted-foreground mt-4 text-xs">
+                Note: Default Password is 123123123
+              </p>
               <div className="mt-4 flex justify-end gap-3 md:col-span-2">
                 <Button
                   variant="default"
@@ -815,23 +727,13 @@ const FleetStatus = (props: {
           )}
           {currentTab === 'conductor' && editConductor && (
             <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <Label htmlFor="conductor_id">Conductor ID</Label>
-                <Input
-                  type="number"
-                  id="conductor_id"
-                  name="conductor_id"
-                  value={editConductor.conductor_id}
-                  onChange={(e) =>
-                    setEditConductor({
-                      ...editConductor,
-                      conductor_id: Number(e.target.value),
-                    })
-                  }
-                  required
-                  className="mt-2 border border-gray-400"
-                />
-              </div>
+              <Input
+                type="hidden"
+                id="conductor_id"
+                name="conductor_id"
+                defaultValue={editConductor.conductor_id}
+                required
+              />
               <div>
                 <Label htmlFor="full_name">Full Name</Label>
                 <Input
@@ -843,6 +745,24 @@ const FleetStatus = (props: {
                     setEditConductor({
                       ...editConductor,
                       name: e.target.value,
+                    })
+                  }
+                  required
+                  className="mt-2 border border-gray-400"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={editConductor.email}
+                  onChange={(e) =>
+                    setEditConductor({
+                      ...editConductor,
+                      email: e.target.value,
                     })
                   }
                   required
