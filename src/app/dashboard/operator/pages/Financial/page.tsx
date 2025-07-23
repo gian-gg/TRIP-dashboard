@@ -1,15 +1,32 @@
 import { useState } from 'react';
-import Cards from '@/components/Cards';
 import ReportCard from '@/components/ReportCard';
 import { Progress } from '@/components/ui/progress';
 import PieGraph from './components/PieGraph';
 import RadarGraph from './components/RadarGraph';
+import Container from '@/components/ui/Container';
 
 import FilterDate from '@/components/FilterDate';
 
-import { TrendingUp, Fuel, DollarSign } from 'lucide-react';
+import { TrendingUp, User } from 'lucide-react';
 
 import type { FilterDateType } from '@/type';
+
+const MiniCard = (props: {
+  title: string;
+  value: string;
+  subtitle: string;
+}) => {
+  return (
+    <Container className="w-full !p-3">
+      <div className="flex justify-between">
+        <h1 className="text-[10px] font-medium">{props.title}</h1>
+        <User className="text-muted-foreground h-4 w-4" />
+      </div>
+      <span className="text-xl font-extrabold md:text-2xl">{props.value}</span>
+      <p className="text-muted-foreground text-[10px]">{props.subtitle}</p>
+    </Container>
+  );
+};
 
 const Financial = () => {
   const [selectedDate, setSelectedDate] = useState<FilterDateType | undefined>(
@@ -27,49 +44,47 @@ const Financial = () => {
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
       />
-      <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-        <Cards
-          card={{
-            title: 'Monthly Revenue',
-            icon: TrendingUp,
-            value: '$67,000',
-            subtitle: 'Target: $70,000',
-          }}
-        >
-          <Progress value={95} className="h-2 md:h-3" />
-        </Cards>
-        <Cards
-          card={{
-            title: 'Operating Costs',
-            icon: Fuel,
-            value: '$42,000',
-            subtitle: '62.7% of revenue',
-          }}
-        >
-          <ul>
-            <li className="text-muted-foreground text-xs">
-              <strong>Fuel</strong>: $15,000
-            </li>
-            <li className="text-muted-foreground text-xs">
-              <strong>Maintenance</strong>: $10,000
-            </li>
-            <li className="text-muted-foreground text-xs">
-              <strong>Salaries</strong>: $17,000
-            </li>
-          </ul>
-        </Cards>
-        <Cards
-          card={{
-            title: 'Net Profit',
-            icon: DollarSign,
-            value: '$25,000',
-            subtitle: '37.3% margin',
-          }}
-        >
-          <p className="text-sm text-green-600">+15% vs last month</p>
-        </Cards>
+      <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+        <Container className="w-full md:w-1/2">
+          <div className="flex justify-between">
+            <h1 className="text-xs font-medium md:text-sm lg:text-lg">
+              Monthly Revenue
+            </h1>
+            <TrendingUp className="text-muted-foreground h-6 w-6 md:h-8 md:w-8" />
+          </div>
+          <span className="text-4xl font-extrabold md:text-6xl">$67,000</span>
+          <p className="text-muted-foreground text-[10px] md:text-xs lg:text-sm">
+            Total income generated.
+          </p>
+          <div className="mt-4 flex items-center justify-between gap-2 text-xs md:text-sm">
+            <p>P2343</p>
+            <Progress value={75} className="h-2" />
+            <p>P234</p>
+          </div>
+        </Container>
+        <div className="grid w-full grid-cols-2 grid-rows-2 gap-4">
+          <MiniCard
+            title="Regular"
+            value="P2343"
+            subtitle="Lorem ipsum dolor sit amet."
+          />
+          <MiniCard
+            title="Student"
+            value="P2343"
+            subtitle="Lorem ipsum dolor sit amet."
+          />
+          <MiniCard
+            title="Senior"
+            value="P2343"
+            subtitle="Lorem ipsum dolor sit amet."
+          />
+          <MiniCard
+            title="PWD"
+            value="P2343"
+            subtitle="Lorem ipsum dolor sit amet."
+          />
+        </div>
       </div>
-      <hr />
       <div className="flex max-h-1/2 w-full flex-col gap-4 md:flex-row">
         <ReportCard
           header={{

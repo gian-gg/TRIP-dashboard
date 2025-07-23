@@ -3,11 +3,17 @@ import Container from '@/components/ui/Container';
 import { type LucideIcon } from 'lucide-react';
 
 const OverviewCards = (props: {
-  card: { title: string; icon: LucideIcon; value: string; subtitle: string };
+  card: {
+    title: string;
+    icon: LucideIcon;
+    value: string;
+    subtitle: string;
+  };
+  className?: string;
   children?: React.ReactNode;
 }) => {
   return (
-    <Container className="w-full">
+    <Container className={props.className}>
       <div className="flex justify-between">
         <h1 className="text-xs font-medium md:text-sm">{props.card.title}</h1>
         <props.card.icon className="text-muted-foreground h-4 w-4" />
