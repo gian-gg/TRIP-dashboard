@@ -80,7 +80,7 @@
 
   /* UI Elements */
   --border: #cbd5e1;
-  --input: #f8fbff;
+  --input: #ffffff;
   --ring: #186cc7; /* match primary */
 
   /* Chart Colors - Multi-color contrast */
@@ -99,10 +99,6 @@
   --sidebar-accent-foreground: #1e293b;
   --sidebar-border: #cbdcf0;
   --sidebar-ring: #a5c9ff;
-
-  /* Optional for consistency */
-  --color-trip-primary: #186cc7;
-  --color-trip-primary-light: #e3f2fe;
 }
 
 @layer base {

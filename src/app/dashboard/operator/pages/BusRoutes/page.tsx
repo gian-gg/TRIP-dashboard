@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import ReportCard from '@/components/ReportCard';
 import BarGraph from './components/BarGraph';
 import Container from '@/components/ui/Container';
 import FilterDate from '@/components/FilterDate';
+
+import type { FilterDateType } from '@/type';
 
 const RouteData = [
   {
@@ -37,13 +40,20 @@ const RouteData = [
 ];
 
 const BusRoutes = () => {
+  const [selectedDate, setSelectedDate] = useState<FilterDateType | undefined>(
+    undefined
+  );
+
   return (
     <>
       <h1 className="text-xl font-bold">Bus Routes</h1>
       <p className="text-muted-foreground text-xs md:text-sm">
         This page provides an overview of the bus routes and their key metrics.
       </p>
-      <FilterDate />
+      <FilterDate
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+      />
 
       <ReportCard
         header={{

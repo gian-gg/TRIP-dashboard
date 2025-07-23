@@ -18,4 +18,9 @@ interface CredentialsType {
   password: string;
 }
 
-export type { GETResponse, UserType, CredentialsType };
+interface FilterDateType {
+  start: Date;
+  end: Date;
+}
+
+export type { GETResponse, UserType, CredentialsType, FilterDateType };

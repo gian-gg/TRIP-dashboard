@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import ReportCard from '@/components/ReportCard';
 import { DollarSign, Users, Bus, Clock } from 'lucide-react';
 import LineGraph from './components/LineGraph';
 import BarGraph from './components/BarGraph';
 import Cards from '@/components/Cards';
 import FilterDate from '@/components/FilterDate';
+
+import type { FilterDateType } from '@/type';
 
 const pageData = {
   title: 'Overview',
@@ -37,13 +40,20 @@ const pageData = {
 };
 
 const Overview = () => {
+  const [selectedDate, setSelectedDate] = useState<FilterDateType | undefined>(
+    undefined
+  );
+
   return (
     <>
       <h1 className="text-xl font-bold">{pageData.title}</h1>
       <p className="text-muted-foreground text-xs md:text-sm">
         {pageData.description}
       </p>
-      <FilterDate />
+      <FilterDate
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+      />
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
         {pageData.overviewCards.map((card, index) => (

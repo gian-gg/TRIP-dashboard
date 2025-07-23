@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Cards from '@/components/Cards';
 import ReportCard from '@/components/ReportCard';
 import { Progress } from '@/components/ui/progress';
@@ -8,7 +9,13 @@ import FilterDate from '@/components/FilterDate';
 
 import { TrendingUp, Fuel, DollarSign } from 'lucide-react';
 
+import type { FilterDateType } from '@/type';
+
 const Financial = () => {
+  const [selectedDate, setSelectedDate] = useState<FilterDateType | undefined>(
+    undefined
+  );
+
   return (
     <>
       <h1 className="text-xl font-bold">Financial</h1>
@@ -16,7 +23,10 @@ const Financial = () => {
         This page provides an overview of the financial performance and key
         metrics.
       </p>
-      <FilterDate />
+      <FilterDate
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+      />
       <div className="grid auto-rows-min gap-4 md:grid-cols-3">
         <Cards
           card={{
