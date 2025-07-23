@@ -7,14 +7,6 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 
-const chartData = [
-  { route: 'Route 1', passengers: 45, fill: 'var(--chart-1)' },
-  { route: 'Route 2', passengers: 65, fill: 'var(--chart-2)' },
-  { route: 'Route 3', passengers: 180, fill: 'var(--chart-3)' },
-  { route: 'Route 4', passengers: 210, fill: 'var(--chart-4)' },
-  { route: 'Route 5', passengers: 160, fill: 'var(--chart-5)' },
-];
-
 const chartConfig = {
   passengers: {
     label: 'Passengers',
@@ -36,10 +28,12 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function BarGraph() {
+export function BarGraph(props: {
+  data: { route: string; passengers: number; fill: string }[];
+}) {
   return (
     <ChartContainer config={chartConfig} className="h-70 w-full">
-      <BarChart accessibilityLayer data={chartData}>
+      <BarChart accessibilityLayer data={props.data}>
         <CartesianGrid vertical={false} />
         <XAxis
           dataKey="route"

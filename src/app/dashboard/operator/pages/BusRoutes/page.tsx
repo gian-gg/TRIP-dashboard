@@ -1,48 +1,48 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import ReportCard from '@/components/ReportCard';
 import BarGraph from './components/BarGraph';
 import Container from '@/components/ui/Container';
-import FilterDate from '@/components/FilterDate';
+import { getUser } from '@/lib/auth';
+import APICall from '@/lib/api';
 
-import type { FilterDateType } from '@/type';
+import type { UserType } from '@/type';
 
-const RouteData = [
-  {
-    route: 'Route 1',
-    dailyPassengerCount: 120,
-    dailyRevenue: 500,
-    revenuePerPassenger: 4.17,
-  },
-  {
-    route: 'Route 2',
-    dailyPassengerCount: 80,
-    dailyRevenue: 300,
-    revenuePerPassenger: 3.75,
-  },
-  {
-    route: 'Route 3',
-    dailyPassengerCount: 150,
-    dailyRevenue: 600,
-    revenuePerPassenger: 4.0,
-  },
-  {
-    route: 'Route 4',
-    dailyPassengerCount: 90,
-    dailyRevenue: 400,
-    revenuePerPassenger: 4.44,
-  },
-  {
-    route: 'Route 5',
-    dailyPassengerCount: 200,
-    dailyRevenue: 800,
-    revenuePerPassenger: 4.0,
-  },
-];
+interface RouteDataType {
+  route_id: string;
+  route_name: string;
+  passengers: string; // daily
+  daily_revenue: string;
+  revenue_per_passenger: string;
+}
 
 const BusRoutes = () => {
-  const [selectedDate, setSelectedDate] = useState<FilterDateType | undefined>(
-    undefined
-  );
+  const [data, setData] = useState<RouteDataType[] | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const user = (await getUser()) as UserType | null;
+
+      if (!user) {
+        toast.error('User not found. Please log in again.');
+        return;
+      }
+
+      await APICall<RouteDataType[]>({
+        type: 'GET',
+        url: `/route/index.php?company_id=${user.company_id}`,
+        consoleLabel: `/route/index.php?company_id=${user.company_id}`,
+        success: (data) => {
+          setData(data);
+        },
+        error: (error) => {
+          toast.error(error.message || 'Unknown error');
+        },
+      });
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <>
@@ -50,10 +50,6 @@ const BusRoutes = () => {
       <p className="text-muted-foreground text-xs md:text-sm">
         This page provides an overview of the bus routes and their key metrics.
       </p>
-      <FilterDate
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-      />
 
       <ReportCard
         header={{
@@ -62,27 +58,36 @@ const BusRoutes = () => {
         }}
         className="max-h-96 w-full"
       >
-        <BarGraph />
+        <BarGraph
+          data={
+            data?.map((route) => ({
+              route: 'Route ' + route.route_id,
+              passengers: Number(route.passengers),
+              fill: `var(--chart-${(Number(route.route_id) % 5) + 1})`,
+            })) || []
+          }
+        />
       </ReportCard>
-      <hr />
       <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-        {RouteData.map((route, index) => (
+        {data?.map((route, index) => (
           <Container key={index} className="p-4">
-            <h2 className="mb-2 text-lg font-bold">{route.route}</h2>
+            <h2 className="mb-2 text-lg font-bold">
+              {route.route_id} - {route.route_name}
+            </h2>
             <table className="w-full text-sm">
               <tbody>
                 <tr>
                   <td className="pr-2">Daily Passenger Count:</td>
-                  <td className="font-semibold">{route.dailyPassengerCount}</td>
+                  <td className="font-semibold">{route.passengers}</td>
                 </tr>
                 <tr>
                   <td className="pr-2">Daily Revenue:</td>
-                  <td className="font-semibold">₱{route.dailyRevenue}</td>
+                  <td className="font-semibold">₱{route.daily_revenue}</td>
                 </tr>
                 <tr>
                   <td className="pr-2">Revenue per Passenger:</td>
                   <td className="font-semibold">
-                    ₱{route.revenuePerPassenger.toFixed(2)}
+                    ₱{route.revenue_per_passenger}
                   </td>
                 </tr>
               </tbody>
