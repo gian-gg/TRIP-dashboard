@@ -3,7 +3,6 @@ import { toast } from 'sonner';
 import ReportCard from '@/components/ReportCard';
 import { DollarSign, Users, UsersRound, Route } from 'lucide-react';
 import LineGraph from './components/LineGraph';
-import BarGraph from './components/BarGraph';
 import Cards from '@/components/Cards';
 import FilterDate from '@/components/FilterDate';
 import { getUser } from '@/lib/auth';
@@ -17,6 +16,7 @@ interface OverviewCardType {
   total_passengers: string;
   average_passenger_per_trip: string;
   total_trip: string;
+  division: { x: string; ridership: string; revenue: string }[];
 }
 
 const Overview = () => {
@@ -37,8 +37,8 @@ const Overview = () => {
       }
 
       const API_URL =
-        selectedDate?.start && selectedDate?.end
-          ? `/company/index.php?company_id=${user.company_id}&start_time=${selectedDate.start}&end_time=${selectedDate.end}`
+        selectedDate?.start && selectedDate?.end && selectedDate?.type
+          ? `/company/index.php?company_id=${user.company_id}&start_time=${selectedDate.start}&end_time=${selectedDate.end}&type=${selectedDate.type}`
           : `/company/index.php?company_id=${user.company_id}`;
 
       await APICall<OverviewCardType>({
@@ -73,7 +73,7 @@ const Overview = () => {
           card={{
             title: 'Total Revenue',
             icon: DollarSign,
-            value: overviewData?.revenue || '0',
+            value: (Number(overviewData?.revenue) || 0).toFixed(2),
             subtitle: 'July 24th, 2025',
           }}
         />
@@ -81,7 +81,7 @@ const Overview = () => {
           card={{
             title: 'Total Passengers',
             icon: Users,
-            value: overviewData?.total_passengers || '0',
+            value: (Number(overviewData?.total_passengers) || 0).toFixed(2),
             subtitle: 'July 24th, 2025',
           }}
         />
@@ -89,7 +89,9 @@ const Overview = () => {
           card={{
             title: 'Average Passengers per Trip',
             icon: UsersRound,
-            value: overviewData?.average_passenger_per_trip || '0',
+            value: (
+              Number(overviewData?.average_passenger_per_trip) || 0
+            ).toFixed(2),
             subtitle: 'July 24th, 2025',
           }}
         />
@@ -97,35 +99,26 @@ const Overview = () => {
           card={{
             title: 'Total Trips',
             icon: Route,
-            value: overviewData?.total_trip || '0',
+            value: (Number(overviewData?.total_trip) || 0).toFixed(2),
             subtitle: 'July 24th, 2025',
           }}
         />
       </div>
 
-      <hr />
-      <div className="flex max-h-1/2 w-full flex-col gap-4 md:flex-row">
-        <ReportCard
-          header={{
-            title: 'Revenue & Ridership Trends',
-            description: 'Monthly performance over the last 6 months',
-          }}
-          link="/dashboard/financial"
-          className="md:w-3/5"
-        >
-          <LineGraph />
-        </ReportCard>
-        <ReportCard
-          header={{
-            title: 'Ridership Trends',
-            description: 'Today’s passenger flow',
-          }}
-          link="/dashboard/operations"
-          className="md:w-2/5"
-        >
-          <BarGraph />
-        </ReportCard>
-      </div>
+      {overviewData && overviewData.division && (
+        <div className="flex max-h-1/2 w-full flex-col gap-4 md:flex-row">
+          <ReportCard
+            header={{
+              title: 'Revenue & Ridership Trends',
+              description: 'Monthly performance over the last 6 months',
+            }}
+            link="/dashboard/financial"
+            className="md:w-full"
+          >
+            <LineGraph chartData={overviewData.division} />
+          </ReportCard>
+        </div>
+      )}
     </>
   );
 };

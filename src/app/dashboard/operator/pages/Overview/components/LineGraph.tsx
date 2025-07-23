@@ -6,37 +6,38 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 
-const chartData = [
-  { month: 'January', ridership: 180, reviews: 40 },
-  { month: 'February', ridership: 220, reviews: 85 },
-  { month: 'March', ridership: 310, reviews: 130 },
-  { month: 'April', ridership: 270, reviews: 160 },
-  { month: 'May', ridership: 350, reviews: 200 },
-  { month: 'June', ridership: 290, reviews: 180 },
-];
-
 const chartConfig = {
   ridership: {
     label: 'Ridership',
     color: 'var(--chart-1)',
   },
-  reviews: {
-    label: 'Reviews',
+  revenue: {
+    label: 'Revenue',
     color: 'var(--chart-2)',
   },
 } satisfies ChartConfig;
 
-const LineGraph = () => {
+const LineGraph = ({
+  chartData,
+}: {
+  chartData: { x: string; ridership: string; revenue: string }[];
+}) => {
   return (
     <ChartContainer className="w-full lg:max-h-[300px]" config={chartConfig}>
-      <AreaChart accessibilityLayer data={chartData}>
+      <AreaChart
+        accessibilityLayer
+        data={chartData}
+        className="w-2/5"
+        margin={{ top: 0, right: 32, left: 32, bottom: 0 }}
+      >
         <CartesianGrid vertical={false} />
         <XAxis
-          dataKey="month"
+          dataKey="x"
           tickLine={false}
           axisLine={false}
           tickMargin={8}
-          tickFormatter={(value) => value.slice(0, 3)}
+          interval={0}
+          tickFormatter={(value) => value}
         />
 
         <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
@@ -45,15 +46,15 @@ const LineGraph = () => {
             <stop offset="5%" stopColor="var(--chart-1)" stopOpacity={0.8} />
             <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0.1} />
           </linearGradient>
-          <linearGradient id="fillReviews" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id="fillRevenue" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="var(--chart-2)" stopOpacity={0.8} />
             <stop offset="95%" stopColor="var(--chart-2)" stopOpacity={0.1} />
           </linearGradient>
         </defs>
         <Area
-          dataKey="reviews"
+          dataKey="revenue"
           type="natural"
-          fill="url(#fillReviews)"
+          fill="url(#fillRevenue)"
           fillOpacity={0.4}
           stroke="var(--chart-2)"
           stackId="a"

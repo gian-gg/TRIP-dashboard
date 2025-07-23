@@ -83,6 +83,7 @@ const FilterDate = (props: {
           setSelectedDate({
             start: format(dayRange.start, 'yyyy-MM-dd HH:mm:ss'),
             end: format(dayRange.end, 'yyyy-MM-dd HH:mm:ss'),
+            type: 'day',
           });
         } else {
           setSelectedDate(undefined);
@@ -94,6 +95,7 @@ const FilterDate = (props: {
         setSelectedDate({
           start: format(weekRange.start, 'yyyy-MM-dd HH:mm:ss'),
           end: format(weekRange.end, 'yyyy-MM-dd HH:mm:ss'),
+          type: 'week',
         });
         break;
       }
@@ -102,6 +104,7 @@ const FilterDate = (props: {
         setSelectedDate({
           start: format(monthRange.start, 'yyyy-MM-dd HH:mm:ss'),
           end: format(monthRange.end, 'yyyy-MM-dd HH:mm:ss'),
+          type: 'month',
         });
         break;
       }

@@ -21,6 +21,7 @@ interface CredentialsType {
 interface FilterDateType {
   start: string;
   end: string;
+  type: 'day' | 'week' | 'month' | 'all';
 }
 
 export type { GETResponse, UserType, CredentialsType, FilterDateType };
