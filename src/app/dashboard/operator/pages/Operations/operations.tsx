@@ -717,7 +717,7 @@ const FleetStatus = (props: {
         </DialogContent>
       </Dialog>
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent>
+        <DialogContent className="w-full !max-w-4xl">
           <DialogHeader>
             <DialogTitle>Bus Details</DialogTitle>
           </DialogHeader>
@@ -726,81 +726,154 @@ const FleetStatus = (props: {
           </DialogDescription>
 
           {selectedBus ? (
-            <table className="border-outline w-full rounded-md border-2">
-              <thead>
-                <tr>
-                  <th
-                    colSpan={2}
-                    className="bg-neutral border-outline border-2 p-2 text-left text-black sm:text-lg md:p-4 md:text-xl"
-                  >
-                    Bus Information
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white">
-                <tr className="border-outline border-b-2">
-                  <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                    Bus ID
-                  </td>
-                  <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                    {selectedBus.bus_id}
-                  </td>
-                </tr>
-                <tr className="border-outline border-b-2">
-                  <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                    Route
-                  </td>
-                  <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                    {selectedBus.route_id}
-                  </td>
-                </tr>
-                <tr className="border-outline border-b-2">
-                  <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                    Driver
-                  </td>
-                  <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                    {selectedBus.driver_id}
-                  </td>
-                </tr>
-                <tr className="border-outline border-b-2">
-                  <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                    Conductor
-                  </td>
-                  <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                    {selectedBus.conductor_id}
-                  </td>
-                </tr>
-                <tr className="border-outline border-b-2">
-                  <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                    Status
-                  </td>
-                  <td className="text-muted-foreground p-2 text-end text-sm capitalize md:text-lg">
-                    <span
-                      className={
-                        selectedBus.status === 'active'
-                          ? 'font-semibold text-green-600'
-                          : selectedBus.status === 'inactive'
-                            ? 'font-semibold text-red-600'
-                            : selectedBus.status === 'in maintenance'
-                              ? 'font-semibold text-yellow-500'
-                              : ''
-                      }
+            <div className="flex w-full flex-col items-start justify-between gap-10 md:flex-row">
+              {/* Bus details table */}
+              <table className="border-outline w-full rounded-md border-2 md:w-1/2">
+                <thead>
+                  <tr>
+                    <th
+                      colSpan={2}
+                      className="bg-neutral border-outline border-2 p-2 text-left text-black sm:text-lg md:p-4 md:text-xl"
                     >
-                      {selectedBus.status.charAt(0).toUpperCase() +
-                        selectedBus.status.slice(1)}
-                    </span>
-                  </td>
-                </tr>
-                <tr className="border-outline">
-                  <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                    Next Maintenance
-                  </td>
-                  <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                    {selectedBus.next_maintenance}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                      Bus Information
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white">
+                  <tr className="border-outline border-b-2">
+                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
+                      Bus ID
+                    </td>
+                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
+                      {selectedBus.bus_id}
+                    </td>
+                  </tr>
+                  <tr className="border-outline border-b-2">
+                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
+                      Route
+                    </td>
+                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
+                      {selectedBus.route_id}
+                    </td>
+                  </tr>
+                  <tr className="border-outline border-b-2">
+                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
+                      Driver
+                    </td>
+                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
+                      {selectedBus.driver_id}
+                    </td>
+                  </tr>
+                  <tr className="border-outline border-b-2">
+                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
+                      Conductor
+                    </td>
+                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
+                      {selectedBus.conductor_id}
+                    </td>
+                  </tr>
+                  <tr className="border-outline border-b-2">
+                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
+                      Status
+                    </td>
+                    <td className="text-muted-foreground p-2 text-end text-sm capitalize md:text-lg">
+                      <span
+                        className={
+                          selectedBus.status === 'active'
+                            ? 'font-semibold text-green-600'
+                            : selectedBus.status === 'inactive'
+                              ? 'font-semibold text-red-600'
+                              : selectedBus.status === 'in maintenance'
+                                ? 'font-semibold text-yellow-500'
+                                : ''
+                        }
+                      >
+                        {selectedBus.status.charAt(0).toUpperCase() +
+                          selectedBus.status.slice(1)}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr className="border-outline">
+                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
+                      Next Maintenance
+                    </td>
+                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
+                      {selectedBus.next_maintenance}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              {/* Timeline Chart */}
+              <div className="w-full md:w-1/2">
+                <div className="mb-4 flex w-full items-center justify-between">
+                  <h3 className="text-lg font-semibold">Bus Timeline</h3>
+                  <span className="text-muted-foreground mb-2 text-sm">
+                    Trips Today: 3/4
+                  </span>
+                </div>
+                <div className="relative max-h-72 overflow-y-auto">
+                  <ul>
+                    <ul className="relative pl-2">
+                      {/* Vertical line */}
+                      <div className="absolute top-2 bottom-2 left-[22px] z-0 w-px bg-gray-300" />
+                      {[
+                        {
+                          time: selectedBus.next_maintenance,
+                          title: 'Next Maintenance',
+                          description: 'Scheduled maintenance for this bus.',
+                        },
+                        {
+                          time: selectedBus.next_maintenance,
+                          title: 'Next Maintenance',
+                          description: 'Scheduled maintenance for this bus.',
+                        },
+                        {
+                          time: selectedBus.next_maintenance,
+                          title: 'Next Maintenance',
+                          description: 'Scheduled maintenance for this bus.',
+                        },
+                        {
+                          time: selectedBus.next_maintenance,
+                          title: 'Next Maintenance',
+                          description: 'Scheduled maintenance for this bus.',
+                        },
+                        {
+                          time: selectedBus.next_maintenance,
+                          title: 'Next Maintenance',
+                          description: 'Scheduled maintenance for this bus.',
+                        },
+                        {
+                          time: selectedBus.next_maintenance || 'N/A',
+                          title: 'Last Maintenance',
+                          description: 'Previous maintenance completed.',
+                        },
+                        {
+                          time: selectedBus.next_maintenance || 'N/A',
+                          title: 'Bus Added',
+                          description: 'Bus was added to the fleet.',
+                        },
+                      ].map((event, idx) => (
+                        <li
+                          key={idx}
+                          className="relative z-10 mb-4 ml-4 flex flex-col"
+                        >
+                          <div className="border-primary absolute top-2 left-[-12px] z-20 h-5 w-5 rounded-full border-2 bg-white" />
+                          <time className="mb-1 ml-8 text-xs font-normal text-gray-400">
+                            {event.time}
+                          </time>
+                          <h4 className="text-md ml-8 font-semibold text-gray-900">
+                            {event.title}
+                          </h4>
+                          <p className="mb-2 ml-8 text-sm font-normal text-gray-500">
+                            {event.description}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  </ul>
+                </div>
+              </div>
+            </div>
           ) : (
             <div className="text-muted-foreground text-center text-sm md:text-lg">
               No bus selected.
