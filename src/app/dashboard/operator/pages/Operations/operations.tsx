@@ -35,6 +35,8 @@ import {
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
 
+import { Pencil, Trash } from 'lucide-react';
+
 import { handleAddConductor, handleAddDriver, handleAddBus } from './utils/add';
 import {
   handleDeleteConductor,
@@ -862,10 +864,21 @@ const FleetStatus = (props: {
             </div>
           )}
           <DialogFooter>
-            <div className="flex w-full flex-col gap-2">
+            <div className="flex w-full justify-end gap-2">
               <Button
-                variant="default"
-                className="w-full"
+                className="bg-destructive w-1/2 text-white hover:bg-red-700 md:w-fit"
+                onClick={() => {
+                  if (selectedBus) {
+                    setIsModalOpen(false);
+                    handleDeleteBus(selectedBus.bus_id, props.refreshData);
+                  }
+                }}
+              >
+                <Trash />
+                Delete Bus
+              </Button>
+              <Button
+                className="w-1/2 md:w-fit"
                 onClick={() => {
                   if (selectedBus) {
                     setEditBus(selectedBus);
@@ -874,19 +887,8 @@ const FleetStatus = (props: {
                   }
                 }}
               >
+                <Pencil />
                 Edit Bus
-              </Button>
-              <Button
-                variant="default"
-                className="bg-destructive w-full text-white hover:bg-red-700"
-                onClick={() => {
-                  if (selectedBus) {
-                    setIsModalOpen(false);
-                    handleDeleteBus(selectedBus.bus_id, props.refreshData);
-                  }
-                }}
-              >
-                Delete Bus
               </Button>
             </div>
           </DialogFooter>
@@ -991,23 +993,9 @@ const FleetStatus = (props: {
             </div>
           )}
           <DialogFooter>
-            <div className="flex w-full flex-col gap-2">
+            <div className="flex w-full justify-end gap-2">
               <Button
-                variant="default"
-                className="w-full"
-                onClick={() => {
-                  if (selectedDriver) {
-                    setEditDriver(selectedDriver);
-                    setIsEditModalOpen(true);
-                    setIsDriverModalOpen(false);
-                  }
-                }}
-              >
-                Edit Driver
-              </Button>
-              <Button
-                variant="default"
-                className="bg-destructive' w-full text-white hover:bg-red-700"
+                className="bg-destructive w-1/2 text-white hover:bg-red-700"
                 onClick={() => {
                   if (selectedDriver) {
                     setIsDriverModalOpen(false);
@@ -1018,7 +1006,21 @@ const FleetStatus = (props: {
                   }
                 }}
               >
+                <Trash />
                 Delete Driver
+              </Button>
+              <Button
+                className="w-1/2"
+                onClick={() => {
+                  if (selectedDriver) {
+                    setEditDriver(selectedDriver);
+                    setIsEditModalOpen(true);
+                    setIsDriverModalOpen(false);
+                  }
+                }}
+              >
+                <Pencil />
+                Edit Driver
               </Button>
             </div>
           </DialogFooter>
@@ -1126,23 +1128,9 @@ const FleetStatus = (props: {
             </div>
           )}
           <DialogFooter>
-            <div className="flex w-full flex-col gap-2">
+            <div className="flex w-full justify-end gap-2">
               <Button
-                variant="default"
-                className="w-full"
-                onClick={() => {
-                  if (selectedConductor) {
-                    setEditConductor(selectedConductor);
-                    setIsEditModalOpen(true);
-                    setIsConductorModalOpen(false);
-                  }
-                }}
-              >
-                Edit Conductor
-              </Button>
-              <Button
-                variant="default"
-                className="bg-destructive' w-full text-white hover:bg-red-700"
+                className="bg-destructive w-1/2 text-white hover:bg-red-700"
                 onClick={() => {
                   if (selectedConductor) {
                     setIsConductorModalOpen(false);
@@ -1153,7 +1141,21 @@ const FleetStatus = (props: {
                   }
                 }}
               >
+                <Trash />
                 Delete Conductor
+              </Button>
+              <Button
+                className="w-1/2"
+                onClick={() => {
+                  if (selectedConductor) {
+                    setEditConductor(selectedConductor);
+                    setIsEditModalOpen(true);
+                    setIsConductorModalOpen(false);
+                  }
+                }}
+              >
+                <Pencil />
+                Edit Conductor
               </Button>
             </div>
           </DialogFooter>
