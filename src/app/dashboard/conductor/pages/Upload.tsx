@@ -1,5 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
+import { Bus, BookUser } from 'lucide-react';
 
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import APICall from '@/lib/api';
 import { getUser } from '@/lib/auth';
 import type { UserType } from '@/type';
+import OverviewCards from '@/components/Cards';
 
 interface TRIPSummaryType {
   trip_details: {
@@ -24,7 +26,15 @@ interface TRIPSummaryType {
   }[];
 }
 
+interface ConductorType extends UserType {
+  bus_id: string;
+  driver_id: string;
+  driver_name: string;
+}
+
 const Upload = () => {
+  const [currentConductor, setCurrentConductor] =
+    useState<ConductorType | null>();
   const [tripContent, setTripContent] = useState<TRIPSummaryType | null>(null);
   const [encryptedToken, setEncryptedToken] = useState<string | null>(null);
 
@@ -74,17 +84,15 @@ const Upload = () => {
         throw new Error('Please upload a valid file first.');
       }
 
-      const userResult = await getUser();
-      if (!userResult) {
-        throw new Error('User not authenticated. Please log in.');
+      if (!currentConductor) {
+        throw new Error('User not found. Please log in again.');
       }
-      const user = userResult as UserType;
 
       await APICall({
         type: 'POST',
         url: '/trip/index.php',
         body: {
-          conductor_id: user.user_id,
+          conductor_id: currentConductor.user_id,
           token: encryptedToken,
         },
         consoleLabel: 'Upload Trip:',
@@ -105,15 +113,63 @@ const Upload = () => {
       setTripContent,
       setEncryptedToken,
       setPageState,
+      currentConductor,
     ]
   );
+
+  useEffect(() => {
+    const fetchCurrentConductor = async () => {
+      const user = await getUser();
+      if (user) {
+        setCurrentConductor(user as ConductorType);
+      } else {
+        toast.error('User not found. Please log in again.');
+      }
+    };
+    fetchCurrentConductor();
+  }, []);
+
+  if (!currentConductor) {
+    return (
+      <div className="flex min-h-screen min-w-screen items-center justify-center">
+        <p className="text-gray-600">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!currentConductor.bus_id || !currentConductor.driver_name) {
+    return (
+      <p className="text-gray-600">
+        You have not been assigned a bus or driver yet. Please contact bus
+        company operator for assistance.
+      </p>
+    );
+  }
 
   return (
     <>
       {pageState === 'upload' ? (
         <>
-          {' '}
-          <h1 className="mb-2 text-2xl font-bold">Upload</h1>
+          <div className="flex w-full flex-col items-center justify-start gap-4 md:flex-row">
+            <OverviewCards
+              card={{
+                title: 'Assigned Bus',
+                icon: Bus,
+                value: currentConductor.bus_id || 'Loading...',
+                subtitle: 'This is the bus assigned to you.',
+              }}
+            />
+            <OverviewCards
+              card={{
+                title: 'Assigned Driver',
+                icon: BookUser,
+                value: currentConductor.driver_name || 'Loading...',
+                subtitle: 'Please ensure to coordinate with them.',
+              }}
+            />
+          </div>
+          <hr />
+          <h1 className="my-2 text-2xl font-bold">Upload</h1>
           <p className="mb-4 text-gray-600">
             Greetings Conductors! Please upload your files using the form below.
           </p>

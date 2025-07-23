@@ -7,7 +7,7 @@ const OverviewCards = (props: {
   children?: React.ReactNode;
 }) => {
   return (
-    <Container>
+    <Container className="w-full">
       <div className="flex justify-between">
         <h1 className="text-xs font-medium md:text-sm">{props.card.title}</h1>
         <props.card.icon className="text-muted-foreground h-4 w-4" />
