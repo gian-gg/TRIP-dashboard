@@ -112,7 +112,7 @@ const Overview = () => {
               title: 'Revenue & Ridership Trends',
               description: 'Monthly performance over the last 6 months',
             }}
-            link="/dashboard/financial"
+            link="/operator/financial"
             className="md:w-full"
           >
             <LineGraph chartData={overviewData.division} />
