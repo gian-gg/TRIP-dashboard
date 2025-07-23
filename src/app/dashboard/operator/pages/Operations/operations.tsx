@@ -458,9 +458,7 @@ const FleetStatus = (props: {
                         required
                       >
                         <option value="">Select Route</option>
-                        {Array.from(
-                          new Set(currentBusData.map((bus) => bus.route_id))
-                        ).map((route) => (
+                        {[1, 2, 3, 4].map((route) => (
                           <option key={route} value={route}>
                             {route}
                           </option>
