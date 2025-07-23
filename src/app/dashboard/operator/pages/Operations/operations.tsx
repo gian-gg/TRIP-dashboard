@@ -763,7 +763,12 @@ const FleetStatus = (props: {
                       Driver
                     </td>
                     <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                      {selectedBus.driver_id}
+                      {selectedBus.driver_id
+                        ? selectedBus.driver_id + ' - '
+                        : ''}
+                      {currentDriverData.find(
+                        (driver) => driver.driver_id === selectedBus.driver_id
+                      )?.full_name ?? 'N/A'}
                     </td>
                   </tr>
                   <tr className="border-outline border-b-2">
@@ -771,7 +776,11 @@ const FleetStatus = (props: {
                       Conductor
                     </td>
                     <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                      {selectedBus.conductor_id}
+                      {selectedBus.conductor_id} -{' '}
+                      {currentConductorData.find(
+                        (conductor) =>
+                          conductor.conductor_id === selectedBus.conductor_id
+                      )?.name ?? 'N/A'}
                     </td>
                   </tr>
                   <tr className="border-outline border-b-2">
