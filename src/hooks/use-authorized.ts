@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import type { UserType } from '@/type';
 import { getUser } from '@/lib/auth';
 
@@ -26,7 +27,7 @@ const useAuthorized = () => {
 
         setUser(userData);
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        toast.error(error instanceof Error ? error.message : 'Unknown error');
         navigate('/');
       } finally {
         setLoading(false);
