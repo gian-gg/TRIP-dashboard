@@ -68,16 +68,19 @@ export function NavUser(props: {
 
       if (name === props.user.name || email === props.user.email) {
         toast.error('No changes detected for name or email.');
+        return;
       }
 
       if (newPassword && confirmPassword) {
         if (newPassword !== confirmPassword) {
           toast.error('New password and confirmation do not match');
+          return;
         }
 
         const passwordError = passwordChecker(newPassword);
         if (passwordError) {
           toast.error(passwordError);
+          return;
         }
       }
 
