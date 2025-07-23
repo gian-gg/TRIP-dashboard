@@ -35,11 +35,17 @@ import {
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
 
+import { handleAddConductor, handleAddDriver, handleAddBus } from './utils/add';
 import {
-  handleAddConductor,
-  handleAddDriver,
-  handleAddBus,
-} from '@/lib/addOperations';
+  handleDeleteConductor,
+  handleDeleteDriver,
+  handleDeleteBus,
+} from './utils/delete';
+import {
+  handleEditConductor,
+  handleEditDriver,
+  handleEditBus,
+} from './utils/edit';
 
 import { getInitials } from '@/lib/misc';
 
@@ -50,6 +56,7 @@ const FleetStatus = (props: {
   currentBusData: BusInformationType[];
   currentDriverData: DriverInformationType[];
   currentConductorData: ConductorInformationType[];
+  refreshData: () => void;
 }) => {
   const { currentBusData, currentDriverData, currentConductorData } = props;
 
@@ -102,10 +109,15 @@ const FleetStatus = (props: {
   useEffect(() => {
     if (currentTab === 'bus') {
       let busData = currentBusData;
-      if (busStatusFilter && busStatusFilter !== 'all') {
+      if (busStatusFilter && busStatusFilter === 'in maintenance') {
+        busData = busData.filter((bus) => {
+          if (!bus.next_maintenance) return false;
+
+          return new Date(bus.next_maintenance) < new Date();
+        });
+      } else if (busStatusFilter && busStatusFilter !== 'all') {
         busData = busData.filter((bus) => bus.status === busStatusFilter);
-      }
-      if (searchInput !== '') {
+      } else if (searchInput !== '') {
         busData = busData.filter((bus) => bus.bus_id === searchInput);
       }
       setFilteredBusData(busData);
@@ -151,6 +163,559 @@ const FleetStatus = (props: {
 
   return (
     <>
+      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Add {currentTab.charAt(0).toUpperCase() + currentTab.slice(1)}
+            </DialogTitle>
+          </DialogHeader>
+          <DialogDescription>
+            Fill in the details to add a new {currentTab}.
+          </DialogDescription>
+
+          {currentTab === 'bus' && (
+            <form
+              onSubmit={(e) =>
+                handleAddBus(e, () => {
+                  props.refreshData();
+                  setIsAddModalOpen(false);
+                })
+              }
+              className="w-full"
+            >
+              <Input
+                type="hidden"
+                id="company_id"
+                name="company_id"
+                defaultValue={props.userData.company_id}
+                required
+              />
+              <div>
+                <Label htmlFor="bus_id">Bus ID *</Label>
+                <Input
+                  type="text"
+                  id="bus_id"
+                  name="bus_id"
+                  className="mt-2 border border-gray-400"
+                  required
+                />
+              </div>
+              <div className="mt-4 flex justify-end gap-3 md:col-span-2">
+                <Button
+                  variant="default"
+                  className="px-2 md:px-4"
+                  type="submit"
+                >
+                  <Save className="mr-0 md:mr-2" />
+                  <span>Save Bus</span>
+                </Button>
+                <Button
+                  variant="default"
+                  className="px-2 md:px-4"
+                  type="button"
+                  onClick={() => setIsAddModalOpen(false)}
+                >
+                  <span>Cancel</span>
+                </Button>
+              </div>
+            </form>
+          )}
+          {currentTab === 'driver' && (
+            <form
+              onSubmit={(e) =>
+                handleAddDriver(e, () => {
+                  props.refreshData();
+                  setIsAddModalOpen(false);
+                })
+              }
+              className="grid grid-cols-1 gap-4 md:grid-cols-2"
+            >
+              <Input
+                type="hidden"
+                id="company_id"
+                name="company_id"
+                defaultValue={props.userData.company_id}
+                required
+              />
+              <div>
+                <Label htmlFor="full_name">Full Name *</Label>
+                <Input
+                  type="text"
+                  id="full_name"
+                  name="full_name"
+                  className="mt-2 border border-gray-400"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="license_number">License Number *</Label>
+                <Input
+                  type="text"
+                  id="license_number"
+                  name="license_number"
+                  className="mt-2 border border-gray-400"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="contact_number">Contact Number *</Label>
+                <Input
+                  type="tel"
+                  id="contact_number"
+                  name="contact_number"
+                  pattern="[0-9]+"
+                  inputMode="numeric"
+                  className="mt-2 border border-gray-400"
+                  required
+                />
+              </div>
+              <div className="mt-4 flex justify-end gap-3 md:col-span-2">
+                <Button
+                  variant="default"
+                  className="px-2 md:px-4"
+                  type="submit"
+                >
+                  <Save className="mr-0 md:mr-2" />
+                  <span>Save Driver</span>
+                </Button>
+                <Button
+                  variant="default"
+                  className="px-2 md:px-4"
+                  type="button"
+                  onClick={() => setIsAddModalOpen(false)}
+                >
+                  <span>Cancel</span>
+                </Button>
+              </div>
+            </form>
+          )}
+          {currentTab === 'conductor' && (
+            <form
+              onSubmit={(e) =>
+                handleAddConductor(e, () => {
+                  props.refreshData();
+                  setIsAddModalOpen(false);
+                })
+              }
+            >
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <Input
+                  type="hidden"
+                  id="company_id"
+                  name="company_id"
+                  defaultValue={props.userData.company_id}
+                  required
+                />
+                <div>
+                  <Label htmlFor="full_name">Full Name *</Label>
+                  <Input
+                    type="text"
+                    id="full_name"
+                    name="full_name"
+                    className="mt-2 border border-gray-400"
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="email">Email *</Label>
+                  <Input
+                    type="email"
+                    id="email"
+                    name="email"
+                    className="mt-2 border border-gray-400"
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="contact_number">Contact Number *</Label>
+                  <Input
+                    type="tel"
+                    id="contact_number"
+                    name="contact_number"
+                    pattern="[0-9]+"
+                    inputMode="numeric"
+                    className="mt-2 border border-gray-400"
+                    required
+                  />
+                </div>
+              </div>
+              <p className="text-muted-foreground mt-4 text-xs">
+                Note: Default Password for conductor account is 123123123.
+              </p>
+              <div className="mt-4 flex justify-end gap-3 md:col-span-2">
+                <Button
+                  variant="default"
+                  className="px-2 md:px-4"
+                  type="submit"
+                >
+                  <Save className="mr-0 md:mr-2" />
+                  <span>Save Conductor</span>
+                </Button>
+                <Button
+                  variant="default"
+                  className="px-2 md:px-4"
+                  type="button"
+                  onClick={() => setIsAddModalOpen(false)}
+                >
+                  <span>Cancel</span>
+                </Button>
+              </div>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {`Edit ${currentTab} `}
+              {currentTab === 'bus' && editBus && `(ID: ${editBus.bus_id})`}
+              {currentTab === 'driver' &&
+                editDriver &&
+                `(ID: ${editDriver.driver_id})`}
+              {currentTab === 'conductor' &&
+                editConductor &&
+                `(ID: ${editConductor.conductor_id})`}
+            </DialogTitle>
+          </DialogHeader>
+          <DialogDescription>
+            {currentTab === 'bus' &&
+              editBus &&
+              'Edit the details of the selected bus.'}
+            {currentTab === 'driver' &&
+              editDriver &&
+              'Edit the details of the selected driver.'}
+            {currentTab === 'conductor' &&
+              editConductor &&
+              'Edit the details of the selected conductor.'}
+          </DialogDescription>
+          {currentTab === 'bus' && editBus && (
+            <form
+              onSubmit={(e) =>
+                handleEditBus(
+                  e,
+
+                  () => {
+                    props.refreshData();
+                    setIsEditModalOpen(false);
+                  },
+                  props.currentBusData.find(
+                    (bus) => bus.bus_id === editBus.bus_id
+                  )
+                )
+              }
+            >
+              <Input
+                type="hidden"
+                id="bus_id"
+                name="user_id"
+                defaultValue={editBus.bus_id}
+                required
+              />
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <Label htmlFor="status">Status *</Label>
+                  <select
+                    id="status"
+                    name="status"
+                    value={editBus.status}
+                    onChange={(e) => {
+                      setEditBus({
+                        ...editBus,
+                        status: e.target.value as BusInformationType['status'],
+                      });
+                    }}
+                    className="mt-2 w-full rounded border border-gray-400 p-2"
+                    required
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+                </div>
+                <div>
+                  <Label htmlFor="next_maintenance">Next Maintenance *</Label>
+                  <Input
+                    type="date"
+                    id="next_maintenance"
+                    name="next_maintenance"
+                    defaultValue={editBus.next_maintenance}
+                    required
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+                {editBus.status === 'active' && (
+                  <>
+                    <div>
+                      <Label htmlFor="edit_route_id">Route ID *</Label>
+                      <select
+                        id="edit_route_id"
+                        name="route_id"
+                        defaultValue={editBus.route_id}
+                        className="mt-2 w-full rounded border border-gray-400 p-2"
+                        required
+                      >
+                        <option value="">Select Route</option>
+                        {Array.from(
+                          new Set(currentBusData.map((bus) => bus.route_id))
+                        ).map((route) => (
+                          <option key={route} value={route}>
+                            {route}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <Label htmlFor="edit_driver_id">Driver ID *</Label>
+                      <select
+                        id="edit_driver_id"
+                        name="driver_id"
+                        defaultValue={editBus.driver_id}
+                        className="mt-2 w-full rounded border border-gray-400 p-2"
+                        required
+                      >
+                        <option value="">Select Driver</option>
+                        {currentDriverData.map((driver) => (
+                          <option
+                            key={driver.driver_id}
+                            value={driver.driver_id}
+                          >
+                            {driver.driver_id} - {driver.full_name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <Label htmlFor="edit_conductor_id">Conductor ID *</Label>
+                      <select
+                        id="edit_conductor_id"
+                        name="conductor_id"
+                        defaultValue={editBus.conductor_id}
+                        className="mt-2 w-full rounded border border-gray-400 p-2"
+                        required
+                      >
+                        <option value="">Select Conductor</option>
+                        {currentConductorData.map((conductor) => (
+                          <option
+                            key={conductor.conductor_id}
+                            value={conductor.conductor_id}
+                          >
+                            {conductor.conductor_id} - {conductor.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </>
+                )}
+              </div>
+              <div className="mt-4 flex justify-end gap-3 md:col-span-2">
+                <Button
+                  variant="default"
+                  className="px-2 md:px-4"
+                  type="submit"
+                >
+                  <Save className="mr-0 md:mr-2" />
+                  <span>Save Bus</span>
+                </Button>
+                <Button
+                  variant="default"
+                  className="px-2 md:px-4"
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                >
+                  <span>Cancel</span>
+                </Button>
+              </div>
+            </form>
+          )}
+          {currentTab === 'driver' && editDriver && (
+            <form
+              onSubmit={(e) =>
+                handleEditDriver(
+                  e,
+                  () => {
+                    props.refreshData();
+                    setIsEditModalOpen(false);
+                  },
+                  props.currentDriverData.find(
+                    (driver) => driver.driver_id === editDriver.driver_id
+                  )
+                )
+              }
+            >
+              <Input
+                type="hidden"
+                id="user_id"
+                name="user_id"
+                defaultValue={editDriver.driver_id}
+                required
+              />
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <Label htmlFor="full_name">Full Name *</Label>
+                  <Input
+                    type="text"
+                    id="full_name"
+                    name="full_name"
+                    defaultValue={editDriver.full_name}
+                    required
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="license_number">License Number *</Label>
+                  <Input
+                    type="text"
+                    id="license_number"
+                    name="license_number"
+                    defaultValue={editDriver.license_number}
+                    required
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="contact_number">Contact Number *</Label>
+                  <Input
+                    type="tel"
+                    id="contact_number"
+                    name="contact_number"
+                    pattern="[0-9]+"
+                    inputMode="numeric"
+                    defaultValue={editDriver.contact_number}
+                    required
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="bus_id">Bus ID</Label>
+                  <Input
+                    type="string"
+                    id="bus_id"
+                    name="bus_id"
+                    defaultValue={editDriver.bus_id}
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+              </div>
+              <p className="text-muted-foreground mt-4 text-xs">
+                Note: Empty Bus ID input will set driver as inactive.
+              </p>
+              <div className="mt-4 flex justify-end gap-3 md:col-span-2">
+                <Button
+                  variant="default"
+                  className="px-2 md:px-4"
+                  type="submit"
+                >
+                  <Save className="mr-0 md:mr-2" />
+                  <span>Save Driver</span>
+                </Button>
+                <Button
+                  variant="default"
+                  className="px-2 md:px-4"
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                >
+                  <span>Cancel</span>
+                </Button>
+              </div>
+            </form>
+          )}
+          {currentTab === 'conductor' && editConductor && (
+            <form
+              onSubmit={(e) =>
+                handleEditConductor(
+                  e,
+                  () => {
+                    props.refreshData();
+                    setIsEditModalOpen(false);
+                  },
+                  props.currentConductorData.find(
+                    (conductor) =>
+                      conductor.conductor_id === editConductor.conductor_id
+                  )
+                )
+              }
+            >
+              <Input
+                type="hidden"
+                id="user_id"
+                name="user_id"
+                defaultValue={editConductor.conductor_id}
+                required
+              />
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <Label htmlFor="full_name">Full Name *</Label>
+                  <Input
+                    type="text"
+                    id="full_name"
+                    name="full_name"
+                    defaultValue={editConductor.name}
+                    required
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="email">Email *</Label>
+                  <Input
+                    type="email"
+                    id="email"
+                    name="email"
+                    defaultValue={editConductor.email}
+                    required
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="contact_number">Contact Number *</Label>
+                  <Input
+                    type="tel"
+                    id="contact_number"
+                    name="contact_number"
+                    pattern="[0-9]+"
+                    inputMode="numeric"
+                    defaultValue={editConductor.contact_number}
+                    required
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="bus_id">Bus ID</Label>
+                  <Input
+                    type="text"
+                    id="bus_id"
+                    name="bus_id"
+                    defaultValue={editConductor.bus_id}
+                    className="mt-2 border border-gray-400"
+                  />
+                </div>
+              </div>
+              <p className="text-muted-foreground mt-4 text-xs">
+                Note: Empty Bus ID input will set conductor as inactive.
+              </p>
+
+              <div className="mt-4 flex justify-end gap-3 md:col-span-2">
+                <Button
+                  variant="default"
+                  className="px-2 md:px-4"
+                  type="submit"
+                >
+                  <Save className="mr-0 md:mr-2" />
+                  <span>Save Conductor</span>
+                </Button>
+                <Button
+                  variant="default"
+                  className="px-2 md:px-4"
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                >
+                  <span>Cancel</span>
+                </Button>
+              </div>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent>
           <DialogHeader>
@@ -242,608 +807,34 @@ const FleetStatus = (props: {
             </div>
           )}
           <DialogFooter>
-            <Button
-              variant="default"
-              className="w-full"
-              onClick={() => {
-                if (selectedBus) {
-                  setEditBus(selectedBus);
-                  setIsEditModalOpen(true);
-                  setIsModalOpen(false);
-                }
-              }}
-            >
-              Edit
-            </Button>
+            <div className="flex w-full flex-col gap-2">
+              <Button
+                variant="default"
+                className="w-full"
+                onClick={() => {
+                  if (selectedBus) {
+                    setEditBus(selectedBus);
+                    setIsEditModalOpen(true);
+                    setIsModalOpen(false);
+                  }
+                }}
+              >
+                Edit Bus
+              </Button>
+              <Button
+                variant="default"
+                className="w-full bg-red-600 text-white hover:bg-red-700"
+                onClick={() => {
+                  if (selectedBus) {
+                    setIsModalOpen(false);
+                    handleDeleteBus(selectedBus.bus_id, props.refreshData);
+                  }
+                }}
+              >
+                Delete Bus
+              </Button>
+            </div>
           </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              Add {currentTab.charAt(0).toUpperCase() + currentTab.slice(1)}
-            </DialogTitle>
-          </DialogHeader>
-          <DialogDescription>
-            Fill in the details to add a new {currentTab}.
-          </DialogDescription>
-
-          {currentTab === 'bus' && (
-            <form
-              onSubmit={handleAddBus}
-              className="grid grid-cols-1 gap-4 md:grid-cols-2"
-            >
-              <Input
-                type="hidden"
-                id="company_id"
-                name="company_id"
-                defaultValue={props.userData.company_id}
-                required
-              />
-              <div>
-                <Label htmlFor="bus_id">Bus ID</Label>
-                <Input
-                  type="text"
-                  id="bus_id"
-                  name="bus_id"
-                  required
-                  className="mt-2 border border-gray-400"
-                />
-              </div>
-              <div className="mt-4 flex justify-end gap-3 md:col-span-2">
-                <Button
-                  variant="default"
-                  className="px-2 md:px-4"
-                  type="submit"
-                >
-                  <Save className="mr-0 md:mr-2" />
-                  <span>Save Bus</span>
-                </Button>
-                <Button
-                  variant="default"
-                  className="px-2 md:px-4"
-                  type="button"
-                  onClick={() => setIsAddModalOpen(false)}
-                >
-                  <span>Cancel</span>
-                </Button>
-              </div>
-            </form>
-          )}
-          {currentTab === 'driver' && (
-            <form
-              onSubmit={handleAddDriver}
-              className="grid grid-cols-1 gap-4 md:grid-cols-2"
-            >
-              <Input
-                type="hidden"
-                id="company_id"
-                name="company_id"
-                defaultValue={props.userData.company_id}
-                required
-              />
-              <div>
-                <Label htmlFor="full_name">Full Name</Label>
-                <Input
-                  type="text"
-                  id="full_name"
-                  name="full_name"
-                  required
-                  className="mt-2 border border-gray-400"
-                />
-              </div>
-              <div>
-                <Label htmlFor="license_number">License Number</Label>
-                <Input
-                  type="text"
-                  id="license_number"
-                  name="license_number"
-                  required
-                  className="mt-2 border border-gray-400"
-                />
-              </div>
-              <div>
-                <Label htmlFor="contact_number">Contact Number</Label>
-                <Input
-                  type="tel"
-                  id="contact_number"
-                  name="contact_number"
-                  pattern="[0-9]+"
-                  inputMode="numeric"
-                  required
-                  className="mt-2 border border-gray-400"
-                />
-              </div>
-              <div className="mt-4 flex justify-end gap-3 md:col-span-2">
-                <Button
-                  variant="default"
-                  className="px-2 md:px-4"
-                  type="submit"
-                >
-                  <Save className="mr-0 md:mr-2" />
-                  <span>Save Driver</span>
-                </Button>
-                <Button
-                  variant="default"
-                  className="px-2 md:px-4"
-                  type="button"
-                  onClick={() => setIsAddModalOpen(false)}
-                >
-                  <span>Cancel</span>
-                </Button>
-              </div>
-            </form>
-          )}
-          {currentTab === 'conductor' && (
-            <form onSubmit={handleAddConductor}>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <Input
-                  type="hidden"
-                  id="company_id"
-                  name="company_id"
-                  defaultValue={props.userData.company_id}
-                  required
-                />
-                <div>
-                  <Label htmlFor="full_name">Full Name</Label>
-                  <Input
-                    type="text"
-                    id="full_name"
-                    name="full_name"
-                    required
-                    className="mt-2 border border-gray-400"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    className="mt-2 border border-gray-400"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="contact_number">Contact Number</Label>
-                  <Input
-                    type="tel"
-                    id="contact_number"
-                    name="contact_number"
-                    pattern="[0-9]+"
-                    inputMode="numeric"
-                    required
-                    className="mt-2 border border-gray-400"
-                  />
-                </div>
-              </div>
-              <p className="text-muted-foreground mt-4 text-xs">
-                Note: Default Password is 123123123
-              </p>
-              <div className="mt-4 flex justify-end gap-3 md:col-span-2">
-                <Button
-                  variant="default"
-                  className="px-2 md:px-4"
-                  type="submit"
-                >
-                  <Save className="mr-0 md:mr-2" />
-                  <span>Save Conductor</span>
-                </Button>
-                <Button
-                  variant="default"
-                  className="px-2 md:px-4"
-                  type="button"
-                  onClick={() => setIsAddModalOpen(false)}
-                >
-                  <span>Cancel</span>
-                </Button>
-              </div>
-            </form>
-          )}
-        </DialogContent>
-      </Dialog>
-      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {`Edit ${currentTab} `}
-              {currentTab === 'bus' && editBus && `(ID: ${editBus.bus_id})`}
-              {currentTab === 'driver' &&
-                editDriver &&
-                `(ID: ${editDriver.driver_id})`}
-              {currentTab === 'conductor' &&
-                editConductor &&
-                `(ID: ${editConductor.conductor_id})`}
-            </DialogTitle>
-          </DialogHeader>
-          <DialogDescription>
-            {currentTab === 'bus' &&
-              editBus &&
-              'Edit the details of the selected bus.'}
-            {currentTab === 'driver' &&
-              editDriver &&
-              'Edit the details of the selected driver.'}
-            {currentTab === 'conductor' &&
-              editConductor &&
-              'Edit the details of the selected conductor.'}
-          </DialogDescription>
-          {currentTab === 'bus' && editBus && (
-            <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <Label htmlFor="edit_route_id">Route ID</Label>
-                <select
-                  id="edit_route_id"
-                  name="route_id"
-                  value={editBus.route_id}
-                  onChange={(e) =>
-                    setEditBus({ ...editBus, route_id: e.target.value })
-                  }
-                  required
-                  className="mt-2 w-full rounded border border-gray-400 p-2"
-                >
-                  <option value="">Select Route</option>
-                  {Array.from(
-                    new Set(currentBusData.map((bus) => bus.route_id))
-                  ).map((route) => (
-                    <option key={route} value={route}>
-                      {route}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <Label htmlFor="edit_driver_id">Driver ID</Label>
-                <select
-                  id="edit_driver_id"
-                  name="driver_id"
-                  value={editBus.driver_id}
-                  onChange={(e) =>
-                    setEditBus({
-                      ...editBus,
-                      driver_id: Number(e.target.value),
-                    })
-                  }
-                  required
-                  className="mt-2 w-full rounded border border-gray-400 p-2"
-                >
-                  <option value="">Select Driver</option>
-                  {currentDriverData.map((driver) => (
-                    <option key={driver.driver_id} value={driver.driver_id}>
-                      {driver.driver_id} - {driver.full_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <Label htmlFor="edit_conductor_id">Conductor ID</Label>
-                <select
-                  id="edit_conductor_id"
-                  name="conductor_id"
-                  value={editBus.conductor_id}
-                  onChange={(e) =>
-                    setEditBus({
-                      ...editBus,
-                      conductor_id: Number(e.target.value),
-                    })
-                  }
-                  required
-                  className="mt-2 w-full rounded border border-gray-400 p-2"
-                >
-                  <option value="">Select Conductor</option>
-                  {currentConductorData.map((conductor) => (
-                    <option
-                      key={conductor.conductor_id}
-                      value={conductor.conductor_id}
-                    >
-                      {conductor.conductor_id} - {conductor.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <Label htmlFor="status">Status</Label>
-                <select
-                  id="status"
-                  name="status"
-                  value={editBus.status}
-                  onChange={(e) =>
-                    setEditBus({
-                      ...editBus,
-                      status: e.target.value as BusInformationType['status'],
-                    })
-                  }
-                  className="mt-2 w-full rounded border border-gray-400 p-2"
-                  required
-                >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                  <option value="in maintenance">In Maintenance</option>
-                </select>
-              </div>
-              <div>
-                <Label htmlFor="next_maintenance">Next Maintenance</Label>
-                <Input
-                  type="date"
-                  id="next_maintenance"
-                  name="next_maintenance"
-                  value={editBus.next_maintenance}
-                  onChange={(e) =>
-                    setEditBus({
-                      ...editBus,
-                      next_maintenance: e.target.value,
-                    })
-                  }
-                  required
-                  className="mt-2 border border-gray-400"
-                />
-              </div>
-              <div className="mt-4 flex justify-end gap-3 md:col-span-2">
-                <Button
-                  variant="default"
-                  className="px-2 md:px-4"
-                  type="submit"
-                >
-                  <Save className="mr-0 md:mr-2" />
-                  <span>Save Bus</span>
-                </Button>
-                <Button
-                  variant="default"
-                  className="px-2 md:px-4"
-                  type="button"
-                  onClick={() => setIsEditModalOpen(false)}
-                >
-                  <span>Cancel</span>
-                </Button>
-              </div>
-            </form>
-          )}
-          {currentTab === 'driver' && editDriver && (
-            <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <Label htmlFor="driver_id">Driver ID</Label>
-                <Input
-                  type="number"
-                  id="driver_id"
-                  name="driver_id"
-                  value={editDriver.driver_id}
-                  onChange={(e) =>
-                    setEditDriver({
-                      ...editDriver,
-                      driver_id: Number(e.target.value),
-                    })
-                  }
-                  required
-                  className="mt-2 border border-gray-400"
-                />
-              </div>
-              <div>
-                <Label htmlFor="full_name">Full Name</Label>
-                <Input
-                  type="text"
-                  id="full_name"
-                  name="full_name"
-                  value={editDriver.full_name}
-                  onChange={(e) =>
-                    setEditDriver({
-                      ...editDriver,
-                      full_name: e.target.value,
-                    })
-                  }
-                  required
-                  className="mt-2 border border-gray-400"
-                />
-              </div>
-              <div>
-                <Label htmlFor="license_number">License Number</Label>
-                <Input
-                  type="text"
-                  id="license_number"
-                  name="license_number"
-                  value={editDriver.license_number}
-                  onChange={(e) =>
-                    setEditDriver({
-                      ...editDriver,
-                      license_number: e.target.value,
-                    })
-                  }
-                  required
-                  className="mt-2 border border-gray-400"
-                />
-              </div>
-              <div>
-                <Label htmlFor="contact_number">Contact Number</Label>
-                <Input
-                  type="tel"
-                  id="contact_number"
-                  name="contact_number"
-                  pattern="[0-9]+"
-                  inputMode="numeric"
-                  value={editDriver.contact_number}
-                  onChange={(e) =>
-                    setEditDriver({
-                      ...editDriver,
-                      contact_number: e.target.value.replace(/[^0-9]/g, ''),
-                    })
-                  }
-                  required
-                  className="mt-2 border border-gray-400"
-                />
-              </div>
-              <div>
-                <Label htmlFor="status">Status</Label>
-                <select
-                  id="status"
-                  name="status"
-                  value={editDriver.status}
-                  onChange={(e) =>
-                    setEditDriver({
-                      ...editDriver,
-                      status: e.target.value as DriverInformationType['status'],
-                    })
-                  }
-                  className="mt-2 w-full rounded border border-gray-400 p-2"
-                  required
-                >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-              </div>
-              <div>
-                <Label htmlFor="bus_id">Bus ID</Label>
-                <Input
-                  type="number"
-                  id="bus_id"
-                  name="bus_id"
-                  value={editDriver.bus_id}
-                  onChange={(e) =>
-                    setEditDriver({
-                      ...editDriver,
-                      bus_id: Number(e.target.value),
-                    })
-                  }
-                  className="mt-2 border border-gray-400"
-                />
-              </div>
-              <div className="mt-4 flex justify-end gap-3 md:col-span-2">
-                <Button
-                  variant="default"
-                  className="px-2 md:px-4"
-                  type="submit"
-                >
-                  <Save className="mr-0 md:mr-2" />
-                  <span>Save Driver</span>
-                </Button>
-                <Button
-                  variant="default"
-                  className="px-2 md:px-4"
-                  type="button"
-                  onClick={() => setIsEditModalOpen(false)}
-                >
-                  <span>Cancel</span>
-                </Button>
-              </div>
-            </form>
-          )}
-          {currentTab === 'conductor' && editConductor && (
-            <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <Input
-                type="hidden"
-                id="conductor_id"
-                name="conductor_id"
-                defaultValue={editConductor.conductor_id}
-                required
-              />
-              <div>
-                <Label htmlFor="full_name">Full Name</Label>
-                <Input
-                  type="text"
-                  id="full_name"
-                  name="full_name"
-                  value={editConductor.name}
-                  onChange={(e) =>
-                    setEditConductor({
-                      ...editConductor,
-                      name: e.target.value,
-                    })
-                  }
-                  required
-                  className="mt-2 border border-gray-400"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={editConductor.email}
-                  onChange={(e) =>
-                    setEditConductor({
-                      ...editConductor,
-                      email: e.target.value,
-                    })
-                  }
-                  required
-                  className="mt-2 border border-gray-400"
-                />
-              </div>
-              <div>
-                <Label htmlFor="contact_number">Contact Number</Label>
-                <Input
-                  type="tel"
-                  id="contact_number"
-                  name="contact_number"
-                  pattern="[0-9]+"
-                  inputMode="numeric"
-                  value={editConductor.contact_number}
-                  onChange={(e) =>
-                    setEditConductor({
-                      ...editConductor,
-                      contact_number: e.target.value.replace(/[^0-9]/g, ''),
-                    })
-                  }
-                  required
-                  className="mt-2 border border-gray-400"
-                />
-              </div>
-              <div>
-                <Label htmlFor="status">Status</Label>
-                <select
-                  id="status"
-                  name="status"
-                  value={editConductor.status}
-                  onChange={(e) =>
-                    setEditConductor({
-                      ...editConductor,
-                      status: e.target
-                        .value as ConductorInformationType['status'],
-                    })
-                  }
-                  className="mt-2 w-full rounded border border-gray-400 p-2"
-                  required
-                >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-              </div>
-              <div>
-                <Label htmlFor="bus_id">Bus ID</Label>
-                <Input
-                  type="number"
-                  id="bus_id"
-                  name="bus_id"
-                  value={editConductor.bus_id}
-                  onChange={(e) =>
-                    setEditConductor({
-                      ...editConductor,
-                      bus_id: Number(e.target.value),
-                    })
-                  }
-                  className="mt-2 border border-gray-400"
-                />
-              </div>
-              <div className="mt-4 flex justify-end gap-3 md:col-span-2">
-                <Button
-                  variant="default"
-                  className="px-2 md:px-4"
-                  type="submit"
-                >
-                  <Save className="mr-0 md:mr-2" />
-                  <span>Save Conductor</span>
-                </Button>
-                <Button
-                  variant="default"
-                  className="px-2 md:px-4"
-                  type="button"
-                  onClick={() => setIsEditModalOpen(false)}
-                >
-                  <span>Cancel</span>
-                </Button>
-              </div>
-            </form>
-          )}
         </DialogContent>
       </Dialog>
       <Dialog open={isDriverModalOpen} onOpenChange={setIsDriverModalOpen}>
@@ -945,19 +936,36 @@ const FleetStatus = (props: {
             </div>
           )}
           <DialogFooter>
-            <Button
-              variant="default"
-              className="w-full"
-              onClick={() => {
-                if (selectedDriver) {
-                  setEditDriver(selectedDriver);
-                  setIsEditModalOpen(true);
-                  setIsDriverModalOpen(false);
-                }
-              }}
-            >
-              Edit
-            </Button>
+            <div className="flex w-full flex-col gap-2">
+              <Button
+                variant="default"
+                className="w-full"
+                onClick={() => {
+                  if (selectedDriver) {
+                    setEditDriver(selectedDriver);
+                    setIsEditModalOpen(true);
+                    setIsDriverModalOpen(false);
+                  }
+                }}
+              >
+                Edit Driver
+              </Button>
+              <Button
+                variant="default"
+                className="w-full bg-red-600 text-white hover:bg-red-700"
+                onClick={() => {
+                  if (selectedDriver) {
+                    setIsDriverModalOpen(false);
+                    handleDeleteDriver(
+                      selectedDriver.driver_id,
+                      props.refreshData
+                    );
+                  }
+                }}
+              >
+                Delete Driver
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1063,19 +1071,36 @@ const FleetStatus = (props: {
             </div>
           )}
           <DialogFooter>
-            <Button
-              variant="default"
-              className="w-full"
-              onClick={() => {
-                if (selectedConductor) {
-                  setEditConductor(selectedConductor);
-                  setIsEditModalOpen(true);
-                  setIsConductorModalOpen(false);
-                }
-              }}
-            >
-              Edit
-            </Button>
+            <div className="flex w-full flex-col gap-2">
+              <Button
+                variant="default"
+                className="w-full"
+                onClick={() => {
+                  if (selectedConductor) {
+                    setEditConductor(selectedConductor);
+                    setIsEditModalOpen(true);
+                    setIsConductorModalOpen(false);
+                  }
+                }}
+              >
+                Edit Conductor
+              </Button>
+              <Button
+                variant="default"
+                className="w-full bg-red-600 text-white hover:bg-red-700"
+                onClick={() => {
+                  if (selectedConductor) {
+                    setIsConductorModalOpen(false);
+                    handleDeleteConductor(
+                      selectedConductor.conductor_id,
+                      props.refreshData
+                    );
+                  }
+                }}
+              >
+                Delete Conductor
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1203,9 +1228,11 @@ const FleetStatus = (props: {
                       title: 'In Maintenance',
                       icon: Wrench,
                       value: String(
-                        currentBusData.filter(
-                          (bus) => bus.status === 'in maintenance'
-                        ).length
+                        currentBusData.filter((bus) => {
+                          if (!bus.next_maintenance) return false;
+
+                          return new Date(bus.next_maintenance) < new Date();
+                        }).length
                       ),
                       subtitle: 'Buses currently in maintenance',
                     }}
@@ -1213,7 +1240,7 @@ const FleetStatus = (props: {
                 </div>
                 <hr className="my-4" />
                 <div className="mt-2 mb-2 flex justify-start">
-                  <div className="w-full max-w-[180px] rounded-full border border-gray-300 bg-white">
+                  <div className="w-fit rounded-full bg-white">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button
@@ -1264,6 +1291,13 @@ const FleetStatus = (props: {
                     <BusInformationCard
                       key={bus.bus_id}
                       BusInfo={bus}
+                      DriverInfo={currentDriverData.find(
+                        (driver) => driver.driver_id === bus.driver_id
+                      )}
+                      ConductorInfo={currentConductorData.find(
+                        (conductor) =>
+                          conductor.conductor_id === bus.conductor_id
+                      )}
                       OnClick={() => {
                         setSelectedBusId(bus.bus_id);
                         setIsModalOpen(true);

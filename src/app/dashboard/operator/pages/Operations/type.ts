@@ -12,7 +12,7 @@ interface DriverInformationType {
   full_name: string;
   license_number: string;
   contact_number: string;
-  bus_id: number;
+  bus_id: string;
   status: 'active' | 'inactive';
 }
 
@@ -21,7 +21,7 @@ interface ConductorInformationType {
   name: string;
   contact_number: string;
   email: string;
-  bus_id: number;
+  bus_id: string;
   status: 'active' | 'inactive';
 }
 

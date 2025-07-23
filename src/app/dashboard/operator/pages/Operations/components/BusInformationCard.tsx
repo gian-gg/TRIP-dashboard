@@ -7,11 +7,17 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import type { BusInformationType } from '../type';
+import type {
+  BusInformationType,
+  DriverInformationType,
+  ConductorInformationType,
+} from '../type';
 import { Badge } from '@/components/ui/badge';
 
 function BusInformationCard(props: {
   BusInfo: BusInformationType;
+  DriverInfo?: DriverInformationType;
+  ConductorInfo?: ConductorInformationType;
   OnClick: (data: BusInformationType) => void;
 }) {
   // Calculate days left until next maintenance
@@ -60,28 +66,42 @@ function BusInformationCard(props: {
                 }
               ></span>
             </div>
-            Bus #{props.BusInfo['bus_id']}
+            {props.BusInfo['bus_id']}
           </CardTitle>
-          <CardAction className="text-sm">
-            <Badge variant="default" className={maintenanceBadgeColor}>
-              {daysLeft > 0
-                ? `${daysLeft} day${daysLeft !== 1 ? 's' : ''} left`
-                : 'Maintenance due!'}
-            </Badge>
-          </CardAction>
+          {props.BusInfo.next_maintenance && (
+            <CardAction className="text-sm">
+              <Badge variant="default" className={maintenanceBadgeColor}>
+                {daysLeft > 0
+                  ? `${daysLeft} day${daysLeft !== 1 ? 's' : ''} left`
+                  : 'Maintenance due!'}
+              </Badge>
+            </CardAction>
+          )}
         </CardHeader>
         <CardContent className="grid h-full w-full grid-cols-2 grid-rows-2 gap-5 p-3 sm:p-5">
           <div>
             <p className="text-xs font-semibold md:text-sm lg:text-base">
               Route:
             </p>
-            <p className="text-xs md:text-sm">{props.BusInfo['route_id']}</p>
+            <p className="text-xs md:text-sm">
+              {props.BusInfo['route_id'] ?? 'N/A'}
+            </p>
           </div>
           <div>
             <p className="text-xs font-semibold md:text-sm lg:text-base">
               Bus Driver:
             </p>
-            <p className="text-xs md:text-sm">{props.BusInfo['driver_id']}</p>
+            <p className="text-xs md:text-sm">
+              {props.DriverInfo?.['full_name'] ?? 'N/A'}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold md:text-sm lg:text-base">
+              Conductor:
+            </p>
+            <p className="text-xs md:text-sm">
+              {props.ConductorInfo?.['name'] ?? 'N/A'}
+            </p>
           </div>
         </CardContent>
         <CardFooter>

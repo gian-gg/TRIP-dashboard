@@ -1,7 +1,10 @@
 import { toast } from 'sonner';
-import APICall from './api';
+import APICall from '@/lib/api';
 
-const handleAddConductor = async (e: React.FormEvent<HTMLFormElement>) => {
+const handleAddConductor = async (
+  e: React.FormEvent<HTMLFormElement>,
+  refreshData: () => void
+) => {
   e.preventDefault();
   const formData = new FormData(e.currentTarget);
 
@@ -9,6 +12,13 @@ const handleAddConductor = async (e: React.FormEvent<HTMLFormElement>) => {
   const contactNumber = formData.get('contact_number') as string;
   const email = formData.get('email') as string;
   const companyID = formData.get('company_id') as string;
+
+  if (!/^9\d{9}$/.test(contactNumber)) {
+    toast.warning(
+      'Please enter a valid phone number that starts with 9 and has 10 digits.'
+    );
+    return;
+  }
 
   await APICall({
     type: 'POST',
@@ -19,9 +29,10 @@ const handleAddConductor = async (e: React.FormEvent<HTMLFormElement>) => {
       email: email,
       company_id: companyID,
     },
-    consoleLabel: 'Edit Conductor Response',
+    consoleLabel: 'Add Conductor Response',
     success: () => {
-      window.location.reload();
+      refreshData();
+      toast.success('Conductor added successfully');
     },
     error: (error) => {
       toast.error(error.message || 'Unknown error');
@@ -29,7 +40,10 @@ const handleAddConductor = async (e: React.FormEvent<HTMLFormElement>) => {
   });
 };
 
-const handleAddDriver = async (e: React.FormEvent<HTMLFormElement>) => {
+const handleAddDriver = async (
+  e: React.FormEvent<HTMLFormElement>,
+  refreshData: () => void
+) => {
   e.preventDefault();
   const formData = new FormData(e.currentTarget);
 
@@ -37,6 +51,13 @@ const handleAddDriver = async (e: React.FormEvent<HTMLFormElement>) => {
   const contactNumber = formData.get('contact_number') as string;
   const licenseNumber = formData.get('license_number') as string;
   const companyID = formData.get('company_id') as string;
+
+  if (!/^9\d{9}$/.test(contactNumber)) {
+    toast.warning(
+      'Please enter a valid phone number that starts with 9 and has 10 digits.'
+    );
+    return;
+  }
 
   await APICall({
     type: 'POST',
@@ -47,9 +68,10 @@ const handleAddDriver = async (e: React.FormEvent<HTMLFormElement>) => {
       license_number: licenseNumber,
       company_id: companyID,
     },
-    consoleLabel: 'Edit Driver Response',
+    consoleLabel: 'Add Driver Response',
     success: () => {
-      window.location.reload();
+      refreshData();
+      toast.success('Driver added successfully');
     },
     error: (error) => {
       toast.error(error.message || 'Unknown error');
@@ -57,7 +79,10 @@ const handleAddDriver = async (e: React.FormEvent<HTMLFormElement>) => {
   });
 };
 
-const handleAddBus = async (e: React.FormEvent<HTMLFormElement>) => {
+const handleAddBus = async (
+  e: React.FormEvent<HTMLFormElement>,
+  refreshData: () => void
+) => {
   e.preventDefault();
   const formData = new FormData(e.currentTarget);
   const busID = formData.get('bus_id') as string;
@@ -70,9 +95,10 @@ const handleAddBus = async (e: React.FormEvent<HTMLFormElement>) => {
       bus_id: busID,
       company_id: companyID,
     },
-    consoleLabel: 'Edit Bus Response',
+    consoleLabel: 'Add Bus Response',
     success: () => {
-      window.location.reload();
+      refreshData();
+      toast.success('Bus added successfully');
     },
     error: (error) => {
       toast.error(error.message || 'Unknown error');

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
+import { LoaderCircle } from 'lucide-react';
+
 import FleetStatus from './operations';
 import type {
   BusInformationType,
@@ -20,7 +22,7 @@ const Operations = () => {
   const [conductorData, setConductorData] =
     useState<ConductorInformationType[]>();
 
-  useEffect(() => {
+  const fetchAllData = async () => {
     const fetchBusData = async () => {
       await APICall<BusInformationType[]>({
         type: 'GET',
@@ -60,16 +62,19 @@ const Operations = () => {
         },
       });
     };
-
     fetchBusData();
     fetchDriverData();
     fetchConductorData();
+  };
+
+  useEffect(() => {
+    fetchAllData();
   }, []);
 
-  if (!busData || !driverData || !conductorData || loading || !user) {
+  if (loading || !user) {
     return (
       <div className="flex h-full w-full items-center justify-center">
-        <div className="text-muted-foreground text-lg">Loading...</div>
+        <LoaderCircle className="animate-spin" />
       </div>
     );
   }
@@ -83,9 +88,10 @@ const Operations = () => {
       </p>
       <FleetStatus
         userData={user}
-        currentBusData={busData}
-        currentDriverData={driverData}
-        currentConductorData={conductorData}
+        currentBusData={busData || []}
+        currentDriverData={driverData || []}
+        currentConductorData={conductorData || []}
+        refreshData={fetchAllData}
       />
     </div>
   );

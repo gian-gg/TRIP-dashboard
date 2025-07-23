@@ -39,21 +39,25 @@ function ConductorInformationCard(props: {
             <p className="text-xs font-semibold md:text-sm lg:text-base">
               Name:
             </p>
-            <p className="text-xs md:text-sm">{props.ConductorInfo.name}</p>
+            <p className="text-xs md:text-sm">
+              {props.ConductorInfo.name ?? 'N/A'}
+            </p>
           </div>
           <div>
             <p className="text-xs font-semibold md:text-sm lg:text-base">
               Contact Number:
             </p>
             <p className="text-xs md:text-sm">
-              {props.ConductorInfo.contact_number}
+              {props.ConductorInfo.contact_number ?? 'N/A'}
             </p>
           </div>
           <div>
             <p className="text-xs font-semibold md:text-sm lg:text-base">
               Email:
             </p>
-            <p className="text-xs md:text-sm">{props.ConductorInfo.email}</p>
+            <p className="text-xs md:text-sm">
+              {props.ConductorInfo.email ?? 'N/A'}
+            </p>
           </div>
           <div>
             <p className="text-xs font-semibold md:text-sm lg:text-base">

@@ -40,6 +40,14 @@ async function PUT<T = unknown, D = Record<string, unknown>>(
   return response.data;
 }
 
+async function DELETE<T = unknown, D = Record<string, unknown>>(
+  url: string,
+  data?: D
+): Promise<T> {
+  const response: AxiosResponse<T> = await Fetch.delete<T>(url, { data });
+  return response.data;
+}
+
 type APIResponse<T> = {
   status: 'success' | 'error';
   data: T;
@@ -47,7 +55,7 @@ type APIResponse<T> = {
 };
 
 type APICallOptions<T> = {
-  type: 'GET' | 'POST' | 'PUT';
+  type: 'GET' | 'POST' | 'PUT' | 'DELETE';
   url: string;
   body?: object;
   success: (data: T) => void;
@@ -73,6 +81,13 @@ const APICall = async <T>(options: APICallOptions<T>) => {
           res = (await PUT(options.url, options.body)) as APIResponse<T>;
         } else {
           res = (await PUT(options.url)) as APIResponse<T>;
+        }
+        break;
+      case 'DELETE':
+        if (options.body) {
+          res = (await DELETE(options.url, options.body)) as APIResponse<T>;
+        } else {
+          res = (await DELETE(options.url)) as APIResponse<T>;
         }
         break;
       default:

@@ -1,7 +1,12 @@
 import { toast } from 'sonner';
 
-const ConfirmToast = (actionLabel: string, handleAction: () => void) => {
+const ConfirmToast = (
+  actionLabel: string,
+  handleAction: () => void,
+  description?: string
+) => {
   toast.warning('Are you Sure?', {
+    description: description,
     action: {
       label: actionLabel,
       onClick: handleAction,
