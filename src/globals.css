@@ -39,9 +39,6 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-
-  --color-trip-primary: oklch(0.5169 0.1619 255.57); /* #186cc7 */
-  --color-trip-primary-light: oklch(95.24% 0.027 255.49); /* #e3f2fe */
 }
 
 :root {
@@ -53,54 +50,59 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  /* Base Colors - Ultra Light Yellow Theme */
-  --background: #fffef9; /* near-white with a hint of warmth */
-  --foreground: #2b2b2b; /* soft black for contrast */
-  --card: #fffdf3; /* barely yellowish background */
-  --card-foreground: #2b2b2b;
-  --popover: #fffde8;
-  --popover-foreground: #2b2b2b;
+  /* Base Colors - Soft Light Blue */
+  --background: #f0f8ff; /* AliceBlue */
+  --foreground: #1e293b; /* slate-800 */
+  --card: #eaf4ff;
+  --card-foreground: #1e293b;
+  --popover: #e2efff;
+  --popover-foreground: #1e293b;
 
-  /* Primary */
-  --primary: #fff9c4; /* pale lemon */
-  --primary-foreground: #2b2b2b;
+  /* Primary - Trip Blue */
+  --primary: #186cc7;
+  --primary-foreground: white;
 
   /* Secondary */
-  --secondary: #fffdea; /* extremely light butter */
-  --secondary-foreground: #2b2b2b;
+  --secondary: #dbeafe;
+  --secondary-foreground: #1e293b;
 
   /* Muted */
-  --muted: #fefbf0; /* muted ivory yellow */
-  --muted-foreground: #505050;
+  --muted: #eff6ff;
+  --muted-foreground: #475569;
 
   /* Accent */
-  --accent: #fff6d0; /* soft yellow highlight */
-  --accent-foreground: #2b2b2b;
+  --accent: #bfdbfe;
+  --accent-foreground: #1e293b;
 
   /* Destructive */
-  --destructive: #ffd1d1; /* light red/pink warning */
-  --destructive-foreground: #2b2b2b;
+  --destructive: #ca3737;
+  --destructive-foreground: white;
 
   /* UI Elements */
-  --border: #f4f2e6; /* very light border */
-  --input: #fffef4; /* input background, slightly yellow */
-  --ring: #fff4a3; /* very soft highlight yellow */
+  --border: #cbd5e1;
+  --input: #f8fbff;
+  --ring: #186cc7; /* match primary */
 
-  --chart-1: #facc15; /* golden yellow */
-  --chart-2: #38bdf8; /* sky blue */
-  --chart-3: #34d399; /* soft green */
-  --chart-4: #fb7185; /* pastel red/pink */
-  --chart-5: #c084fc; /* soft violet/purple */
+  /* Chart Colors - Multi-color contrast */
+  --chart-1: #186cc7; /* trip primary */
+  --chart-2: #38bdf8;
+  --chart-3: #34d399;
+  --chart-4: #fb7185;
+  --chart-5: #a78bfa;
 
   /* Sidebar */
-  --sidebar: #fffef8;
-  --sidebar-foreground: #2b2b2b;
-  --sidebar-primary: #fffad0;
-  --sidebar-primary-foreground: #2b2b2b;
-  --sidebar-accent: #fff6dd;
-  --sidebar-accent-foreground: #2b2b2b;
-  --sidebar-border: #f3f0e0;
-  --sidebar-ring: #fff5bb;
+  --sidebar: #e6f0fa;
+  --sidebar-foreground: #1e293b;
+  --sidebar-primary: #186cc7;
+  --sidebar-primary-foreground: white;
+  --sidebar-accent: #dbeafe;
+  --sidebar-accent-foreground: #1e293b;
+  --sidebar-border: #cbdcf0;
+  --sidebar-ring: #a5c9ff;
+
+  /* Optional for consistency */
+  --color-trip-primary: #186cc7;
+  --color-trip-primary-light: #e3f2fe;
 }
 
 @layer base {

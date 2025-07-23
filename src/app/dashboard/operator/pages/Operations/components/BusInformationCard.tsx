@@ -39,7 +39,7 @@ function BusInformationCard(props: {
   } else if (daysLeft <= 7 && daysLeft > 3) {
     maintenanceBadgeColor = 'bg-red-100 text-red-700 border-red-300';
   } else if (daysLeft <= 3) {
-    maintenanceBadgeColor = 'bg-red-600 text-white border border-red-800';
+    maintenanceBadgeColor = 'bg-destructive text-white';
   }
 
   return (

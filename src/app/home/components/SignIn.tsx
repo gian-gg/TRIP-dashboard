@@ -63,7 +63,7 @@ export function SignIn() {
   return (
     <Card className="w-full max-w-sm bg-white">
       <CardHeader>
-        <CardTitle className="text-trip-primary text-xl font-bold">
+        <CardTitle className="text-xl font-bold">
           Sign In to your Account!
         </CardTitle>
         <CardDescription className="text-xs">
@@ -81,15 +81,7 @@ export function SignIn() {
                 name="email"
                 placeholder="Enter your email"
                 required
-                className="placeholder:text-muted-foreground focus-visible:ring-ring border border-black/20 bg-white text-black shadow-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-                style={
-                  {
-                    backgroundColor: 'white',
-                    boxShadow: 'none',
-                    '--ring': '#3b82f6', // override soft yellow focus ring (Tailwind blue-500)
-                    '--input': '#ffffff', // override soft yellow input bg
-                  } as React.CSSProperties
-                }
+                className="focus-visible:ring-ring border border-black/20"
               />
             </div>
             <div className="grid gap-2">
@@ -97,17 +89,17 @@ export function SignIn() {
                 <Label htmlFor="password">Password</Label>
 
                 <Dialog>
-                  <DialogTrigger className="hover:text-trip-primary/80 ml-auto inline-block cursor-pointer text-xs underline-offset-4 hover:underline">
+                  <DialogTrigger className="hover:text-primary/80 ml-auto inline-block cursor-pointer text-xs underline-offset-4 hover:underline">
                     Forgot your password?
                   </DialogTrigger>
                   <DialogContent className="bg-white">
                     <DialogHeader>
-                      <DialogTitle className="text-trip-primary">
+                      <DialogTitle className="text-primary">
                         Reset Your Password
                       </DialogTitle>
                       <DialogDescription>
                         To reset your password, please email us at{' '}
-                        <strong className="text-trip-primary">
+                        <strong className="text-primary">
                           support@trip.com
                         </strong>{' '}
                         with:
@@ -131,15 +123,7 @@ export function SignIn() {
                 name="password"
                 placeholder="Enter your password"
                 required
-                className="placeholder:text-muted-foreground focus-visible:ring-ring border border-black/20 bg-white text-black shadow-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-                style={
-                  {
-                    backgroundColor: 'white',
-                    boxShadow: 'none',
-                    '--ring': '#3b82f6', // override soft yellow focus ring (Tailwind blue-500)
-                    '--input': '#ffffff', // override soft yellow input bg
-                  } as React.CSSProperties
-                }
+                className="focus-visible:ring-ring border border-black/20"
               />
             </div>
           </div>
@@ -148,7 +132,7 @@ export function SignIn() {
       <CardFooter className="flex-col gap-2">
         <Button
           type="submit"
-          className="bg-trip-primary hover:bg-trip-primary/70 w-full cursor-pointer text-white"
+          className="bg-primary hover:bg-primary/70 w-full cursor-pointer text-white"
           form="sign-in-form"
           disabled={isLoading}
         >

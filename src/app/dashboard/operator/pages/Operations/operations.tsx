@@ -733,7 +733,7 @@ const FleetStatus = (props: {
                   <tr>
                     <th
                       colSpan={2}
-                      className="bg-neutral border-outline border-2 p-2 text-left text-black sm:text-lg md:p-4 md:text-xl"
+                      className="bg-neutral border-outline border-2 p-2 text-left sm:text-lg md:p-4 md:text-xl"
                     >
                       Bus Information
                     </th>
@@ -780,12 +780,10 @@ const FleetStatus = (props: {
                       <span
                         className={
                           selectedBus.status === 'active'
-                            ? 'font-semibold text-green-600'
+                            ? 'font-semibold text-green-400'
                             : selectedBus.status === 'inactive'
-                              ? 'font-semibold text-red-600'
-                              : selectedBus.status === 'in maintenance'
-                                ? 'font-semibold text-yellow-500'
-                                : ''
+                              ? 'text-destructive font-semibold'
+                              : ''
                         }
                       >
                         {selectedBus.status.charAt(0).toUpperCase() +
@@ -896,7 +894,7 @@ const FleetStatus = (props: {
               </Button>
               <Button
                 variant="default"
-                className="w-full bg-red-600 text-white hover:bg-red-700"
+                className="bg-destructive w-full text-white hover:bg-red-700"
                 onClick={() => {
                   if (selectedBus) {
                     setIsModalOpen(false);
@@ -922,7 +920,7 @@ const FleetStatus = (props: {
           {selectedDriver ? (
             <div className="mb-4 flex flex-col items-center">
               <div className="mb-2 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gray-200">
-                <span className="text-4xl font-bold text-gray-600">
+                <span className="text-4xl font-bold text-gray-400">
                   {getInitials(selectedDriver.full_name)}
                 </span>
               </div>
@@ -937,7 +935,7 @@ const FleetStatus = (props: {
                 <tr>
                   <th
                     colSpan={2}
-                    className="bg-neutral border-outline border-2 p-2 text-left text-black sm:text-lg md:p-4 md:text-xl"
+                    className="bg-neutral border-outline border-2 p-2 text-left sm:text-lg md:p-4 md:text-xl"
                   >
                     Driver Information
                   </th>
@@ -984,8 +982,8 @@ const FleetStatus = (props: {
                     <span
                       className={
                         selectedDriver.status === 'active'
-                          ? 'font-semibold text-green-600'
-                          : 'font-semibold text-red-600'
+                          ? 'font-semibold text-green-400'
+                          : 'text-destructive font-semibold'
                       }
                     >
                       {selectedDriver.status.charAt(0).toUpperCase() +
@@ -1025,7 +1023,7 @@ const FleetStatus = (props: {
               </Button>
               <Button
                 variant="default"
-                className="w-full bg-red-600 text-white hover:bg-red-700"
+                className="bg-destructive' w-full text-white hover:bg-red-700"
                 onClick={() => {
                   if (selectedDriver) {
                     setIsDriverModalOpen(false);
@@ -1056,7 +1054,7 @@ const FleetStatus = (props: {
           {selectedConductor ? (
             <div className="my-4 flex flex-col items-center">
               <div className="mb-2 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gray-200">
-                <span className="text-4xl font-bold text-gray-600">
+                <span className="text-4xl font-bold text-gray-400">
                   {getInitials(selectedConductor.name)}
                 </span>
               </div>
@@ -1071,7 +1069,7 @@ const FleetStatus = (props: {
                 <tr>
                   <th
                     colSpan={2}
-                    className="bg-neutral border-outline border-2 p-2 text-left text-black sm:text-lg md:p-4 md:text-xl"
+                    className="bg-neutral border-outline border-2 p-2 text-left sm:text-lg md:p-4 md:text-xl"
                   >
                     Conductor Information
                   </th>
@@ -1118,8 +1116,8 @@ const FleetStatus = (props: {
                     <span
                       className={
                         selectedConductor.status === 'active'
-                          ? 'font-semibold text-green-600'
-                          : 'font-semibold text-red-600'
+                          ? 'font-semibold text-green-400'
+                          : 'text-destructive font-semibold'
                       }
                     >
                       {selectedConductor.status.charAt(0).toUpperCase() +
@@ -1160,7 +1158,7 @@ const FleetStatus = (props: {
               </Button>
               <Button
                 variant="default"
-                className="w-full bg-red-600 text-white hover:bg-red-700"
+                className="bg-destructive' w-full text-white hover:bg-red-700"
                 onClick={() => {
                   if (selectedConductor) {
                     setIsConductorModalOpen(false);
@@ -1179,7 +1177,7 @@ const FleetStatus = (props: {
       </Dialog>
 
       <div className="grid auto-rows-min gap-4 md:grid-cols-3"></div>
-      <div className="min-h-[100vh] flex-1 rounded-xl bg-white md:min-h-min">
+      <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
         <div className="flex-col gap-3">
           <div className="flex justify-between pr-3 pl-3">
             <div className="inline-flex gap-3">
@@ -1187,9 +1185,7 @@ const FleetStatus = (props: {
                 onClick={() => setCurrentTab('bus')}
                 variant={currentTab === 'bus' ? 'default' : 'outline'}
                 className={
-                  currentTab === 'bus'
-                    ? 'border-primary font-bold text-black'
-                    : ''
+                  currentTab === 'bus' ? 'border-primary font-bold' : ''
                 }
               >
                 Buses
@@ -1198,9 +1194,7 @@ const FleetStatus = (props: {
                 onClick={() => setCurrentTab('driver')}
                 variant={currentTab === 'driver' ? 'default' : 'outline'}
                 className={
-                  currentTab === 'driver'
-                    ? 'border-primary font-bold text-black'
-                    : ''
+                  currentTab === 'driver' ? 'border-primary font-bold' : ''
                 }
               >
                 Drivers
@@ -1209,9 +1203,7 @@ const FleetStatus = (props: {
                 onClick={() => setCurrentTab('conductor')}
                 variant={currentTab === 'conductor' ? 'default' : 'outline'}
                 className={
-                  currentTab === 'conductor'
-                    ? 'border-primary font-bold text-black'
-                    : ''
+                  currentTab === 'conductor' ? 'border-primary font-bold' : ''
                 }
               >
                 Conductors

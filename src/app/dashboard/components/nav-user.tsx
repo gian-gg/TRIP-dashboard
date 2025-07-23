@@ -42,11 +42,13 @@ import type { UserType } from '@/type';
 
 import { getInitials } from '@/lib/misc';
 
-export function NavUser({ user }: { user: UserType }) {
+export function NavUser(props: {
+  user: UserType;
+  setUser: (user: UserType) => void;
+}) {
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
 
-  const [currentUser, setCurrentUser] = useState<UserType>(user); // for optimistic UI updates
   const [openProfileDialog, setOpenProfileDialog] = useState<boolean>(false);
 
   const handleSignOut = () => {
@@ -64,30 +66,30 @@ export function NavUser({ user }: { user: UserType }) {
       const newPassword = formData.get('newPassword') as string | null;
       const confirmPassword = formData.get('confirmPassword') as string | null;
 
-      console.log(currentUser);
-
-      if (name === currentUser.name || email === currentUser.email) {
-        throw new Error('No changes detected for name or email.');
+      if (name === props.user.name || email === props.user.email) {
+        toast.error('No changes detected for name or email.');
       }
 
       if (newPassword && confirmPassword) {
         if (newPassword !== confirmPassword) {
-          throw new Error('New password and confirmation do not match');
+          toast.error('New password and confirmation do not match');
         }
 
         const passwordError = passwordChecker(newPassword);
         if (passwordError) {
-          throw new Error(passwordError);
+          toast.error(passwordError);
         }
       }
 
       const requestBody = {
-        user_id: currentUser.user_id,
+        user_id: props.user.user_id,
         name: name,
         email: email,
         current_password: oldPassword,
         new_password: newPassword,
       };
+
+      console.log('Request Body:', requestBody);
 
       toast.promise(
         async () => {
@@ -96,7 +98,7 @@ export function NavUser({ user }: { user: UserType }) {
             url: '/users/index.php',
             body: requestBody,
             consoleLabel: 'Profile Update Response',
-            success: (data) => setCurrentUser(data),
+            success: (data) => props.setUser(data),
             error: (error) => {
               throw new Error(error.message);
             },
@@ -109,7 +111,7 @@ export function NavUser({ user }: { user: UserType }) {
         }
       );
     },
-    [currentUser, setCurrentUser]
+    [props]
   );
 
   return (
@@ -122,11 +124,11 @@ export function NavUser({ user }: { user: UserType }) {
               <div className="mb-4 flex flex-col items-center">
                 <div className="mb-2 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gray-200">
                   <span className="text-4xl font-bold text-gray-600">
-                    {getInitials(currentUser.name)}
+                    {getInitials(props.user.name)}
                   </span>
                 </div>
                 <span className="text-muted-foreground text-xs">
-                  {currentUser.name}
+                  {props.user.name}
                 </span>
               </div>
             </DialogDescription>
@@ -145,7 +147,7 @@ export function NavUser({ user }: { user: UserType }) {
               <Input
                 id="name"
                 name="name"
-                defaultValue={currentUser.name}
+                defaultValue={props.user.name}
                 required
               />
               <Button type="submit" variant="default">
@@ -166,7 +168,7 @@ export function NavUser({ user }: { user: UserType }) {
                 id="email"
                 name="email"
                 type="email"
-                defaultValue={currentUser.email}
+                defaultValue={props.user.email}
                 required
               />
               <Button type="submit" variant="default">
@@ -224,18 +226,14 @@ export function NavUser({ user }: { user: UserType }) {
               >
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarFallback className="rounded-lg">
-                    {currentUser.name
-                      .split(' ')
-                      .map((n) => n[0])
-                      .join('')
-                      .toUpperCase()}
+                    {getInitials(props.user.name)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
-                    {currentUser.name}
+                    {props.user.name}
                   </span>
-                  <span className="truncate text-xs">{currentUser.email}</span>
+                  <span className="truncate text-xs">{props.user.email}</span>
                 </div>
                 <ChevronsUpDown className="ml-auto size-4" />
               </SidebarMenuButton>
@@ -250,20 +248,14 @@ export function NavUser({ user }: { user: UserType }) {
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarFallback className="rounded-lg">
-                      {currentUser.name
-                        .split(' ')
-                        .map((n) => n[0])
-                        .join('')
-                        .toUpperCase()}
+                      {getInitials(props.user.name)}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-medium">
-                      {currentUser.name}
+                      {props.user.name}
                     </span>
-                    <span className="truncate text-xs">
-                      {currentUser.email}
-                    </span>
+                    <span className="truncate text-xs">{props.user.email}</span>
                   </div>
                 </div>
               </DropdownMenuLabel>

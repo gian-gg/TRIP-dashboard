@@ -15,11 +15,14 @@ import { SidebarMenuButton } from '@/components/ui/sidebar';
 
 import type { UserType } from '@/type';
 
-const companyData = {
-  title: 'Ceres Liners',
-  subtitle: 'Ceres Transport, Inc.',
-  logo: '/ceres.jpg',
-};
+const busCompanies = [
+  {
+    id: 1,
+    title: 'Ceres Liners',
+    subtitle: 'Ceres Transport, Inc.',
+    logo: '/ceres.jpg',
+  },
+];
 
 export function AppSidebar({
   UserData,
@@ -29,6 +32,15 @@ export function AppSidebar({
   UserData: UserType;
   SideBarData: { title: string; url: string; icon: LucideIcon }[];
 }) {
+  const [currentUser, setCurrentUser] = React.useState<UserType>(UserData); // for optimistic UI updates
+  const [currentCompany, setCurrentCompany] =
+    React.useState<(typeof busCompanies)[0]>(); // for optimistic UI updates
+
+  React.useEffect(() => {
+    setCurrentUser(UserData);
+    setCurrentCompany(busCompanies[Number(UserData.company_id) - 1]);
+  }, [UserData]);
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -37,13 +49,13 @@ export function AppSidebar({
           className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
         >
           <img
-            src={companyData.logo}
+            src={currentCompany?.logo}
             className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg"
             alt="company logo"
           />
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-bold">{companyData.title}</span>
-            <span className="truncate text-xs">{companyData.subtitle}</span>
+            <span className="truncate font-bold">{currentCompany?.title}</span>
+            <span className="truncate text-xs">{currentCompany?.subtitle}</span>
           </div>
         </SidebarMenuButton>
       </SidebarHeader>
@@ -51,7 +63,7 @@ export function AppSidebar({
         <NavMain items={SideBarData} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={UserData} />
+        <NavUser user={currentUser} setUser={setCurrentUser} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
