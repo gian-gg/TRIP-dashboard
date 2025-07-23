@@ -3,6 +3,7 @@ import { DollarSign, Users, Bus, Clock } from 'lucide-react';
 import LineGraph from './components/LineGraph';
 import BarGraph from './components/BarGraph';
 import Cards from '@/components/Cards';
+import FilterDate from '@/components/FilterDate';
 
 const pageData = {
   title: 'Overview',
@@ -42,11 +43,14 @@ const Overview = () => {
       <p className="text-muted-foreground text-xs md:text-sm">
         {pageData.description}
       </p>
-      <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+      <FilterDate />
+
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
         {pageData.overviewCards.map((card, index) => (
           <Cards key={index} card={card} />
         ))}
       </div>
+
       <hr />
       <div className="flex max-h-1/2 w-full flex-col gap-4 md:flex-row">
         <ReportCard

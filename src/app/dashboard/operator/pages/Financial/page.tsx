@@ -4,6 +4,8 @@ import { Progress } from '@/components/ui/progress';
 import PieGraph from './components/PieGraph';
 import RadarGraph from './components/RadarGraph';
 
+import FilterDate from '@/components/FilterDate';
+
 import { TrendingUp, Fuel, DollarSign } from 'lucide-react';
 
 const Financial = () => {
@@ -14,6 +16,7 @@ const Financial = () => {
         This page provides an overview of the financial performance and key
         metrics.
       </p>
+      <FilterDate />
       <div className="grid auto-rows-min gap-4 md:grid-cols-3">
         <Cards
           card={{

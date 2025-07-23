@@ -1,6 +1,7 @@
 import ReportCard from '@/components/ReportCard';
 import BarGraph from './components/BarGraph';
 import Container from '@/components/ui/Container';
+import FilterDate from '@/components/FilterDate';
 
 const RouteData = [
   {
@@ -42,6 +43,8 @@ const BusRoutes = () => {
       <p className="text-muted-foreground text-xs md:text-sm">
         This page provides an overview of the bus routes and their key metrics.
       </p>
+      <FilterDate />
+
       <ReportCard
         header={{
           title: 'Route Performance',
