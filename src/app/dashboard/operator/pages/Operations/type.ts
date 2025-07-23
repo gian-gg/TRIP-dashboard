@@ -5,6 +5,17 @@ interface BusInformationType {
   conductor_id: number;
   status: 'active' | 'inactive' | 'in maintenance' | 'in transit';
   next_maintenance: string;
+  trips: {
+    trip_id: string;
+    route_id: string;
+    boarding_time: string;
+    arrival_time: string;
+    total_passenger: string;
+    total_revenue: string;
+    driver_id: string;
+    conductor_id: string;
+    bus_id: string;
+  }[];
 }
 
 interface DriverInformationType {
