@@ -73,7 +73,7 @@ const Overview = () => {
           card={{
             title: 'Total Revenue',
             icon: DollarSign,
-            value: (Number(overviewData?.revenue) || 0).toFixed(2),
+            value: '₱' + (Number(overviewData?.revenue) || 0).toFixed(2),
             subtitle: 'July 24th, 2025',
           }}
         />

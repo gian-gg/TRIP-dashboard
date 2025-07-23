@@ -7,13 +7,6 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 
-const chartData = [
-  { type: 'Regular', count: 186 },
-  { type: 'Senior', count: 305 },
-  { type: 'PWD', count: 237 },
-  { type: 'Student', count: 273 },
-];
-
 const chartConfig = {
   count: {
     label: 'Count',
@@ -21,13 +14,13 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-function RadarGraph() {
+function RadarGraph(props: { data: { type: string; count: number }[] }) {
   return (
     <ChartContainer
       config={chartConfig}
       className="mx-auto aspect-square max-h-[300px] w-full"
     >
-      <RadarChart data={chartData}>
+      <RadarChart data={props.data}>
         <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
         <PolarAngleAxis dataKey="type" />
         <PolarGrid />

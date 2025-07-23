@@ -7,13 +7,6 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 
-export const description = 'A pie chart with a label list';
-
-const chartData = [
-  { method: 'online', count: 275, fill: 'var(--color-online)' },
-  { method: 'cash', count: 200, fill: 'var(--color-cash)' },
-];
-
 const chartConfig = {
   count: {
     label: 'Count',
@@ -28,7 +21,9 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-function PieGraph() {
+function PieGraph(props: {
+  data: { method: 'online' | 'cash'; count: number; fill: string }[];
+}) {
   return (
     <ChartContainer
       config={chartConfig}
@@ -38,7 +33,7 @@ function PieGraph() {
         <ChartTooltip
           content={<ChartTooltipContent nameKey="count" hideLabel />}
         />
-        <Pie data={chartData} dataKey="count">
+        <Pie data={props.data} dataKey="count">
           <LabelList
             dataKey="method"
             className="fill-black"
