@@ -78,18 +78,31 @@ const FilterDate = (props: {
   useEffect(() => {
     switch (filterType) {
       case 'day': {
-        const dayRange = getDayRange(date!);
-        setSelectedDate(dayRange);
+        if (date) {
+          const dayRange = getDayRange(date);
+          setSelectedDate({
+            start: format(dayRange.start, 'yyyy-MM-dd HH:mm:ss'),
+            end: format(dayRange.end, 'yyyy-MM-dd HH:mm:ss'),
+          });
+        } else {
+          setSelectedDate(undefined);
+        }
         break;
       }
       case 'week': {
         const weekRange = getWeekRange(date!);
-        setSelectedDate(weekRange);
+        setSelectedDate({
+          start: format(weekRange.start, 'yyyy-MM-dd HH:mm:ss'),
+          end: format(weekRange.end, 'yyyy-MM-dd HH:mm:ss'),
+        });
         break;
       }
       case 'month': {
         const monthRange = getMonthRange(date!);
-        setSelectedDate(monthRange);
+        setSelectedDate({
+          start: format(monthRange.start, 'yyyy-MM-dd HH:mm:ss'),
+          end: format(monthRange.end, 'yyyy-MM-dd HH:mm:ss'),
+        });
         break;
       }
       case 'all':

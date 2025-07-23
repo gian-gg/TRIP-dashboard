@@ -19,8 +19,8 @@ interface CredentialsType {
 }
 
 interface FilterDateType {
-  start: Date;
-  end: Date;
+  start: string;
+  end: string;
 }
 
 export type { GETResponse, UserType, CredentialsType, FilterDateType };
