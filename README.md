@@ -23,12 +23,19 @@
 
 <br />
 
+- TRIP is designed to accomodate bus companies, enhancing their day-to-day operations, allowing bus passenger, personnel, and companies to easily manage trips and data.
+
+
 ## 📷 Project Demo
 
 ### 🚌 Operator View
 
-| <img src="/docs/operator1.png" alt="Trip Operator Demo 1" /> | <img src="/docs/operator2.png" alt="Trip Operator Demo 2" /> | <img src="/Operator/operator3.png" alt="Trip Operator Demo 3" /> | <img src="/docs/operator3.png" alt="Trip Operator Demo 4" /> |
-| ------------------------------------------------------------ | ------------------------------------------------------------ | ---------------------------------------------------------------- | ------------------------------------------------------------ |
+<div align="center"> 
+  <img src="/docs/operator1.png" alt="Trip Operator Demo 1" /> 
+  <img src="/docs/operator2.png" alt="Trip Operator Demo 2" />
+    <img src="/docs/operator4.png" alt="Trip Operator Demo 3" />
+  <img src="/docs/operator3.png" alt="Trip Operator Demo 4" />
+</div>
 
 ### 👨 Conductor View
 
@@ -41,6 +48,8 @@
 <div align="center"> 
   <img src="/docs/signin.png" alt="Trip Sign In Demo" />
 </div>
+
+- Note: "Ceres Liners is used as an example only. TRIP is an independent platform with no official ties to any bus operator."
 
 ## 👥 The Team
 
