@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
+import { Printer } from 'lucide-react';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 import ReportCard from '@/components/ReportCard';
 import BarGraph from './components/BarGraph';
+import { generateBusRoutesPrintReport } from './utils/print';
 import Container from '@/components/ui/Container';
 import { getUser } from '@/lib/auth';
 import APICall from '@/lib/api';
@@ -44,12 +47,25 @@ const BusRoutes = () => {
     fetchData();
   }, []);
 
+  const handlePrint = () => {
+    generateBusRoutesPrintReport(data);
+  };
+
   return (
     <>
-      <h1 className="text-xl font-bold">Bus Routes</h1>
-      <p className="text-muted-foreground text-xs md:text-sm">
-        This page provides an overview of the bus routes and their key metrics.
-      </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold">Bus Routes</h1>
+          <p className="text-muted-foreground text-xs md:text-sm">
+            This page provides an overview of the bus routes and their key
+            metrics.
+          </p>
+        </div>
+        <Button variant="outline" onClick={handlePrint}>
+          <Printer className="mr-2 h-4 w-4" />
+          Print PDF
+        </Button>
+      </div>
 
       <ReportCard
         header={{

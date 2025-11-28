@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 import ReportCard from '@/components/ReportCard';
-import { DollarSign, Users, UsersRound, Route } from 'lucide-react';
+import { DollarSign, Users, UsersRound, Route, Printer } from 'lucide-react';
 import LineGraph from './components/LineGraph';
+import { generateOverviewPrintReport } from './utils/print';
 import Cards from '@/components/Cards';
 import FilterDate from '@/components/FilterDate';
 import { getUser } from '@/lib/auth';
@@ -57,12 +59,24 @@ const Overview = () => {
     fetchData();
   }, [selectedDate]);
 
+  const handlePrint = () => {
+    generateOverviewPrintReport(overviewData);
+  };
+
   return (
     <>
-      <h1 className="text-xl font-bold">Overview</h1>
-      <p className="text-muted-foreground text-xs md:text-sm">
-        This page provides an overview of the dashboard's key metrics.
-      </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold">Overview</h1>
+          <p className="text-muted-foreground text-xs md:text-sm">
+            This page provides an overview of the dashboard's key metrics.
+          </p>
+        </div>
+        <Button variant="outline" onClick={handlePrint}>
+          <Printer className="mr-2 h-4 w-4" />
+          Print PDF
+        </Button>
+      </div>
       <FilterDate
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}

@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 import ReportCard from '@/components/ReportCard';
 import { Progress } from '@/components/ui/progress';
 import PieGraph from './components/PieGraph';
 import RadarGraph from './components/RadarGraph';
+import { generateFinancialPrintReport } from './utils/print';
 import Container from '@/components/ui/Container';
 import { getUser } from '@/lib/auth';
 import APICall from '@/lib/api';
 
 import FilterDate from '@/components/FilterDate';
 
-import { TrendingUp, User } from 'lucide-react';
+import { TrendingUp, User, Printer } from 'lucide-react';
 
 import type { FilterDateType, UserType } from '@/type';
 
@@ -84,13 +86,25 @@ const Financial = () => {
     fetchData();
   }, [selectedDate]);
 
+  const handlePrint = () => {
+    generateFinancialPrintReport(data);
+  };
+
   return (
     <>
-      <h1 className="text-xl font-bold">Financial</h1>
-      <p className="text-muted-foreground text-xs md:text-sm">
-        This page provides an overview of the financial performance and key
-        metrics.
-      </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold">Financial</h1>
+          <p className="text-muted-foreground text-xs md:text-sm">
+            This page provides an overview of the financial performance and key
+            metrics.
+          </p>
+        </div>
+        <Button variant="outline" onClick={handlePrint}>
+          <Printer className="mr-2 h-4 w-4" />
+          Print PDF
+        </Button>
+      </div>
       <FilterDate
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
