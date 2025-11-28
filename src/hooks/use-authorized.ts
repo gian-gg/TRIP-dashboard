@@ -16,7 +16,7 @@ const useAuthorized = () => {
       try {
         const userData = (await getUser()) as UserType | null;
         if (!userData) {
-          navigate('/');
+          navigate('/login');
           return;
         }
 

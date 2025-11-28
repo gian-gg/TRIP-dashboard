@@ -5,7 +5,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import Loading from '@/components/Loading';
 
-const Home = lazy(() => import('@/app/home/page'));
+const LandingPage = lazy(() => import('@/app/landing/page'));
+const Login = lazy(() => import('@/app/login/page'));
 const OperatorDashboard = lazy(() => import('@/app/dashboard/operator/page'));
 const NotFound = lazy(() => import('@/app/NotFound'));
 const Overview = lazy(
@@ -29,7 +30,8 @@ createRoot(document.getElementById('root')!).render(
     <Router>
       <Suspense fallback={<Loading />}>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/operator/*" element={<OperatorDashboard />}>
             <Route index element={<Overview />} />
             <Route path="financial" element={<Financial />} />
