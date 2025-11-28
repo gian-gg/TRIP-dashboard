@@ -1,5 +1,3 @@
-'use client';
-
 import { motion } from 'framer-motion';
 import { X, Check, TrendingUp, Zap, Clock } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
