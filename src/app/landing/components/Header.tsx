@@ -68,7 +68,7 @@ export function Header() {
 
           {/* CTA Buttons - Desktop */}
           <div className="hidden items-center gap-3 md:flex">
-            <Link to="/">
+            <Link to="/login">
               <Button size="lg" variant="outline">
                 Login
               </Button>
@@ -109,7 +109,7 @@ export function Header() {
               </Link>
             ))}
             <div className="mt-4 flex flex-col gap-3">
-              <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
                 <Button size="lg" variant="outline" className="w-full">
                   Login
                 </Button>

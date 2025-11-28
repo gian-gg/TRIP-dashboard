@@ -81,58 +81,6 @@ export function CTAFooter() {
                 Contact Sales
               </Button>
             </div>
-
-            {/* Trust Badge */}
-            <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-sm text-white/80">
-              <div className="flex items-center gap-2">
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                No Credit Card Required
-              </div>
-              <div className="flex items-center gap-2">
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                Free 30-Day Trial
-              </div>
-              <div className="flex items-center gap-2">
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                24/7 Support
-              </div>
-            </div>
           </motion.div>
         </div>
       </section>
