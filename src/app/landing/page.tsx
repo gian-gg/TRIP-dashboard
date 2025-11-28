@@ -5,6 +5,7 @@ import {
   FeatureDeepDive,
   TrustPartners,
   CTAFooter,
+  Disclaimer,
 } from './components';
 
 function LandingPage() {
@@ -18,6 +19,7 @@ function LandingPage() {
         <FeatureDeepDive />
         <CTAFooter />
       </main>
+      <Disclaimer />
     </div>
   );
 }
