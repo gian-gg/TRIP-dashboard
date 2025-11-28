@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
-import BusInformationCard from './components/BusInformationCard';
-import DriverInformationCard from './components/DriverInformationCard';
-import ConductorInformationCard from './components/ConductorInformationCard';
+import { BusTable } from './components/BusTable';
+import { DriverTable } from './components/DriverTable';
+import { ConductorTable } from './components/ConductorTable';
 import type {
   BusInformationType,
   DriverInformationType,
@@ -16,26 +16,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  Plus,
-  Save,
-  Laugh,
-  Frown,
-  Wrench,
-  Search,
-  ChevronDown,
-} from 'lucide-react';
+import { Plus, Save, Laugh, Frown, Wrench, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Cards from '@/components/Cards';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuItem,
-} from '@/components/ui/dropdown-menu';
-
-import { Pencil, Trash } from 'lucide-react';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 import { handleAddConductor, handleAddDriver, handleAddBus } from './utils/add';
 import {
@@ -49,7 +40,7 @@ import {
   handleEditBus,
 } from './utils/edit';
 
-import { getInitials, formatTimeTo12Hour } from '@/lib/misc';
+import { getInitials } from '@/lib/misc';
 
 import type { UserType } from '@/type';
 
@@ -74,6 +65,7 @@ const FleetStatus = (props: {
   );
   const [isDriverModalOpen, setIsDriverModalOpen] = useState(false);
   const [isConductorModalOpen, setIsConductorModalOpen] = useState(false);
+
   const selectedBus =
     selectedBusId !== null
       ? currentBusData.find((bus) => bus.bus_id === selectedBusId)
@@ -90,6 +82,7 @@ const FleetStatus = (props: {
           (conductor) => conductor.conductor_id === selectedConductorId
         )
       : null;
+
   const [searchInput, setSearchInput] = useState('');
   const [filteredBusData, setFilteredBusData] =
     useState<BusInformationType[]>(currentBusData);
@@ -97,7 +90,7 @@ const FleetStatus = (props: {
     useState<DriverInformationType[]>(currentDriverData);
   const [filteredConductorData, setFilteredConductorData] =
     useState<ConductorInformationType[]>(currentConductorData);
-  const [busStatusFilter, setBusStatusFilter] = useState('');
+  const [busStatusFilter, setBusStatusFilter] = useState('all');
   const [driverStatusFilter, setDriverStatusFilter] = useState('all');
   const [conductorStatusFilter, setConductorStatusFilter] = useState('all');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -114,13 +107,15 @@ const FleetStatus = (props: {
       if (busStatusFilter && busStatusFilter === 'in maintenance') {
         busData = busData.filter((bus) => {
           if (!bus.next_maintenance) return false;
-
           return new Date(bus.next_maintenance) < new Date();
         });
       } else if (busStatusFilter && busStatusFilter !== 'all') {
         busData = busData.filter((bus) => bus.status === busStatusFilter);
-      } else if (searchInput !== '') {
-        busData = busData.filter((bus) => bus.bus_id === searchInput);
+      }
+      if (searchInput !== '') {
+        busData = busData.filter((bus) =>
+          bus.bus_id.toLowerCase().includes(searchInput.toLowerCase())
+        );
       }
       setFilteredBusData(busData);
     } else if (currentTab === 'driver') {
@@ -130,13 +125,14 @@ const FleetStatus = (props: {
           (driver) => driver.status === driverStatusFilter
         );
       }
-      setFilteredDriverData(
-        driverData.filter(
+      if (searchInput !== '') {
+        driverData = driverData.filter(
           (driver) =>
             driver.driver_id.toString().includes(searchInput) ||
             driver.full_name.toLowerCase().includes(searchInput.toLowerCase())
-        )
-      );
+        );
+      }
+      setFilteredDriverData(driverData);
     } else if (currentTab === 'conductor') {
       let conductorData = currentConductorData;
       if (conductorStatusFilter && conductorStatusFilter !== 'all') {
@@ -144,13 +140,14 @@ const FleetStatus = (props: {
           (conductor) => conductor.status === conductorStatusFilter
         );
       }
-      setFilteredConductorData(
-        conductorData.filter(
+      if (searchInput !== '') {
+        conductorData = conductorData.filter(
           (conductor) =>
             conductor.conductor_id.toString().includes(searchInput) ||
             conductor.name.toLowerCase().includes(searchInput.toLowerCase())
-        )
-      );
+        );
+      }
+      setFilteredConductorData(conductorData);
     }
   }, [
     currentBusData,
@@ -163,18 +160,240 @@ const FleetStatus = (props: {
     conductorStatusFilter,
   ]);
 
+  const handleViewBus = (busId: string) => {
+    setSelectedBusId(busId);
+    setIsModalOpen(true);
+  };
+
+  const handleViewDriver = (driverId: number) => {
+    setSelectedDriverId(driverId);
+    setIsDriverModalOpen(true);
+  };
+
+  const handleViewConductor = (conductorId: number) => {
+    setSelectedConductorId(conductorId);
+    setIsConductorModalOpen(true);
+  };
+
+  const handleEditBusModal = (bus: BusInformationType) => {
+    setEditBus(bus);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditDriverModal = (driver: DriverInformationType) => {
+    setEditDriver(driver);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditConductorModal = (conductor: ConductorInformationType) => {
+    setEditConductor(conductor);
+    setIsEditModalOpen(true);
+  };
+
+  const handleDeleteBusConfirm = (busId: string) => {
+    handleDeleteBus(busId, () => {
+      props.refreshData();
+    });
+  };
+
+  const handleDeleteDriverConfirm = (driverId: number) => {
+    handleDeleteDriver(driverId, () => {
+      props.refreshData();
+    });
+  };
+
+  const handleDeleteConductorConfirm = (conductorId: number) => {
+    handleDeleteConductor(conductorId, () => {
+      props.refreshData();
+    });
+  };
+
+  const totalBuses = currentBusData.length;
+  const activeBuses = currentBusData.filter(
+    (bus) => bus.status === 'active'
+  ).length;
+  const maintenanceBuses = currentBusData.filter((bus) => {
+    if (!bus.next_maintenance) return false;
+    return new Date(bus.next_maintenance) < new Date();
+  }).length;
+
+  const totalDrivers = currentDriverData.length;
+  const activeDrivers = currentDriverData.filter(
+    (driver) => driver.status === 'active'
+  ).length;
+
+  const totalConductors = currentConductorData.length;
+  const activeConductors = currentConductorData.filter(
+    (conductor) => conductor.status === 'active'
+  ).length;
+
   return (
     <>
+      {/* Statistics Cards */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <Cards
+          card={{
+            title: 'Total Buses',
+            icon: Laugh,
+            value: totalBuses.toString(),
+            subtitle: `${activeBuses} active, ${maintenanceBuses} need maintenance`,
+          }}
+        />
+        <Cards
+          card={{
+            title: 'Total Drivers',
+            icon: Frown,
+            value: totalDrivers.toString(),
+            subtitle: `${activeDrivers} active`,
+          }}
+        />
+        <Cards
+          card={{
+            title: 'Total Conductors',
+            icon: Wrench,
+            value: totalConductors.toString(),
+            subtitle: `${activeConductors} active`,
+          }}
+        />
+      </div>
+
+      {/* Tab Selector */}
+      <div className="flex gap-2">
+        <Button
+          variant={currentTab === 'bus' ? 'default' : 'outline'}
+          onClick={() => {
+            setCurrentTab('bus');
+            setSearchInput('');
+          }}
+        >
+          Buses
+        </Button>
+        <Button
+          variant={currentTab === 'driver' ? 'default' : 'outline'}
+          onClick={() => {
+            setCurrentTab('driver');
+            setSearchInput('');
+          }}
+        >
+          Drivers
+        </Button>
+        <Button
+          variant={currentTab === 'conductor' ? 'default' : 'outline'}
+          onClick={() => {
+            setCurrentTab('conductor');
+            setSearchInput('');
+          }}
+        >
+          Conductors
+        </Button>
+      </div>
+
+      {/* Controls */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-1 items-center gap-2">
+          <div className="relative flex-1 md:max-w-sm">
+            <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+            <Input
+              placeholder={`Search ${currentTab}s...`}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+
+          {currentTab === 'bus' && (
+            <Select value={busStatusFilter} onValueChange={setBusStatusFilter}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="in maintenance">In Maintenance</SelectItem>
+                <SelectItem value="in transit">In Transit</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+
+          {currentTab === 'driver' && (
+            <Select
+              value={driverStatusFilter}
+              onValueChange={setDriverStatusFilter}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+
+          {currentTab === 'conductor' && (
+            <Select
+              value={conductorStatusFilter}
+              onValueChange={setConductorStatusFilter}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+
+        <Button onClick={() => setIsAddModalOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
+          Add {currentTab.charAt(0).toUpperCase() + currentTab.slice(1)}
+        </Button>
+      </div>
+
+      {/* Tables */}
+      {currentTab === 'bus' && (
+        <BusTable
+          buses={filteredBusData}
+          onView={handleViewBus}
+          onEdit={handleEditBusModal}
+          onDelete={handleDeleteBusConfirm}
+        />
+      )}
+
+      {currentTab === 'driver' && (
+        <DriverTable
+          drivers={filteredDriverData}
+          onView={handleViewDriver}
+          onEdit={handleEditDriverModal}
+          onDelete={handleDeleteDriverConfirm}
+        />
+      )}
+
+      {currentTab === 'conductor' && (
+        <ConductorTable
+          conductors={filteredConductorData}
+          onView={handleViewConductor}
+          onEdit={handleEditConductorModal}
+          onDelete={handleDeleteConductorConfirm}
+        />
+      )}
+
+      {/* Add Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               Add {currentTab.charAt(0).toUpperCase() + currentTab.slice(1)}
             </DialogTitle>
+            <DialogDescription>
+              Fill in the details to add a new {currentTab}.
+            </DialogDescription>
           </DialogHeader>
-          <DialogDescription>
-            Fill in the details to add a new {currentTab}.
-          </DialogDescription>
 
           {currentTab === 'bus' && (
             <form
@@ -184,45 +403,69 @@ const FleetStatus = (props: {
                   setIsAddModalOpen(false);
                 })
               }
-              className="w-full"
+              className="space-y-4"
             >
               <Input
                 type="hidden"
-                id="company_id"
                 name="company_id"
                 defaultValue={props.userData.company_id}
-                required
               />
               <div>
                 <Label htmlFor="bus_id">Bus ID *</Label>
+                <Input type="text" id="bus_id" name="bus_id" required />
+              </div>
+              <div>
+                <Label htmlFor="route_id">Route ID</Label>
+                <Input type="text" id="route_id" name="route_id" />
+              </div>
+              <div>
+                <Label htmlFor="driver_id">Driver ID</Label>
+                <Input type="number" id="driver_id" name="driver_id" />
+              </div>
+              <div>
+                <Label htmlFor="conductor_id">Conductor ID</Label>
+                <Input type="number" id="conductor_id" name="conductor_id" />
+              </div>
+              <div>
+                <Label htmlFor="status">Status *</Label>
+                <Select name="status" defaultValue="active" required>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                    <SelectItem value="in maintenance">
+                      In Maintenance
+                    </SelectItem>
+                    <SelectItem value="in transit">In Transit</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="next_maintenance">Next Maintenance</Label>
                 <Input
-                  type="text"
-                  id="bus_id"
-                  name="bus_id"
-                  className="mt-2 border border-gray-400"
-                  required
+                  type="date"
+                  id="next_maintenance"
+                  name="next_maintenance"
                 />
               </div>
-              <div className="mt-4 flex justify-end gap-3 md:col-span-2">
+              <DialogFooter>
                 <Button
-                  variant="default"
-                  className="px-2 md:px-4"
-                  type="submit"
-                >
-                  <Save className="mr-0 md:mr-2" />
-                  <span>Save Bus</span>
-                </Button>
-                <Button
-                  variant="default"
-                  className="px-2 md:px-4"
                   type="button"
+                  variant="outline"
                   onClick={() => setIsAddModalOpen(false)}
                 >
-                  <span>Cancel</span>
+                  Cancel
                 </Button>
-              </div>
+                <Button type="submit">
+                  <Save className="mr-2 h-4 w-4" />
+                  Add Bus
+                </Button>
+              </DialogFooter>
             </form>
           )}
+
           {currentTab === 'driver' && (
             <form
               onSubmit={(e) =>
@@ -231,24 +474,16 @@ const FleetStatus = (props: {
                   setIsAddModalOpen(false);
                 })
               }
-              className="grid grid-cols-1 gap-4 md:grid-cols-2"
+              className="space-y-4"
             >
               <Input
                 type="hidden"
-                id="company_id"
                 name="company_id"
                 defaultValue={props.userData.company_id}
-                required
               />
               <div>
                 <Label htmlFor="full_name">Full Name *</Label>
-                <Input
-                  type="text"
-                  id="full_name"
-                  name="full_name"
-                  className="mt-2 border border-gray-400"
-                  required
-                />
+                <Input type="text" id="full_name" name="full_name" required />
               </div>
               <div>
                 <Label htmlFor="license_number">License Number *</Label>
@@ -256,7 +491,6 @@ const FleetStatus = (props: {
                   type="text"
                   id="license_number"
                   name="license_number"
-                  className="mt-2 border border-gray-400"
                   required
                 />
               </div>
@@ -266,32 +500,41 @@ const FleetStatus = (props: {
                   type="tel"
                   id="contact_number"
                   name="contact_number"
-                  pattern="[0-9]+"
-                  inputMode="numeric"
-                  className="mt-2 border border-gray-400"
                   required
                 />
               </div>
-              <div className="mt-4 flex justify-end gap-3 md:col-span-2">
+              <div>
+                <Label htmlFor="bus_id">Bus ID</Label>
+                <Input type="text" id="bus_id" name="bus_id" />
+              </div>
+              <div>
+                <Label htmlFor="status">Status *</Label>
+                <Select name="status" defaultValue="active" required>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <DialogFooter>
                 <Button
-                  variant="default"
-                  className="px-2 md:px-4"
-                  type="submit"
-                >
-                  <Save className="mr-0 md:mr-2" />
-                  <span>Save Driver</span>
-                </Button>
-                <Button
-                  variant="default"
-                  className="px-2 md:px-4"
                   type="button"
+                  variant="outline"
                   onClick={() => setIsAddModalOpen(false)}
                 >
-                  <span>Cancel</span>
+                  Cancel
                 </Button>
-              </div>
+                <Button type="submit">
+                  <Save className="mr-2 h-4 w-4" />
+                  Add Driver
+                </Button>
+              </DialogFooter>
             </form>
           )}
+
           {currentTab === 'conductor' && (
             <form
               onSubmit={(e) =>
@@ -300,235 +543,177 @@ const FleetStatus = (props: {
                   setIsAddModalOpen(false);
                 })
               }
+              className="space-y-4"
             >
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Input
+                type="hidden"
+                name="company_id"
+                defaultValue={props.userData.company_id}
+              />
+              <div>
+                <Label htmlFor="name">Name *</Label>
+                <Input type="text" id="name" name="name" required />
+              </div>
+              <div>
+                <Label htmlFor="email">Email *</Label>
+                <Input type="email" id="email" name="email" required />
+              </div>
+              <div>
+                <Label htmlFor="contact_number">Contact Number *</Label>
                 <Input
-                  type="hidden"
-                  id="company_id"
-                  name="company_id"
-                  defaultValue={props.userData.company_id}
+                  type="tel"
+                  id="contact_number"
+                  name="contact_number"
                   required
                 />
-                <div>
-                  <Label htmlFor="full_name">Full Name *</Label>
-                  <Input
-                    type="text"
-                    id="full_name"
-                    name="full_name"
-                    className="mt-2 border border-gray-400"
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="email">Email *</Label>
-                  <Input
-                    type="email"
-                    id="email"
-                    name="email"
-                    className="mt-2 border border-gray-400"
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="contact_number">Contact Number *</Label>
-                  <Input
-                    type="tel"
-                    id="contact_number"
-                    name="contact_number"
-                    pattern="[0-9]+"
-                    inputMode="numeric"
-                    className="mt-2 border border-gray-400"
-                    required
-                  />
-                </div>
               </div>
-              <p className="text-muted-foreground mt-4 text-xs">
-                Note: Default Password for conductor account is 123123123.
-              </p>
-              <div className="mt-4 flex justify-end gap-3 md:col-span-2">
+              <div>
+                <Label htmlFor="bus_id">Bus ID</Label>
+                <Input type="text" id="bus_id" name="bus_id" />
+              </div>
+              <div>
+                <Label htmlFor="status">Status *</Label>
+                <Select name="status" defaultValue="active" required>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <DialogFooter>
                 <Button
-                  variant="default"
-                  className="px-2 md:px-4"
-                  type="submit"
-                >
-                  <Save className="mr-0 md:mr-2" />
-                  <span>Save Conductor</span>
-                </Button>
-                <Button
-                  variant="default"
-                  className="px-2 md:px-4"
                   type="button"
+                  variant="outline"
                   onClick={() => setIsAddModalOpen(false)}
                 >
-                  <span>Cancel</span>
+                  Cancel
                 </Button>
-              </div>
+                <Button type="submit">
+                  <Save className="mr-2 h-4 w-4" />
+                  Add Conductor
+                </Button>
+              </DialogFooter>
             </form>
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Edit Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {`Edit ${currentTab} `}
-              {currentTab === 'bus' && editBus && `(ID: ${editBus.bus_id})`}
-              {currentTab === 'driver' &&
-                editDriver &&
-                `(ID: ${editDriver.driver_id})`}
-              {currentTab === 'conductor' &&
-                editConductor &&
-                `(ID: ${editConductor.conductor_id})`}
+              Edit {currentTab.charAt(0).toUpperCase() + currentTab.slice(1)}
             </DialogTitle>
+            <DialogDescription>
+              Update the details of the {currentTab}.
+            </DialogDescription>
           </DialogHeader>
-          <DialogDescription>
-            {currentTab === 'bus' &&
-              editBus &&
-              'Edit the details of the selected bus.'}
-            {currentTab === 'driver' &&
-              editDriver &&
-              'Edit the details of the selected driver.'}
-            {currentTab === 'conductor' &&
-              editConductor &&
-              'Edit the details of the selected conductor.'}
-          </DialogDescription>
-          {currentTab === 'bus' && editBus && (
+
+          {editBus && currentTab === 'bus' && (
             <form
               onSubmit={(e) =>
                 handleEditBus(
                   e,
-
                   () => {
                     props.refreshData();
                     setIsEditModalOpen(false);
+                    setEditBus(null);
                   },
-                  props.currentBusData.find(
-                    (bus) => bus.bus_id === editBus.bus_id
-                  )
+                  editBus
                 )
               }
+              className="space-y-4"
             >
               <Input
                 type="hidden"
-                id="bus_id"
                 name="user_id"
                 defaultValue={editBus.bus_id}
-                required
               />
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div>
-                  <Label htmlFor="status">Status *</Label>
-                  <select
-                    id="status"
-                    name="status"
-                    value={editBus.status}
-                    onChange={(e) => {
-                      setEditBus({
-                        ...editBus,
-                        status: e.target.value as BusInformationType['status'],
-                      });
-                    }}
-                    className="mt-2 w-full rounded border border-gray-400 p-2"
-                    required
-                  >
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
-                </div>
-                <div>
-                  <Label htmlFor="next_maintenance">Next Maintenance *</Label>
-                  <Input
-                    type="date"
-                    id="next_maintenance"
-                    name="next_maintenance"
-                    defaultValue={editBus.next_maintenance}
-                    required
-                    className="mt-2 border border-gray-400"
-                  />
-                </div>
-                {editBus.status === 'active' && (
-                  <>
-                    <div>
-                      <Label htmlFor="edit_route_id">Route ID *</Label>
-                      <select
-                        id="edit_route_id"
-                        name="route_id"
-                        defaultValue={editBus.route_id}
-                        className="mt-2 w-full rounded border border-gray-400 p-2"
-                        required
-                      >
-                        <option value="">Select Route</option>
-                        {[1, 2, 3, 4].map((route) => (
-                          <option key={route} value={route}>
-                            {route}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <Label htmlFor="edit_driver_id">Driver ID *</Label>
-                      <select
-                        id="edit_driver_id"
-                        name="driver_id"
-                        defaultValue={editBus.driver_id}
-                        className="mt-2 w-full rounded border border-gray-400 p-2"
-                        required
-                      >
-                        <option value="">Select Driver</option>
-                        {currentDriverData.map((driver) => (
-                          <option
-                            key={driver.driver_id}
-                            value={driver.driver_id}
-                          >
-                            {driver.driver_id} - {driver.full_name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <Label htmlFor="edit_conductor_id">Conductor ID *</Label>
-                      <select
-                        id="edit_conductor_id"
-                        name="conductor_id"
-                        defaultValue={editBus.conductor_id}
-                        className="mt-2 w-full rounded border border-gray-400 p-2"
-                        required
-                      >
-                        <option value="">Select Conductor</option>
-                        {currentConductorData.map((conductor) => (
-                          <option
-                            key={conductor.conductor_id}
-                            value={conductor.conductor_id}
-                          >
-                            {conductor.conductor_id} - {conductor.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </>
-                )}
+              <div>
+                <Label htmlFor="edit_bus_id">Bus ID *</Label>
+                <Input
+                  type="text"
+                  id="edit_bus_id"
+                  defaultValue={editBus.bus_id}
+                  disabled
+                />
               </div>
-              <div className="mt-4 flex justify-end gap-3 md:col-span-2">
+              <div>
+                <Label htmlFor="edit_route_id">Route ID</Label>
+                <Input
+                  type="text"
+                  id="edit_route_id"
+                  name="route_id"
+                  defaultValue={editBus.route_id || ''}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit_driver_id">Driver ID</Label>
+                <Input
+                  type="number"
+                  id="edit_driver_id"
+                  name="driver_id"
+                  defaultValue={editBus.driver_id || ''}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit_conductor_id">Conductor ID</Label>
+                <Input
+                  type="number"
+                  id="edit_conductor_id"
+                  name="conductor_id"
+                  defaultValue={editBus.conductor_id || ''}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit_status">Status *</Label>
+                <Select name="status" defaultValue={editBus.status} required>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                    <SelectItem value="in maintenance">
+                      In Maintenance
+                    </SelectItem>
+                    <SelectItem value="in transit">In Transit</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="edit_next_maintenance">Next Maintenance</Label>
+                <Input
+                  type="date"
+                  id="edit_next_maintenance"
+                  name="next_maintenance"
+                  defaultValue={editBus.next_maintenance || ''}
+                />
+              </div>
+              <DialogFooter>
                 <Button
-                  variant="default"
-                  className="px-2 md:px-4"
-                  type="submit"
-                >
-                  <Save className="mr-0 md:mr-2" />
-                  <span>Save Bus</span>
-                </Button>
-                <Button
-                  variant="default"
-                  className="px-2 md:px-4"
                   type="button"
-                  onClick={() => setIsEditModalOpen(false)}
+                  variant="outline"
+                  onClick={() => {
+                    setIsEditModalOpen(false);
+                    setEditBus(null);
+                  }}
                 >
-                  <span>Cancel</span>
+                  Cancel
                 </Button>
-              </div>
+                <Button type="submit">
+                  <Save className="mr-2 h-4 w-4" />
+                  Update Bus
+                </Button>
+              </DialogFooter>
             </form>
           )}
-          {currentTab === 'driver' && editDriver && (
+
+          {editDriver && currentTab === 'driver' && (
             <form
               onSubmit={(e) =>
                 handleEditDriver(
@@ -536,91 +721,89 @@ const FleetStatus = (props: {
                   () => {
                     props.refreshData();
                     setIsEditModalOpen(false);
+                    setEditDriver(null);
                   },
-                  props.currentDriverData.find(
-                    (driver) => driver.driver_id === editDriver.driver_id
-                  )
+                  editDriver
                 )
               }
+              className="space-y-4"
             >
               <Input
                 type="hidden"
-                id="user_id"
                 name="user_id"
                 defaultValue={editDriver.driver_id}
-                required
               />
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div>
-                  <Label htmlFor="full_name">Full Name *</Label>
-                  <Input
-                    type="text"
-                    id="full_name"
-                    name="full_name"
-                    defaultValue={editDriver.full_name}
-                    required
-                    className="mt-2 border border-gray-400"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="license_number">License Number *</Label>
-                  <Input
-                    type="text"
-                    id="license_number"
-                    name="license_number"
-                    defaultValue={editDriver.license_number}
-                    required
-                    className="mt-2 border border-gray-400"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="contact_number">Contact Number *</Label>
-                  <Input
-                    type="tel"
-                    id="contact_number"
-                    name="contact_number"
-                    pattern="[0-9]+"
-                    inputMode="numeric"
-                    defaultValue={editDriver.contact_number}
-                    required
-                    className="mt-2 border border-gray-400"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="bus_id">Bus ID</Label>
-                  <Input
-                    type="string"
-                    id="bus_id"
-                    name="bus_id"
-                    defaultValue={editDriver.bus_id}
-                    className="mt-2 border border-gray-400"
-                  />
-                </div>
+              <div>
+                <Label htmlFor="edit_full_name">Full Name *</Label>
+                <Input
+                  type="text"
+                  id="edit_full_name"
+                  name="full_name"
+                  defaultValue={editDriver.full_name}
+                  required
+                />
               </div>
-              <p className="text-muted-foreground mt-4 text-xs">
-                Note: Empty Bus ID input will set driver as inactive.
-              </p>
-              <div className="mt-4 flex justify-end gap-3 md:col-span-2">
+              <div>
+                <Label htmlFor="edit_license_number">License Number *</Label>
+                <Input
+                  type="text"
+                  id="edit_license_number"
+                  name="license_number"
+                  defaultValue={editDriver.license_number}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit_contact_number">Contact Number *</Label>
+                <Input
+                  type="tel"
+                  id="edit_contact_number"
+                  name="contact_number"
+                  defaultValue={editDriver.contact_number}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit_bus_id">Bus ID</Label>
+                <Input
+                  type="text"
+                  id="edit_bus_id"
+                  name="bus_id"
+                  defaultValue={editDriver.bus_id || ''}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit_status">Status *</Label>
+                <Select name="status" defaultValue={editDriver.status} required>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <DialogFooter>
                 <Button
-                  variant="default"
-                  className="px-2 md:px-4"
-                  type="submit"
-                >
-                  <Save className="mr-0 md:mr-2" />
-                  <span>Save Driver</span>
-                </Button>
-                <Button
-                  variant="default"
-                  className="px-2 md:px-4"
                   type="button"
-                  onClick={() => setIsEditModalOpen(false)}
+                  variant="outline"
+                  onClick={() => {
+                    setIsEditModalOpen(false);
+                    setEditDriver(null);
+                  }}
                 >
-                  <span>Cancel</span>
+                  Cancel
                 </Button>
-              </div>
+                <Button type="submit">
+                  <Save className="mr-2 h-4 w-4" />
+                  Update Driver
+                </Button>
+              </DialogFooter>
             </form>
           )}
-          {currentTab === 'conductor' && editConductor && (
+
+          {editConductor && currentTab === 'conductor' && (
             <form
               onSubmit={(e) =>
                 handleEditConductor(
@@ -628,411 +811,190 @@ const FleetStatus = (props: {
                   () => {
                     props.refreshData();
                     setIsEditModalOpen(false);
+                    setEditConductor(null);
                   },
-                  props.currentConductorData.find(
-                    (conductor) =>
-                      conductor.conductor_id === editConductor.conductor_id
-                  )
+                  editConductor
                 )
               }
+              className="space-y-4"
             >
               <Input
                 type="hidden"
-                id="user_id"
                 name="user_id"
                 defaultValue={editConductor.conductor_id}
-                required
               />
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div>
-                  <Label htmlFor="full_name">Full Name *</Label>
-                  <Input
-                    type="text"
-                    id="full_name"
-                    name="full_name"
-                    defaultValue={editConductor.name}
-                    required
-                    className="mt-2 border border-gray-400"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="email">Email *</Label>
-                  <Input
-                    type="email"
-                    id="email"
-                    name="email"
-                    defaultValue={editConductor.email}
-                    required
-                    className="mt-2 border border-gray-400"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="contact_number">Contact Number *</Label>
-                  <Input
-                    type="tel"
-                    id="contact_number"
-                    name="contact_number"
-                    pattern="[0-9]+"
-                    inputMode="numeric"
-                    defaultValue={editConductor.contact_number}
-                    required
-                    className="mt-2 border border-gray-400"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="bus_id">Bus ID</Label>
-                  <Input
-                    type="text"
-                    id="bus_id"
-                    name="bus_id"
-                    defaultValue={editConductor.bus_id}
-                    className="mt-2 border border-gray-400"
-                  />
-                </div>
+              <div>
+                <Label htmlFor="edit_name">Name *</Label>
+                <Input
+                  type="text"
+                  id="edit_name"
+                  name="name"
+                  defaultValue={editConductor.name}
+                  required
+                />
               </div>
-              <p className="text-muted-foreground mt-4 text-xs">
-                Note: Empty Bus ID input will set conductor as inactive.
-              </p>
-
-              <div className="mt-4 flex justify-end gap-3 md:col-span-2">
-                <Button
-                  variant="default"
-                  className="px-2 md:px-4"
-                  type="submit"
+              <div>
+                <Label htmlFor="edit_email">Email *</Label>
+                <Input
+                  type="email"
+                  id="edit_email"
+                  name="email"
+                  defaultValue={editConductor.email}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit_contact_number">Contact Number *</Label>
+                <Input
+                  type="tel"
+                  id="edit_contact_number"
+                  name="contact_number"
+                  defaultValue={editConductor.contact_number}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit_bus_id">Bus ID</Label>
+                <Input
+                  type="text"
+                  id="edit_bus_id"
+                  name="bus_id"
+                  defaultValue={editConductor.bus_id || ''}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit_status">Status *</Label>
+                <Select
+                  name="status"
+                  defaultValue={editConductor.status}
+                  required
                 >
-                  <Save className="mr-0 md:mr-2" />
-                  <span>Save Conductor</span>
-                </Button>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <DialogFooter>
                 <Button
-                  variant="default"
-                  className="px-2 md:px-4"
                   type="button"
-                  onClick={() => setIsEditModalOpen(false)}
+                  variant="outline"
+                  onClick={() => {
+                    setIsEditModalOpen(false);
+                    setEditConductor(null);
+                  }}
                 >
-                  <span>Cancel</span>
+                  Cancel
                 </Button>
-              </div>
+                <Button type="submit">
+                  <Save className="mr-2 h-4 w-4" />
+                  Update Conductor
+                </Button>
+              </DialogFooter>
             </form>
           )}
         </DialogContent>
       </Dialog>
+
+      {/* View Bus Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="!w-full !max-w-4xl">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>Bus Details</DialogTitle>
           </DialogHeader>
-          <DialogDescription>
-            Here are the details of the selected bus.
-          </DialogDescription>
-
-          {selectedBus ? (
-            <div className="flex w-full flex-col items-start justify-between gap-10 md:flex-row">
-              {/* Bus details table */}
-              <table className="border-outline w-full rounded-md border-2 md:w-1/2">
-                <thead>
-                  <tr>
-                    <th
-                      colSpan={2}
-                      className="bg-neutral border-outline border-2 p-2 text-left sm:text-lg md:p-4 md:text-xl"
-                    >
-                      Current Bus Information
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white">
-                  <tr className="border-outline border-b-2">
-                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                      Bus ID
-                    </td>
-                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                      {selectedBus.bus_id}
-                    </td>
-                  </tr>
-                  <tr className="border-outline border-b-2">
-                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                      Route
-                    </td>
-                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                      {selectedBus.route_id}
-                    </td>
-                  </tr>
-                  <tr className="border-outline border-b-2">
-                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                      Driver
-                    </td>
-                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                      {selectedBus.driver_id
-                        ? selectedBus.driver_id + ' - '
-                        : ''}
-                      {currentDriverData.find(
-                        (driver) => driver.driver_id === selectedBus.driver_id
-                      )?.full_name ?? 'N/A'}
-                    </td>
-                  </tr>
-                  <tr className="border-outline border-b-2">
-                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                      Conductor
-                    </td>
-                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                      {selectedBus.conductor_id} -{' '}
-                      {currentConductorData.find(
-                        (conductor) =>
-                          conductor.conductor_id === selectedBus.conductor_id
-                      )?.name ?? 'N/A'}
-                    </td>
-                  </tr>
-                  <tr className="border-outline border-b-2">
-                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                      Status
-                    </td>
-                    <td className="text-muted-foreground p-2 text-end text-sm capitalize md:text-lg">
-                      <span
-                        className={
-                          selectedBus.status === 'active'
-                            ? 'font-semibold text-green-400'
-                            : selectedBus.status === 'inactive'
-                              ? 'text-destructive font-semibold'
-                              : ''
-                        }
-                      >
-                        {selectedBus.status.charAt(0).toUpperCase() +
-                          selectedBus.status.slice(1)}
-                      </span>
-                    </td>
-                  </tr>
-                  <tr className="border-outline">
-                    <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                      Next Maintenance
-                    </td>
-                    <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                      {selectedBus.next_maintenance}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              {/* Timeline Chart */}
-              <div className="w-full md:w-1/2">
-                <div className="mb-4 flex w-full items-center justify-between">
-                  <h3 className="text-lg font-semibold">Bus Timeline</h3>
-                  {selectedBus.trips.length > 0 && (
-                    <span className="text-muted-foreground mb-2 text-sm">
-                      Trips Today:{' '}
-                      {
-                        selectedBus.trips.filter((trip) => {
-                          const tripDate = new Date(trip.boarding_time);
-                          const today = new Date();
-                          return (
-                            tripDate.getDate() === today.getDate() &&
-                            tripDate.getMonth() === today.getMonth() &&
-                            tripDate.getFullYear() === today.getFullYear()
-                          );
-                        }).length
-                      }
-                    </span>
-                  )}
-                </div>
-                {selectedBus.trips.length > 0 ? (
-                  <div className="relative max-h-72 overflow-y-auto">
-                    <ul className="relative pl-2">
-                      {/* Vertical line */}
-                      <div className="absolute top-2 bottom-2 left-[22px] z-0 w-px bg-gray-300" />
-                      {selectedBus.trips.map((event, idx) => (
-                        <li
-                          key={idx}
-                          className="relative z-10 mb-4 ml-4 flex flex-col"
-                        >
-                          <div className="border-primary absolute top-2 left-[-12px] z-20 h-5 w-5 rounded-full border-2 bg-white" />
-                          <time className="mb-1 ml-8 text-xs font-normal text-gray-400">
-                            <strong>{event.boarding_time.split(' ')[0]}</strong>{' '}
-                            | {formatTimeTo12Hour(event.boarding_time)} -{' '}
-                            {formatTimeTo12Hour(event.arrival_time)}
-                          </time>
-                          <h4 className="text-md ml-8 font-semibold text-gray-900">
-                            Trip ID: {event.trip_id}
-                          </h4>
-                          <p className="mb-2 ml-8 text-sm font-normal text-gray-500">
-                            Conductor ID: {event.conductor_id} | Driver ID:{' '}
-                            {event.driver_id} | Route ID: {event.route_id}
-                          </p>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : (
-                  <div className="text-muted-foreground w-full text-center md:w-1/2">
-                    No timeline data available.
-                  </div>
-                )}
+          {selectedBus && (
+            <div className="space-y-4">
+              <div>
+                <Label className="text-muted-foreground text-sm">Bus ID</Label>
+                <p className="font-medium">{selectedBus.bus_id}</p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground text-sm">Route</Label>
+                <p className="font-medium">{selectedBus.route_id || 'N/A'}</p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground text-sm">
+                  Driver ID
+                </Label>
+                <p className="font-medium">{selectedBus.driver_id || 'N/A'}</p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground text-sm">
+                  Conductor ID
+                </Label>
+                <p className="font-medium">
+                  {selectedBus.conductor_id || 'N/A'}
+                </p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground text-sm">Status</Label>
+                <p className="font-medium capitalize">{selectedBus.status}</p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground text-sm">
+                  Next Maintenance
+                </Label>
+                <p className="font-medium">
+                  {selectedBus.next_maintenance || 'N/A'}
+                </p>
               </div>
             </div>
-          ) : (
-            <div className="text-muted-foreground text-center text-sm md:text-lg">
-              No bus selected.
-            </div>
           )}
-          <DialogFooter>
-            <div className="flex w-full justify-end gap-2">
-              <Button
-                className="bg-destructive w-1/2 text-white hover:bg-red-700 md:w-fit"
-                onClick={() => {
-                  if (selectedBus) {
-                    setIsModalOpen(false);
-                    handleDeleteBus(selectedBus.bus_id, props.refreshData);
-                  }
-                }}
-              >
-                <Trash />
-                Delete Bus
-              </Button>
-              <Button
-                className="w-1/2 md:w-fit"
-                onClick={() => {
-                  if (selectedBus) {
-                    setEditBus(selectedBus);
-                    setIsEditModalOpen(true);
-                    setIsModalOpen(false);
-                  }
-                }}
-              >
-                <Pencil />
-                Edit Bus
-              </Button>
-            </div>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* View Driver Modal */}
       <Dialog open={isDriverModalOpen} onOpenChange={setIsDriverModalOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Driver Details</DialogTitle>
           </DialogHeader>
-          <DialogDescription>
-            Here are the details of the selected driver.
-          </DialogDescription>
-
-          {selectedDriver ? (
-            <div className="mb-4 flex flex-col items-center">
-              <div className="mb-2 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gray-200">
-                <span className="text-4xl font-bold text-gray-400">
+          {selectedDriver && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="bg-muted flex h-16 w-16 items-center justify-center rounded-full text-lg font-semibold">
                   {getInitials(selectedDriver.full_name)}
-                </span>
-              </div>
-              <span className="text-muted-foreground text-xs">
-                Profile Picture
-              </span>
-            </div>
-          ) : null}
-          {selectedDriver ? (
-            <table className="border-outline w-full rounded-md border-2">
-              <thead>
-                <tr>
-                  <th
-                    colSpan={2}
-                    className="bg-neutral border-outline border-2 p-2 text-left sm:text-lg md:p-4 md:text-xl"
-                  >
-                    Driver Information
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white">
-                <tr className="border-outline border-b-2">
-                  <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                    Driver ID
-                  </td>
-                  <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                    {selectedDriver.driver_id}
-                  </td>
-                </tr>
-                <tr className="border-outline border-b-2">
-                  <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                    Full Name
-                  </td>
-                  <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
+                </div>
+                <div>
+                  <p className="text-lg font-semibold">
                     {selectedDriver.full_name}
-                  </td>
-                </tr>
-                <tr className="border-outline border-b-2">
-                  <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                    License Number
-                  </td>
-                  <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                    {selectedDriver.license_number}
-                  </td>
-                </tr>
-                <tr className="border-outline border-b-2">
-                  <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                    Contact Number
-                  </td>
-                  <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                    {selectedDriver.contact_number}
-                  </td>
-                </tr>
-                <tr className="border-outline border-b-2">
-                  <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                    Status
-                  </td>
-                  <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                    <span
-                      className={
-                        selectedDriver.status === 'active'
-                          ? 'font-semibold text-green-400'
-                          : 'text-destructive font-semibold'
-                      }
-                    >
-                      {selectedDriver.status.charAt(0).toUpperCase() +
-                        selectedDriver.status.slice(1)}
-                    </span>
-                  </td>
-                </tr>
-                <tr className="border-outline">
-                  <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                    Bus ID
-                  </td>
-                  <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                    {selectedDriver.bus_id ?? 'N/A'}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          ) : (
-            <div className="text-muted-foreground text-center text-sm md:text-lg">
-              No driver selected.
+                  </p>
+                  <p className="text-muted-foreground text-sm">
+                    ID: {selectedDriver.driver_id}
+                  </p>
+                </div>
+              </div>
+              <div>
+                <Label className="text-muted-foreground text-sm">
+                  License Number
+                </Label>
+                <p className="font-medium">{selectedDriver.license_number}</p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground text-sm">
+                  Contact Number
+                </Label>
+                <p className="font-medium">{selectedDriver.contact_number}</p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground text-sm">Bus ID</Label>
+                <p className="font-medium">{selectedDriver.bus_id || 'N/A'}</p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground text-sm">Status</Label>
+                <p className="font-medium capitalize">
+                  {selectedDriver.status}
+                </p>
+              </div>
             </div>
           )}
-          <DialogFooter>
-            <div className="flex w-full justify-end gap-2">
-              <Button
-                className="bg-destructive w-1/2 text-white hover:bg-red-700"
-                onClick={() => {
-                  if (selectedDriver) {
-                    setIsDriverModalOpen(false);
-                    handleDeleteDriver(
-                      selectedDriver.driver_id,
-                      props.refreshData
-                    );
-                  }
-                }}
-              >
-                <Trash />
-                Delete Driver
-              </Button>
-              <Button
-                className="w-1/2"
-                onClick={() => {
-                  if (selectedDriver) {
-                    setEditDriver(selectedDriver);
-                    setIsEditModalOpen(true);
-                    setIsDriverModalOpen(false);
-                  }
-                }}
-              >
-                <Pencil />
-                Edit Driver
-              </Button>
-            </div>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* View Conductor Modal */}
       <Dialog
         open={isConductorModalOpen}
         onOpenChange={setIsConductorModalOpen}
@@ -1041,503 +1003,49 @@ const FleetStatus = (props: {
           <DialogHeader>
             <DialogTitle>Conductor Details</DialogTitle>
           </DialogHeader>
-          <DialogDescription>
-            Here are the details of the selected conductor.
-          </DialogDescription>
-          {selectedConductor ? (
-            <div className="my-4 flex flex-col items-center">
-              <div className="mb-2 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gray-200">
-                <span className="text-4xl font-bold text-gray-400">
+          {selectedConductor && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="bg-muted flex h-16 w-16 items-center justify-center rounded-full text-lg font-semibold">
                   {getInitials(selectedConductor.name)}
-                </span>
-              </div>
-              <span className="text-muted-foreground text-xs">
-                Profile Picture
-              </span>
-            </div>
-          ) : null}
-          {selectedConductor ? (
-            <table className="border-outline w-full rounded-md border-2">
-              <thead>
-                <tr>
-                  <th
-                    colSpan={2}
-                    className="bg-neutral border-outline border-2 p-2 text-left sm:text-lg md:p-4 md:text-xl"
-                  >
-                    Conductor Information
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white">
-                <tr className="border-outline border-b-2">
-                  <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                    Conductor ID
-                  </td>
-                  <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                    {selectedConductor.conductor_id}
-                  </td>
-                </tr>
-                <tr className="border-outline border-b-2">
-                  <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                    Full Name
-                  </td>
-                  <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
+                </div>
+                <div>
+                  <p className="text-lg font-semibold">
                     {selectedConductor.name}
-                  </td>
-                </tr>
-                <tr className="border-outline border-b-2">
-                  <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                    Contact Number
-                  </td>
-                  <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                    {selectedConductor.contact_number}
-                  </td>
-                </tr>
-                <tr className="border-outline border-b-2">
-                  <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                    Email
-                  </td>
-                  <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                    {selectedConductor.email}
-                  </td>
-                </tr>
-                <tr className="border-outline border-b-2">
-                  <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                    Status
-                  </td>
-                  <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                    <span
-                      className={
-                        selectedConductor.status === 'active'
-                          ? 'font-semibold text-green-400'
-                          : 'text-destructive font-semibold'
-                      }
-                    >
-                      {selectedConductor.status.charAt(0).toUpperCase() +
-                        selectedConductor.status.slice(1)}
-                    </span>
-                  </td>
-                </tr>
-
-                <tr className="border-outline">
-                  <td className="text-secondary-foreground p-2 text-sm font-semibold md:text-lg">
-                    Bus ID
-                  </td>
-                  <td className="text-muted-foreground p-2 text-end text-sm md:text-lg">
-                    {selectedConductor.bus_id ?? 'N/A'}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          ) : (
-            <div className="text-muted-foreground text-center text-sm md:text-lg">
-              No conductor selected.
+                  </p>
+                  <p className="text-muted-foreground text-sm">
+                    ID: {selectedConductor.conductor_id}
+                  </p>
+                </div>
+              </div>
+              <div>
+                <Label className="text-muted-foreground text-sm">Email</Label>
+                <p className="font-medium">{selectedConductor.email}</p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground text-sm">
+                  Contact Number
+                </Label>
+                <p className="font-medium">
+                  {selectedConductor.contact_number}
+                </p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground text-sm">Bus ID</Label>
+                <p className="font-medium">
+                  {selectedConductor.bus_id || 'N/A'}
+                </p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground text-sm">Status</Label>
+                <p className="font-medium capitalize">
+                  {selectedConductor.status}
+                </p>
+              </div>
             </div>
           )}
-          <DialogFooter>
-            <div className="flex w-full justify-end gap-2">
-              <Button
-                className="bg-destructive w-1/2 text-white hover:bg-red-700"
-                onClick={() => {
-                  if (selectedConductor) {
-                    setIsConductorModalOpen(false);
-                    handleDeleteConductor(
-                      selectedConductor.conductor_id,
-                      props.refreshData
-                    );
-                  }
-                }}
-              >
-                <Trash />
-                Delete Conductor
-              </Button>
-              <Button
-                className="w-1/2"
-                onClick={() => {
-                  if (selectedConductor) {
-                    setEditConductor(selectedConductor);
-                    setIsEditModalOpen(true);
-                    setIsConductorModalOpen(false);
-                  }
-                }}
-              >
-                <Pencil />
-                Edit Conductor
-              </Button>
-            </div>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      <div className="grid auto-rows-min gap-4 md:grid-cols-3"></div>
-      <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min">
-        <div className="flex-col gap-3">
-          <div className="flex justify-between pr-3 pl-3">
-            <div className="inline-flex gap-3">
-              <Button
-                onClick={() => setCurrentTab('bus')}
-                variant={currentTab === 'bus' ? 'default' : 'outline'}
-                className={
-                  currentTab === 'bus' ? 'border-primary font-bold' : ''
-                }
-              >
-                Buses
-              </Button>
-              <Button
-                onClick={() => setCurrentTab('driver')}
-                variant={currentTab === 'driver' ? 'default' : 'outline'}
-                className={
-                  currentTab === 'driver' ? 'border-primary font-bold' : ''
-                }
-              >
-                Drivers
-              </Button>
-              <Button
-                onClick={() => setCurrentTab('conductor')}
-                variant={currentTab === 'conductor' ? 'default' : 'outline'}
-                className={
-                  currentTab === 'conductor' ? 'border-primary font-bold' : ''
-                }
-              >
-                Conductors
-              </Button>
-            </div>
-            <div>
-              {currentTab === 'bus' && (
-                <Button
-                  variant="default"
-                  className="px-2 md:px-4"
-                  onClick={() => setIsAddModalOpen(true)}
-                >
-                  <Plus
-                    className={currentTab === 'bus' ? 'mr-0 md:mr-2' : ''}
-                  />
-                  <span className="hidden md:inline">New Bus</span>
-                </Button>
-              )}
-              {currentTab === 'driver' && (
-                <Button
-                  variant="default"
-                  className="px-2 md:px-4"
-                  onClick={() => setIsAddModalOpen(true)}
-                >
-                  <Plus
-                    className={currentTab === 'driver' ? 'mr-0 md:mr-2' : ''}
-                  />
-                  <span className="hidden md:inline">New Driver</span>
-                </Button>
-              )}
-              {currentTab === 'conductor' && (
-                <Button
-                  variant="default"
-                  className="px-2 md:px-4"
-                  onClick={() => setIsAddModalOpen(true)}
-                >
-                  <Plus
-                    className={currentTab === 'conductor' ? 'mr-0 md:mr-2' : ''}
-                  />
-                  <span className="hidden md:inline">New Conductor</span>
-                </Button>
-              )}
-            </div>
-          </div>
-          <div className="relative my-6 w-full">
-            <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <Search className="h-5 w-5 text-gray-400" />
-            </span>
-            <input
-              type="text"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Search..."
-              className="focus:border-primary focus:ring-primary/20 block w-full rounded-xl border border-gray-300 bg-white p-2 pl-10 transition placeholder:text-gray-400 focus:ring-2"
-            />
-          </div>
-          <div className="mt-5">
-            {currentTab === 'bus' && (
-              <div>
-                <hr className="my-4" />
-                <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-3">
-                  <Cards
-                    card={{
-                      title: 'Active',
-                      icon: Laugh,
-                      value: String(
-                        currentBusData.filter((bus) => bus.status === 'active')
-                          .length
-                      ),
-                      subtitle: 'Currently in service',
-                    }}
-                  />
-                  <Cards
-                    card={{
-                      title: 'Inactive',
-                      icon: Frown,
-                      value: String(
-                        currentBusData.filter(
-                          (bus) => bus.status === 'inactive'
-                        ).length
-                      ),
-                      subtitle: 'Not in service',
-                    }}
-                  />
-                  <Cards
-                    card={{
-                      title: 'In Maintenance',
-                      icon: Wrench,
-                      value: String(
-                        currentBusData.filter((bus) => {
-                          if (!bus.next_maintenance) return false;
-
-                          return new Date(bus.next_maintenance) < new Date();
-                        }).length
-                      ),
-                      subtitle: 'Buses currently in maintenance',
-                    }}
-                  />
-                </div>
-                <hr className="my-4" />
-                <div className="mt-2 mb-2 flex justify-start">
-                  <div className="w-fit rounded-full bg-white">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="flex w-full items-center justify-between"
-                        >
-                          <span>
-                            {busStatusFilter === '' || busStatusFilter === 'all'
-                              ? 'All buses'
-                              : busStatusFilter === 'active'
-                                ? 'Active buses'
-                                : busStatusFilter === 'inactive'
-                                  ? 'Inactive buses'
-                                  : busStatusFilter === 'in maintenance'
-                                    ? 'In maintenance buses'
-                                    : 'All buses'}
-                          </span>
-                          <ChevronDown className="ml-2 h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onSelect={() => setBusStatusFilter('all')}
-                        >
-                          All buses
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onSelect={() => setBusStatusFilter('active')}
-                        >
-                          Active buses
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onSelect={() => setBusStatusFilter('inactive')}
-                        >
-                          Inactive buses
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onSelect={() => setBusStatusFilter('in maintenance')}
-                        >
-                          In maintenance buses
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </div>
-                <div className="grid w-full grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {filteredBusData.map((bus) => (
-                    <BusInformationCard
-                      key={bus.bus_id}
-                      BusInfo={bus}
-                      DriverInfo={currentDriverData.find(
-                        (driver) => driver.driver_id === bus.driver_id
-                      )}
-                      ConductorInfo={currentConductorData.find(
-                        (conductor) =>
-                          conductor.conductor_id === bus.conductor_id
-                      )}
-                      OnClick={() => {
-                        setSelectedBusId(bus.bus_id);
-                        setIsModalOpen(true);
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-            {currentTab === 'driver' && (
-              <>
-                <hr className="my-4" />
-                <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-2">
-                  <Cards
-                    card={{
-                      title: 'Active',
-                      icon: Laugh,
-                      value: String(
-                        currentDriverData.filter(
-                          (driver) => driver.status === 'active'
-                        ).length
-                      ),
-                      subtitle: 'Active drivers',
-                    }}
-                  />
-                  <Cards
-                    card={{
-                      title: 'Inactive',
-                      icon: Frown,
-                      value: String(
-                        currentDriverData.filter(
-                          (driver) => driver.status === 'inactive'
-                        ).length
-                      ),
-                      subtitle: 'Inactive drivers',
-                    }}
-                  />
-                </div>
-                <hr className="my-4" />
-                <div className="mt-2 mb-2 flex justify-start">
-                  <div className="w-full max-w-[180px] rounded-full border border-gray-300 bg-white">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="flex w-full items-center justify-between"
-                        >
-                          <span>
-                            {driverStatusFilter === '' ||
-                            driverStatusFilter === 'all'
-                              ? 'All drivers'
-                              : driverStatusFilter === 'active'
-                                ? 'Active drivers'
-                                : driverStatusFilter === 'inactive'
-                                  ? 'Inactive drivers'
-                                  : 'All drivers'}
-                          </span>
-                          <ChevronDown className="ml-2 h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onSelect={() => setDriverStatusFilter('all')}
-                        >
-                          All drivers
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onSelect={() => setDriverStatusFilter('active')}
-                        >
-                          Active drivers
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onSelect={() => setDriverStatusFilter('inactive')}
-                        >
-                          Inactive drivers
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </div>
-                <div className="grid w-full grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {filteredDriverData.map((driver) => (
-                    <DriverInformationCard
-                      key={driver.driver_id}
-                      DriverInfo={driver}
-                      OnClick={() => {
-                        setSelectedDriverId(driver.driver_id);
-                        setIsDriverModalOpen(true);
-                      }}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
-            {currentTab === 'conductor' && (
-              <>
-                <hr className="my-4" />
-                <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-2">
-                  <Cards
-                    card={{
-                      title: 'Active',
-                      icon: Laugh,
-                      value: String(
-                        currentConductorData.filter(
-                          (conductor) => conductor.status === 'active'
-                        ).length
-                      ),
-                      subtitle: 'Active conductors',
-                    }}
-                  />
-                  <Cards
-                    card={{
-                      title: 'Inactive',
-                      icon: Frown,
-                      value: String(
-                        currentConductorData.filter(
-                          (conductor) => conductor.status === 'inactive'
-                        ).length
-                      ),
-                      subtitle: 'Inactive conductors',
-                    }}
-                  />
-                </div>
-                <hr className="my-4" />
-                <div className="mt-2 mb-2 flex justify-start">
-                  <div className="w-full max-w-[180px] rounded-full border border-gray-300 bg-white">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="flex w-full items-center justify-between"
-                        >
-                          <span>
-                            {conductorStatusFilter === '' ||
-                            conductorStatusFilter === 'all'
-                              ? 'All conductors'
-                              : conductorStatusFilter === 'active'
-                                ? 'Active conductors'
-                                : conductorStatusFilter === 'inactive'
-                                  ? 'Inactive conductors'
-                                  : 'All conductors'}
-                          </span>
-                          <ChevronDown className="ml-2 h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onSelect={() => setConductorStatusFilter('all')}
-                        >
-                          All conductors
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onSelect={() => setConductorStatusFilter('active')}
-                        >
-                          Active conductors
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onSelect={() => setConductorStatusFilter('inactive')}
-                        >
-                          Inactive conductors
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </div>
-                <div className="grid w-full grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {filteredConductorData.map((conductor) => (
-                    <ConductorInformationCard
-                      key={conductor.conductor_id}
-                      ConductorInfo={conductor}
-                      OnClick={() => {
-                        setSelectedConductorId(conductor.conductor_id);
-                        setIsConductorModalOpen(true);
-                      }}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
     </>
   );
 };
