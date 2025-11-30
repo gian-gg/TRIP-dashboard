@@ -39,7 +39,10 @@ const Overview = () => {
       }
 
       const API_URL =
-        selectedDate?.start && selectedDate?.end && selectedDate?.type
+        selectedDate &&
+        selectedDate.start &&
+        selectedDate.end &&
+        selectedDate.type
           ? `/company/index.php?company_id=${user.company_id}&start_time=${selectedDate.start}&end_time=${selectedDate.end}&type=${selectedDate.type}`
           : `/company/index.php?company_id=${user.company_id}`;
 
