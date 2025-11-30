@@ -29,7 +29,7 @@ const useAuthorized = () => {
       } catch (error) {
         localStorage.removeItem('token');
         toast.error(error instanceof Error ? error.message : 'Unknown error');
-        navigate('/');
+        navigate('/login');
       } finally {
         setLoading(false);
       }
