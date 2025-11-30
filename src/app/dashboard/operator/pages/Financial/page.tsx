@@ -66,7 +66,7 @@ const Financial = () => {
       }
 
       const API_URL =
-        selectedDate?.start && selectedDate?.end
+        selectedDate && selectedDate?.start && selectedDate?.end
           ? `/financial/index.php?company_id=${user.company_id}&start_time=${selectedDate.start}&end_time=${selectedDate.end}`
           : `/financial/index.php?company_id=${user.company_id}`;
 
