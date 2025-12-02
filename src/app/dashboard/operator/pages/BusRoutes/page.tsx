@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,7 @@ interface RouteDataType {
 
 const BusRoutes = () => {
   const [data, setData] = useState<RouteDataType[] | null>(null);
+  const chartRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,7 +49,30 @@ const BusRoutes = () => {
   }, []);
 
   const handlePrint = () => {
-    generateBusRoutesPrintReport(data);
+    // Capture chart SVG as data URL (if rendered) and pass to print util
+    let chartImage: string | undefined;
+    try {
+      const container = chartRef.current;
+      if (container) {
+        const svg = container.querySelector('svg');
+        if (svg) {
+          let svgString = new XMLSerializer().serializeToString(svg);
+          if (!svgString.includes('xmlns')) {
+            svgString = svgString.replace(
+              /<svg/,
+              '<svg xmlns="http://www.w3.org/2000/svg"'
+            );
+          }
+          chartImage =
+            'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgString);
+        }
+      }
+    } catch {
+      // fallback: continue without chart
+      chartImage = undefined;
+    }
+
+    generateBusRoutesPrintReport(data, chartImage);
   };
 
   return (
@@ -74,15 +98,17 @@ const BusRoutes = () => {
         }}
         className="max-h-96 w-full"
       >
-        <BarGraph
-          data={
-            data?.map((route) => ({
-              route: 'Route ' + route.route_id,
-              passengers: Number(route.passengers),
-              fill: `var(--chart-${(Number(route.route_id) % 5) + 1})`,
-            })) || []
-          }
-        />
+        <div ref={chartRef}>
+          <BarGraph
+            data={
+              data?.map((route) => ({
+                route: 'Route ' + route.route_id,
+                passengers: Number(route.passengers),
+                fill: `var(--chart-${(Number(route.route_id) % 5) + 1})`,
+              })) || []
+            }
+          />
+        </div>
       </ReportCard>
       <div className="grid auto-rows-min gap-4 md:grid-cols-3">
         {data?.map((route, index) => (

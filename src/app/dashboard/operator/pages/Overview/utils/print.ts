@@ -7,7 +7,8 @@ interface OverviewCardType {
 }
 
 export const generateOverviewPrintReport = (
-  overviewData: OverviewCardType | null
+  overviewData: OverviewCardType | null,
+  chartImage?: string
 ) => {
   const printWindow = window.open('', '_blank');
   if (!printWindow) return;
@@ -64,6 +65,16 @@ export const generateOverviewPrintReport = (
             <div class="subtitle">July 24th, 2025</div>
           </div>
         </div>
+        ${
+          chartImage
+            ? `
+          <div style="margin-top:20px;text-align:center;">
+            <h3 style="color:#186cc7;margin-bottom:10px;">Revenue & Ridership Trends</h3>
+            <img src="${chartImage}" alt="Chart" style="max-width:100%;height:auto;border:1px solid #e5e7eb;padding:8px;border-radius:6px;background:#fff;"/>
+          </div>
+        `
+            : ''
+        }
         <div class="footer">
           <p>TRIP - Transit Routing and Integrated Payments</p>
         </div>

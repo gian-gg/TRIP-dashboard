@@ -6,7 +6,10 @@ interface RouteDataType {
   revenue_per_passenger: string;
 }
 
-export const generateBusRoutesPrintReport = (data: RouteDataType[] | null) => {
+export const generateBusRoutesPrintReport = (
+  data: RouteDataType[] | null,
+  chartImage?: string
+) => {
   const printWindow = window.open('', '_blank');
   if (!printWindow) return;
 
@@ -62,6 +65,16 @@ export const generateBusRoutesPrintReport = (data: RouteDataType[] | null) => {
             <div class="value">₱${totalRevenue.toFixed(2)}</div>
           </div>
         </div>
+        ${
+          chartImage
+            ? `
+          <div style="margin-top:20px;text-align:center;">
+            <h3 style="color:#186cc7;margin-bottom:10px;">Route Performance Chart</h3>
+            <img src="${chartImage}" alt="Route Performance Chart" style="max-width:100%;height:auto;border:1px solid #e5e7eb;padding:8px;border-radius:6px;background:#fff;"/>
+          </div>
+        `
+            : ''
+        }
         <table>
           <thead>
             <tr>

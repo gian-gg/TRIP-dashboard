@@ -5,6 +5,7 @@ import ReportCard from '@/components/ReportCard';
 import { DollarSign, Users, UsersRound, Route, Printer } from 'lucide-react';
 import LineGraph from './components/LineGraph';
 import { generateOverviewPrintReport } from './utils/print';
+import { useRef } from 'react';
 import Cards from '@/components/Cards';
 import FilterDate from '@/components/FilterDate';
 import { getUser } from '@/lib/auth';
@@ -25,6 +26,7 @@ const Overview = () => {
   const [overviewData, setOverviewData] = useState<OverviewCardType | null>(
     null
   );
+  const chartRef = useRef<HTMLDivElement | null>(null);
   const [selectedDate, setSelectedDate] = useState<FilterDateType | undefined>(
     undefined
   );
@@ -63,7 +65,30 @@ const Overview = () => {
   }, [selectedDate]);
 
   const handlePrint = () => {
-    generateOverviewPrintReport(overviewData);
+    // Capture chart SVG as data URL (if rendered) and pass to print util
+    let chartImage: string | undefined;
+    try {
+      const container = chartRef.current;
+      if (container) {
+        const svg = container.querySelector('svg');
+        if (svg) {
+          let svgString = new XMLSerializer().serializeToString(svg);
+          if (!svgString.includes('xmlns')) {
+            svgString = svgString.replace(
+              /<svg/,
+              '<svg xmlns="http://www.w3.org/2000/svg"'
+            );
+          }
+          chartImage =
+            'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgString);
+        }
+      }
+    } catch {
+      // fallback: continue without chart
+      chartImage = undefined;
+    }
+
+    generateOverviewPrintReport(overviewData, chartImage);
   };
 
   return (
@@ -132,7 +157,9 @@ const Overview = () => {
             link="/operator/financial"
             className="md:w-full"
           >
-            <LineGraph chartData={overviewData.division} />
+            <div ref={chartRef}>
+              <LineGraph chartData={overviewData.division} />
+            </div>
           </ReportCard>
         </div>
       )}
