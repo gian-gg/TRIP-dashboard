@@ -1,6 +1,13 @@
 import { useState, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
-import { Bus, BookUser, Upload as UploadIcon, FileText, X } from 'lucide-react';
+import {
+  Bus,
+  BookUser,
+  Upload as UploadIcon,
+  FileText,
+  X,
+  Route,
+} from 'lucide-react';
 
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,8 +34,11 @@ interface TRIPSummaryType {
 
 interface ConductorType extends UserType {
   bus_id: string;
+  route_id: string;
+  route_name: string;
   driver_id: string;
   driver_name: string;
+  driver_contact: string;
 }
 
 const Upload = () => {
@@ -238,13 +248,21 @@ const Upload = () => {
     <>
       {pageState === 'upload' ? (
         <>
-          <div className="flex w-full flex-col items-center justify-start gap-4 md:flex-row">
+          <div className="grid w-full gap-4 md:grid-cols-2 lg:grid-cols-3">
             <OverviewCards
               card={{
                 title: 'Assigned Bus',
                 icon: Bus,
                 value: currentConductor.bus_id || 'Loading...',
-                subtitle: 'This is the bus assigned to you.',
+                subtitle: 'Your assigned vehicle',
+              }}
+            />
+            <OverviewCards
+              card={{
+                title: 'Assigned Route',
+                icon: Route,
+                value: currentConductor.route_id || 'Loading...',
+                subtitle: currentConductor.route_name || 'Route information',
               }}
             />
             <OverviewCards
@@ -252,7 +270,9 @@ const Upload = () => {
                 title: 'Assigned Driver',
                 icon: BookUser,
                 value: currentConductor.driver_name || 'Loading...',
-                subtitle: 'Please ensure to coordinate with them.',
+                subtitle: currentConductor.driver_contact
+                  ? `📞 0${currentConductor.driver_contact}`
+                  : 'No contact available',
               }}
             />
           </div>
