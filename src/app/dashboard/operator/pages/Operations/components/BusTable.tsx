@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 import {
   Table,
   TableBody,
@@ -6,25 +8,33 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { MoreHorizontal, Eye, Pencil, Trash } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import type { BusInformationType } from '../type';
 
-interface BusTableProps {
+import BusModal from './BusModal';
+import BusEdit from './BusEdit';
+
+import type {
+  BusInformationType,
+  ConductorInformationType,
+  DriverInformationType,
+} from '../type';
+
+export function BusTable({
+  buses,
+  drivers,
+  conductors,
+  refreshData,
+}: {
   buses: BusInformationType[];
-  onView: (busId: string) => void;
-  onEdit: (bus: BusInformationType) => void;
-  onDelete: (busId: string) => void;
-}
+  drivers: DriverInformationType[];
+  conductors: ConductorInformationType[];
+  refreshData: () => void;
+}) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedBus, setSelectedBus] = useState<BusInformationType | null>(
+    null
+  );
 
-export function BusTable({ buses, onView, onEdit, onDelete }: BusTableProps) {
   const getStatusBadge = (status: BusInformationType['status']) => {
     const variants: Record<
       BusInformationType['status'],
@@ -33,8 +43,9 @@ export function BusTable({ buses, onView, onEdit, onDelete }: BusTableProps) {
       active: 'default',
       inactive: 'secondary',
       'in maintenance': 'destructive',
-      'in transit': 'outline',
     };
+
+    console.log(status);
 
     return (
       <Badge variant={variants[status]} className="capitalize">
@@ -49,90 +60,100 @@ export function BusTable({ buses, onView, onEdit, onDelete }: BusTableProps) {
   };
 
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Bus ID</TableHead>
-            <TableHead>Route</TableHead>
-            <TableHead>Driver</TableHead>
-            <TableHead>Conductor</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Next Maintenance</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {buses.length === 0 ? (
+    <>
+      <BusModal
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        selectedBus={selectedBus}
+        currentDriverData={drivers}
+        currentConductorData={conductors}
+        setIsEditModalOpen={setIsEditModalOpen}
+      />
+
+      {selectedBus && (
+        <BusEdit
+          isOpen={isEditModalOpen}
+          setIsOpen={setIsEditModalOpen}
+          currentBusData={selectedBus}
+          currentDriverData={drivers}
+          currentConductorData={conductors}
+          refreshData={refreshData}
+        />
+      )}
+
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={7} className="h-24 text-center">
-                No buses found.
-              </TableCell>
+              <TableHead>Bus ID</TableHead>
+              <TableHead>Route</TableHead>
+              <TableHead>Driver</TableHead>
+              <TableHead>Conductor</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Next Maintenance</TableHead>
             </TableRow>
-          ) : (
-            buses.map((bus) => (
-              <TableRow key={bus.bus_id} className="cursor-pointer">
-                <TableCell className="font-medium">{bus.bus_id}</TableCell>
-                <TableCell>{bus.route_id || 'N/A'}</TableCell>
-                <TableCell>
-                  {bus.driver_id ? `ID: ${bus.driver_id}` : 'N/A'}
+          </TableHeader>
+          <TableBody>
+            {buses.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="h-24 text-center">
+                  No buses found.
                 </TableCell>
-                <TableCell>
-                  {bus.conductor_id ? `ID: ${bus.conductor_id}` : 'N/A'}
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    {getStatusBadge(bus.status)}
+              </TableRow>
+            ) : (
+              buses.map((bus) => (
+                <TableRow
+                  key={bus.bus_id}
+                  className="cursor-pointer"
+                  onClick={() => {
+                    setSelectedBus(bus);
+                    setIsModalOpen(true);
+                  }}
+                >
+                  <TableCell className="font-medium">{bus.bus_id}</TableCell>
+                  <TableCell>{bus.route_id || '---'}</TableCell>
+                  <TableCell>
+                    {bus.driver_id
+                      ? drivers.find(
+                          (driver) => driver.driver_id === bus.driver_id
+                        )?.full_name
+                      : '---'}
+                  </TableCell>
+                  <TableCell>
+                    {bus.conductor_id
+                      ? conductors.find(
+                          (conductor) =>
+                            conductor.conductor_id === bus.conductor_id
+                        )?.name
+                      : '---'}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      {getStatusBadge(bus.status)}
+                    </div>
+                  </TableCell>
+                  <TableCell className="space-x-2">
                     {checkMaintenanceStatus(bus.next_maintenance) && (
                       <Badge variant="destructive" className="text-[10px]">
                         Due
                       </Badge>
                     )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <span
-                    className={
-                      checkMaintenanceStatus(bus.next_maintenance)
-                        ? 'text-destructive font-semibold'
-                        : ''
-                    }
-                  >
-                    {bus.next_maintenance || 'N/A'}
-                  </span>
-                </TableCell>
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Open menu</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => onView(bus.bus_id)}>
-                        <Eye className="mr-2 h-4 w-4" />
-                        View Details
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onEdit(bus)}>
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => onDelete(bus.bus_id)}
-                        className="text-destructive"
-                      >
-                        <Trash className="mr-2 h-4 w-4" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-    </div>
+                    <span
+                      className={
+                        checkMaintenanceStatus(bus.next_maintenance)
+                          ? 'text-destructive font-semibold'
+                          : ''
+                      }
+                    >
+                      {bus.next_maintenance || '---'}
+                    </span>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </>
   );
 }

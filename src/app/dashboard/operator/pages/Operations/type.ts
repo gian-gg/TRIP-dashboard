@@ -3,7 +3,7 @@ interface BusInformationType {
   route_id: string;
   driver_id: number;
   conductor_id: number;
-  status: 'active' | 'inactive' | 'in maintenance' | 'in transit';
+  status: 'active' | 'inactive' | 'in maintenance';
   next_maintenance: string;
   trips: {
     trip_id: string;

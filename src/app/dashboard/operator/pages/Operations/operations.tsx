@@ -4,19 +4,6 @@ import { BusTable } from './components/BusTable';
 import { DriverTable } from './components/DriverTable';
 import { ConductorTable } from './components/ConductorTable';
 import { StatisticsCards } from './components/StatisticsCards';
-import { AddBusModal } from './components/AddBusModal';
-import { AddDriverModal } from './components/AddDriverModal';
-import { AddConductorModal } from './components/AddConductorModal';
-import {
-  EditBusModal,
-  EditDriverModal,
-  EditConductorModal,
-} from './components/EditModals';
-import {
-  ViewBusModal,
-  ViewDriverModal,
-  ViewConductorModal,
-} from './components/ViewModals';
 import type {
   BusInformationType,
   DriverInformationType,
@@ -330,9 +317,9 @@ const FleetStatus = (props: {
       {currentTab === 'bus' && (
         <BusTable
           buses={filteredBusData}
-          onView={handleViewBus}
-          onEdit={handleEditBusModal}
-          onDelete={handleDeleteBusConfirm}
+          drivers={currentDriverData}
+          conductors={currentConductorData}
+          refreshData={props.refreshData}
         />
       )}
 
@@ -353,81 +340,6 @@ const FleetStatus = (props: {
           onDelete={handleDeleteConductorConfirm}
         />
       )}
-
-      {/* Add Modals */}
-      {currentTab === 'bus' && (
-        <AddBusModal
-          isOpen={isAddModalOpen}
-          onClose={() => setIsAddModalOpen(false)}
-          companyId={props.userData.company_id}
-          onSuccess={props.refreshData}
-        />
-      )}
-
-      {currentTab === 'driver' && (
-        <AddDriverModal
-          isOpen={isAddModalOpen}
-          onClose={() => setIsAddModalOpen(false)}
-          companyId={props.userData.company_id}
-          onSuccess={props.refreshData}
-        />
-      )}
-
-      {currentTab === 'conductor' && (
-        <AddConductorModal
-          isOpen={isAddModalOpen}
-          onClose={() => setIsAddModalOpen(false)}
-          companyId={props.userData.company_id}
-          onSuccess={props.refreshData}
-        />
-      )}
-
-      {/* Edit Modals */}
-      {editBus && (
-        <EditBusModal
-          isOpen={!!editBus}
-          onClose={() => setEditBus(null)}
-          bus={editBus}
-          onSuccess={props.refreshData}
-        />
-      )}
-
-      {editDriver && (
-        <EditDriverModal
-          isOpen={!!editDriver}
-          onClose={() => setEditDriver(null)}
-          driver={editDriver}
-          onSuccess={props.refreshData}
-        />
-      )}
-
-      {editConductor && (
-        <EditConductorModal
-          isOpen={!!editConductor}
-          onClose={() => setEditConductor(null)}
-          conductor={editConductor}
-          onSuccess={props.refreshData}
-        />
-      )}
-
-      {/* View Modals */}
-      <ViewBusModal
-        isOpen={isViewBusModalOpen}
-        onClose={() => setIsViewBusModalOpen(false)}
-        bus={selectedBus || null}
-      />
-
-      <ViewDriverModal
-        isOpen={isViewDriverModalOpen}
-        onClose={() => setIsViewDriverModalOpen(false)}
-        driver={selectedDriver || null}
-      />
-
-      <ViewConductorModal
-        isOpen={isViewConductorModalOpen}
-        onClose={() => setIsViewConductorModalOpen(false)}
-        conductor={selectedConductor || null}
-      />
     </>
   );
 };
