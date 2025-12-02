@@ -61,55 +61,59 @@ export function SignIn() {
   };
 
   return (
-    <Card className="w-full max-w-sm bg-white">
-      <CardHeader>
-        <CardTitle className="text-xl font-bold">
-          Sign In to your Account!
+    <Card className="w-full max-w-md border-0 bg-white/80 shadow-xl backdrop-blur-sm">
+      <CardHeader className="space-y-1 pb-6">
+        <CardTitle className="text-center text-2xl font-bold tracking-tight">
+          Welcome back
         </CardTitle>
-        <CardDescription className="text-xs">
-          Enter your email below to sign in to your account.
+        <CardDescription className="text-center">
+          Sign in to access your dashboard
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} id="sign-in-form">
-          <div className="flex flex-col gap-6">
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+          <div className="flex flex-col gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium">
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
                 name="email"
-                placeholder="Enter your email"
+                placeholder="name@example.com"
                 required
-                className="focus-visible:ring-ring border border-black/20"
+                className="h-11 transition-all focus-visible:ring-2"
               />
             </div>
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password" className="text-sm font-medium">
+                  Password
+                </Label>
 
                 <Dialog>
-                  <DialogTrigger className="hover:text-primary/80 ml-auto inline-block cursor-pointer text-xs underline-offset-4 hover:underline">
-                    Forgot your password?
+                  <DialogTrigger className="text-primary hover:text-primary/80 text-xs underline-offset-4 transition-colors hover:underline">
+                    Forgot password?
                   </DialogTrigger>
-                  <DialogContent className="bg-white">
+                  <DialogContent className="border-0 bg-white/95 backdrop-blur-sm">
                     <DialogHeader>
-                      <DialogTitle className="text-primary">
+                      <DialogTitle className="text-primary text-xl">
                         Reset Your Password
                       </DialogTitle>
-                      <DialogDescription>
-                        To reset your password, please email us at{' '}
-                        <strong className="text-primary">
-                          support@trip.com
-                        </strong>{' '}
-                        with:
-                        <div className="flex w-full flex-col items-center justify-center sm:items-start">
-                          <ul className="mt-2 list-disc pl-4 text-left">
-                            <li>Your registered email address</li>
-                            <li>A brief description of your issue</li>
-                          </ul>
-                        </div>
-                        <p className="mt-2">
+                      <DialogDescription className="space-y-3 pt-2">
+                        <p>
+                          To reset your password, please email us at{' '}
+                          <strong className="text-primary">
+                            support@trip.com
+                          </strong>{' '}
+                          with:
+                        </p>
+                        <ul className="list-disc space-y-1 pl-5">
+                          <li>Your registered email address</li>
+                          <li>A brief description of your issue</li>
+                        </ul>
+                        <p>
                           We'll send you a secure link to create a new password.
                         </p>
                       </DialogDescription>
@@ -123,20 +127,20 @@ export function SignIn() {
                 name="password"
                 placeholder="Enter your password"
                 required
-                className="focus-visible:ring-ring border border-black/20"
+                className="h-11 transition-all focus-visible:ring-2"
               />
             </div>
           </div>
         </form>
       </CardContent>
-      <CardFooter className="flex-col gap-2">
+      <CardFooter className="flex-col gap-3 pt-2">
         <Button
           type="submit"
-          className="bg-primary hover:bg-primary/70 w-full cursor-pointer text-white"
+          className="h-11 w-full shadow-lg transition-all hover:shadow-xl"
           form="sign-in-form"
           disabled={isLoading}
         >
-          <LogIn />
+          <LogIn className="h-4 w-4" />
           Sign In
         </Button>
       </CardFooter>
