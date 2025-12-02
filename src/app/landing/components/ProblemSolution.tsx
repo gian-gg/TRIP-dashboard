@@ -18,8 +18,15 @@ export function ProblemSolution() {
     },
     {
       icon: X,
-      title: 'No Real-Time Data',
-      description: 'Operators lack visibility into fleet operations',
+      title: 'Limited Visibility',
+      description:
+        'Operators struggle to track fleet performance and revenue accurately',
+      color: 'text-red-500',
+    },
+    {
+      icon: X,
+      title: 'Fare Evasion',
+      description: 'Manual systems allow data manipulation and revenue loss',
       color: 'text-red-500',
     },
   ];
@@ -40,8 +47,16 @@ export function ProblemSolution() {
     },
     {
       icon: TrendingUp,
-      title: 'Live Dashboard',
-      description: 'Real-time fleet monitoring and revenue analytics',
+      title: 'Post-Trip Analytics',
+      description:
+        'Comprehensive dashboard with trip data synced after each journey',
+      color: 'text-green-500',
+    },
+    {
+      icon: Check,
+      title: 'Tamper-Proof Security',
+      description:
+        'Encrypted data prevents manipulation and eliminates fare evasion',
       color: 'text-green-500',
     },
   ];

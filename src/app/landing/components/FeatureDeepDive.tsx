@@ -5,9 +5,9 @@ import {
   QrCode,
   Hand,
   MessageCircle,
-  MapPin,
+  BarChart3,
+  Shield,
   TrendingUp,
-  Users,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -31,31 +31,31 @@ export function FeatureDeepDive() {
       icon: MessageCircle,
       title: 'Conductor Interface',
       description:
-        'Real-time communication with HQ. Update status, report issues, coordinate seamlessly.',
+        'Simple interface for conductors to upload trip data. Secure, encrypted submission after each trip.',
       gradient: 'from-teal-500 to-green-500',
     },
   ];
 
   const fleetCommandFeatures = [
     {
-      icon: MapPin,
-      title: 'Real-Time GPS Tracking',
+      icon: Shield,
+      title: 'Data Encryption & Security',
       description:
-        'Monitor every bus in your fleet. See exact locations, routes, and estimated arrival times.',
+        'End-to-end encryption prevents data tampering. Conductors and passengers cannot modify trip data, eliminating fare evasion.',
       gradient: 'from-purple-500 to-pink-500',
     },
     {
-      icon: TrendingUp,
-      title: 'Revenue Analytics',
+      icon: BarChart3,
+      title: 'Post-Trip Analytics',
       description:
-        'Track earnings per route, per bus, per driver. Make data-driven decisions to maximize profit.',
+        'Trip data syncs to the dashboard after each journey. Analyze revenue per route, per bus, and identify trends.',
       gradient: 'from-pink-500 to-rose-500',
     },
     {
-      icon: Users,
-      title: 'Driver Performance',
+      icon: TrendingUp,
+      title: 'Revenue Tracking',
       description:
-        'Monitor driver behavior, punctuality, and passenger ratings. Improve service quality.',
+        'Comprehensive financial reports updated after each trip. Track earnings, payment methods, and passenger categories.',
       gradient: 'from-rose-500 to-orange-500',
     },
   ];
@@ -176,9 +176,9 @@ export function FeatureDeepDive() {
               The Fleet Command
             </h2>
             <p className="text-muted-foreground mx-auto max-w-3xl text-lg lg:mx-0">
-              Your operational command center. Monitor all buses, analyze
-              performance, and make informed decisions in real-time from a
-              single, powerful dashboard.
+              Your operational command center. Analyze performance and make
+              informed decisions with comprehensive trip data collected after
+              each journey.
             </p>
           </div>
 
@@ -224,7 +224,7 @@ export function FeatureDeepDive() {
               <div className="grid items-center gap-8 lg:grid-cols-2">
                 <div className="bg-background/80 flex aspect-video items-center justify-center rounded-xl border backdrop-blur-sm">
                   <div className="text-muted-foreground text-center">
-                    <MapPin className="mx-auto mb-2 h-16 w-16" />
+                    <BarChart3 className="mx-auto mb-2 h-16 w-16" />
                     <p className="text-sm font-medium">Dashboard Preview</p>
                   </div>
                 </div>
@@ -233,19 +233,19 @@ export function FeatureDeepDive() {
                     Complete Operational Visibility
                   </h3>
                   <p className="text-muted-foreground mb-6">
-                    From a single screen, see every bus location, monitor
-                    revenue in real-time, and track driver performance. Make
-                    decisions based on live data, not guesswork.
+                    From a single screen, analyze trip data, monitor revenue
+                    trends, and track fleet performance. Make decisions based on
+                    comprehensive data collected from every journey.
                   </p>
                   <div className="flex flex-wrap gap-2">
                     <div className="bg-background/80 rounded-lg px-3 py-1.5 text-sm font-medium backdrop-blur-sm">
-                      📊 Live Analytics
+                      📊 Trip Analytics
                     </div>
                     <div className="bg-background/80 rounded-lg px-3 py-1.5 text-sm font-medium backdrop-blur-sm">
-                      🗺️ GPS Fleet View
+                      🔒 Encrypted Data
                     </div>
                     <div className="bg-background/80 rounded-lg px-3 py-1.5 text-sm font-medium backdrop-blur-sm">
-                      📈 Revenue Tracking
+                      📈 Revenue Reports
                     </div>
                   </div>
                 </div>
