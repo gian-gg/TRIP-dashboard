@@ -68,6 +68,7 @@ export function BusTable({
         currentDriverData={drivers}
         currentConductorData={conductors}
         setIsEditModalOpen={setIsEditModalOpen}
+        refreshData={refreshData}
       />
 
       {selectedBus && (

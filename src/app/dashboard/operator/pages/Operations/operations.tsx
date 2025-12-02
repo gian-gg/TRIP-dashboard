@@ -18,11 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  handleDeleteConductor,
-  handleDeleteDriver,
-  handleDeleteBus,
-} from './utils/delete';
 import { calculateFleetStatistics } from './utils/statistics';
 import { generatePrintReport } from './utils/print';
 import type { UserType } from '@/type';
@@ -39,33 +34,7 @@ const FleetStatus = (props: {
   const [currentTab, setCurrentTab] = useState<'bus' | 'driver' | 'conductor'>(
     'bus'
   );
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [selectedBusId, setSelectedBusId] = useState<string | null>(null);
-  const [selectedDriverId, setSelectedDriverId] = useState<number | null>(null);
-  const [selectedConductorId, setSelectedConductorId] = useState<number | null>(
-    null
-  );
-  const [isViewBusModalOpen, setIsViewBusModalOpen] = useState(false);
-  const [isViewDriverModalOpen, setIsViewDriverModalOpen] = useState(false);
-  const [isViewConductorModalOpen, setIsViewConductorModalOpen] =
-    useState(false);
-
-  const selectedBus =
-    selectedBusId !== null
-      ? currentBusData.find((bus) => bus.bus_id === selectedBusId)
-      : null;
-  const selectedDriver =
-    selectedDriverId !== null
-      ? currentDriverData.find(
-          (driver) => driver.driver_id === selectedDriverId
-        )
-      : null;
-  const selectedConductor =
-    selectedConductorId !== null
-      ? currentConductorData.find(
-          (conductor) => conductor.conductor_id === selectedConductorId
-        )
-      : null;
+  const [_isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const [searchInput, setSearchInput] = useState('');
   const [filteredBusData, setFilteredBusData] =
@@ -77,12 +46,6 @@ const FleetStatus = (props: {
   const [busStatusFilter, setBusStatusFilter] = useState('all');
   const [driverStatusFilter, setDriverStatusFilter] = useState('all');
   const [conductorStatusFilter, setConductorStatusFilter] = useState('all');
-  const [editBus, setEditBus] = useState<BusInformationType | null>(null);
-  const [editDriver, setEditDriver] = useState<DriverInformationType | null>(
-    null
-  );
-  const [editConductor, setEditConductor] =
-    useState<ConductorInformationType | null>(null);
 
   useEffect(() => {
     if (currentTab === 'bus') {
@@ -142,51 +105,6 @@ const FleetStatus = (props: {
     driverStatusFilter,
     conductorStatusFilter,
   ]);
-
-  const handleViewBus = (busId: string) => {
-    setSelectedBusId(busId);
-    setIsViewBusModalOpen(true);
-  };
-
-  const handleViewDriver = (driverId: number) => {
-    setSelectedDriverId(driverId);
-    setIsViewDriverModalOpen(true);
-  };
-
-  const handleViewConductor = (conductorId: number) => {
-    setSelectedConductorId(conductorId);
-    setIsViewConductorModalOpen(true);
-  };
-
-  const handleEditBusModal = (bus: BusInformationType) => {
-    setEditBus(bus);
-  };
-
-  const handleEditDriverModal = (driver: DriverInformationType) => {
-    setEditDriver(driver);
-  };
-
-  const handleEditConductorModal = (conductor: ConductorInformationType) => {
-    setEditConductor(conductor);
-  };
-
-  const handleDeleteBusConfirm = (busId: string) => {
-    handleDeleteBus(busId, () => {
-      props.refreshData();
-    });
-  };
-
-  const handleDeleteDriverConfirm = (driverId: number) => {
-    handleDeleteDriver(driverId, () => {
-      props.refreshData();
-    });
-  };
-
-  const handleDeleteConductorConfirm = (conductorId: number) => {
-    handleDeleteConductor(conductorId, () => {
-      props.refreshData();
-    });
-  };
 
   const statistics = calculateFleetStatistics(
     currentBusData,
@@ -326,18 +244,16 @@ const FleetStatus = (props: {
       {currentTab === 'driver' && (
         <DriverTable
           drivers={filteredDriverData}
-          onView={handleViewDriver}
-          onEdit={handleEditDriverModal}
-          onDelete={handleDeleteDriverConfirm}
+          buses={currentBusData}
+          refreshData={props.refreshData}
         />
       )}
 
       {currentTab === 'conductor' && (
         <ConductorTable
           conductors={filteredConductorData}
-          onView={handleViewConductor}
-          onEdit={handleEditConductorModal}
-          onDelete={handleDeleteConductorConfirm}
+          buses={currentBusData}
+          refreshData={props.refreshData}
         />
       )}
     </>

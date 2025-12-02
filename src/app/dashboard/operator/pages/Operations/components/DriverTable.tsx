@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -7,30 +8,24 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { MoreHorizontal, Eye, Pencil, Trash } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { getInitials } from '@/lib/misc';
-import type { DriverInformationType } from '../type';
-
-interface DriverTableProps {
-  drivers: DriverInformationType[];
-  onView: (driverId: number) => void;
-  onEdit: (driver: DriverInformationType) => void;
-  onDelete: (driverId: number) => void;
-}
+import DriverModal from './DriverModal';
+import DriverEdit from './DriverEdit';
+import type { DriverInformationType, BusInformationType } from '../type';
 
 export function DriverTable({
   drivers,
-  onView,
-  onEdit,
-  onDelete,
-}: DriverTableProps) {
+  buses,
+  refreshData,
+}: {
+  drivers: DriverInformationType[];
+  buses: BusInformationType[];
+  refreshData: () => void;
+}) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedDriver, setSelectedDriver] =
+    useState<DriverInformationType | null>(null);
   const getStatusBadge = (status: DriverInformationType['status']) => {
     return (
       <Badge
@@ -43,79 +38,76 @@ export function DriverTable({
   };
 
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Driver</TableHead>
-            <TableHead>License Number</TableHead>
-            <TableHead>Contact Number</TableHead>
-            <TableHead>Bus ID</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {drivers.length === 0 ? (
+    <>
+      <DriverModal
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        selectedDriver={selectedDriver}
+        setIsEditModalOpen={setIsEditModalOpen}
+        refreshData={refreshData}
+      />
+
+      {selectedDriver && (
+        <DriverEdit
+          isOpen={isEditModalOpen}
+          setIsOpen={setIsEditModalOpen}
+          currentDriverData={selectedDriver}
+          currentBusData={buses}
+          refreshData={refreshData}
+        />
+      )}
+
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={6} className="h-24 text-center">
-                No drivers found.
-              </TableCell>
+              <TableHead>Driver</TableHead>
+              <TableHead>License Number</TableHead>
+              <TableHead>Contact Number</TableHead>
+              <TableHead>Bus ID</TableHead>
+              <TableHead>Status</TableHead>
             </TableRow>
-          ) : (
-            drivers.map((driver) => (
-              <TableRow key={driver.driver_id} className="cursor-pointer">
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold">
-                      {getInitials(driver.full_name)}
-                    </div>
-                    <div>
-                      <div className="font-medium">{driver.full_name}</div>
-                      <div className="text-muted-foreground text-xs">
-                        ID: {driver.driver_id}
-                      </div>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell>{driver.license_number}</TableCell>
-                <TableCell>{driver.contact_number}</TableCell>
-                <TableCell>{driver.bus_id || 'N/A'}</TableCell>
-                <TableCell>{getStatusBadge(driver.status)}</TableCell>
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Open menu</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        onClick={() => onView(driver.driver_id)}
-                      >
-                        <Eye className="mr-2 h-4 w-4" />
-                        View Details
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onEdit(driver)}>
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => onDelete(driver.driver_id)}
-                        className="text-destructive"
-                      >
-                        <Trash className="mr-2 h-4 w-4" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+          </TableHeader>
+          <TableBody>
+            {drivers.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="h-24 text-center">
+                  No drivers found.
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-    </div>
+            ) : (
+              drivers.map((driver) => (
+                <TableRow
+                  key={driver.driver_id}
+                  className="cursor-pointer"
+                  onClick={() => {
+                    setSelectedDriver(driver);
+                    setIsModalOpen(true);
+                  }}
+                >
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold">
+                        {getInitials(driver.full_name)}
+                      </div>
+                      <div>
+                        <div className="font-medium">{driver.full_name}</div>
+                        <div className="text-muted-foreground text-xs">
+                          ID: {driver.driver_id}
+                        </div>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>{driver.license_number}</TableCell>
+                  <TableCell>{driver.contact_number}</TableCell>
+                  <TableCell>{driver.bus_id || 'N/A'}</TableCell>
+                  <TableCell>{getStatusBadge(driver.status)}</TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </>
   );
 }

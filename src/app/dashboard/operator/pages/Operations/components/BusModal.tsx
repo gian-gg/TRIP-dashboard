@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { formatTimeTo12Hour } from '@/lib/misc';
 import { Pencil, Trash } from 'lucide-react';
+import { handleDeleteBus } from '../utils/delete';
 import type {
   BusInformationType,
   ConductorInformationType,
@@ -22,6 +23,7 @@ const busModal = ({
   selectedBus,
   currentDriverData,
   currentConductorData,
+  refreshData,
 }: {
   isModalOpen: boolean;
   setIsModalOpen: (open: boolean) => void;
@@ -29,6 +31,7 @@ const busModal = ({
   selectedBus: BusInformationType | null;
   currentDriverData: DriverInformationType[];
   currentConductorData: ConductorInformationType[];
+  refreshData: () => void;
 }) => {
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -190,7 +193,7 @@ const busModal = ({
               onClick={() => {
                 if (selectedBus) {
                   setIsModalOpen(false);
-                  //   handleDeleteBus(selectedBus.bus_id, props.refreshData);
+                  handleDeleteBus(selectedBus.bus_id, refreshData);
                 }
               }}
             >
