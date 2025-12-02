@@ -4,6 +4,9 @@ import { BusTable } from './components/BusTable';
 import { DriverTable } from './components/DriverTable';
 import { ConductorTable } from './components/ConductorTable';
 import { StatisticsCards } from './components/StatisticsCards';
+import BusAdd from './components/BusAdd';
+import DriverAdd from './components/DriverAdd';
+import ConductorAdd from './components/ConductorAdd';
 import type {
   BusInformationType,
   DriverInformationType,
@@ -34,7 +37,7 @@ const FleetStatus = (props: {
   const [currentTab, setCurrentTab] = useState<'bus' | 'driver' | 'conductor'>(
     'bus'
   );
-  const [_isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const [searchInput, setSearchInput] = useState('');
   const [filteredBusData, setFilteredBusData] =
@@ -126,6 +129,32 @@ const FleetStatus = (props: {
   return (
     <>
       <StatisticsCards statistics={statistics} />
+
+      {/* Add Modals */}
+      {currentTab === 'bus' && (
+        <BusAdd
+          isOpen={isAddModalOpen}
+          setIsOpen={setIsAddModalOpen}
+          companyId={props.userData.company_id}
+          refreshData={props.refreshData}
+        />
+      )}
+      {currentTab === 'driver' && (
+        <DriverAdd
+          isOpen={isAddModalOpen}
+          setIsOpen={setIsAddModalOpen}
+          companyId={props.userData.company_id}
+          refreshData={props.refreshData}
+        />
+      )}
+      {currentTab === 'conductor' && (
+        <ConductorAdd
+          isOpen={isAddModalOpen}
+          setIsOpen={setIsAddModalOpen}
+          companyId={props.userData.company_id}
+          refreshData={props.refreshData}
+        />
+      )}
 
       {/* Tab Selector */}
       <div className="flex gap-2">
