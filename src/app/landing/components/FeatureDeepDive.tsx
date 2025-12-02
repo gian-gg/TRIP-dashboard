@@ -147,13 +147,13 @@ export function FeatureDeepDive() {
                     </div>
                   </div>
                 </div>
-                <div className="bg-background/80 flex aspect-video items-center justify-center rounded-xl border backdrop-blur-sm">
-                  <div className="text-muted-foreground text-center">
-                    <QrCode className="mx-auto mb-2 h-16 w-16" />
-                    <p className="text-sm font-medium">
-                      Interactive Demo Placeholder
-                    </p>
-                  </div>
+                <div className="overflow-hidden">
+                  <img
+                    src="/product1.gif"
+                    alt="Transit Node Interface - Passenger Experience"
+                    className="pointer-events-none h-full w-full object-cover select-none"
+                    draggable={false}
+                  />
                 </div>
               </div>
             </div>
@@ -222,11 +222,13 @@ export function FeatureDeepDive() {
           >
             <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 p-8 md:p-12">
               <div className="grid items-center gap-8 lg:grid-cols-2">
-                <div className="bg-background/80 flex aspect-video items-center justify-center rounded-xl border backdrop-blur-sm">
-                  <div className="text-muted-foreground text-center">
-                    <BarChart3 className="mx-auto mb-2 h-16 w-16" />
-                    <p className="text-sm font-medium">Dashboard Preview</p>
-                  </div>
+                <div className="overflow-hidden">
+                  <img
+                    src="/product2.gif"
+                    alt="Fleet Command Dashboard - Analytics Interface"
+                    className="pointer-events-none h-full w-full object-cover select-none"
+                    draggable={false}
+                  />
                 </div>
                 <div>
                   <h3 className="mb-4 text-2xl font-bold">
