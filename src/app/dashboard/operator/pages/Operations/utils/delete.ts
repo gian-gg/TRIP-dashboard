@@ -10,9 +10,9 @@ const handleDeleteConductor = (id: number, refreshData: () => void) => {
         type: 'DELETE',
         url: `/conductor/index.php?conductor_id=${id}`,
         consoleLabel: 'Delete Conductor Response',
-        success: () => {
+        success: (data: { message: string }) => {
           refreshData();
-          toast.success('Conductor deleted successfully');
+          toast.success(data.message);
         },
         error: (error) => {
           toast.error(error.message || 'Unknown error');
