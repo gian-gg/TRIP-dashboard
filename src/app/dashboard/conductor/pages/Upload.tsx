@@ -139,10 +139,18 @@ const Upload = () => {
 
   if (!currentConductor.bus_id || !currentConductor.driver_name) {
     return (
-      <p className="text-gray-600">
-        You have not been assigned a bus or driver yet. Please contact bus
-        company operator for assistance.
-      </p>
+      <div className="flex min-h-[calc(100vh-12rem)] flex-col items-center justify-center gap-6 p-4 text-center">
+        <div className="bg-primary/10 rounded-full p-6">
+          <Bus className="text-primary h-16 w-16" />
+        </div>
+        <div className="max-w-md space-y-3">
+          <h2 className="text-2xl font-bold">No Assignment Yet</h2>
+          <p className="text-muted-foreground leading-relaxed">
+            You have not been assigned a bus or driver yet. Please contact your
+            bus company operator for assistance.
+          </p>
+        </div>
+      </div>
     );
   }
 
