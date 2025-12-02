@@ -9,14 +9,14 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import BusModal from './BusModal';
-import BusEdit from './BusEdit';
+import BusModal from './view';
+import BusEdit from './edit';
 
 import type {
   BusInformationType,
   ConductorInformationType,
   DriverInformationType,
-} from '../type';
+} from '../../type';
 
 export function BusTable({
   buses,

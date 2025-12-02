@@ -1,12 +1,14 @@
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
-import { BusTable } from './components/BusTable';
-import { DriverTable } from './components/DriverTable';
-import { ConductorTable } from './components/ConductorTable';
-import { StatisticsCards } from './components/StatisticsCards';
-import BusAdd from './components/BusAdd';
-import DriverAdd from './components/DriverAdd';
-import ConductorAdd from './components/ConductorAdd';
+import {
+  BusTable,
+  BusAdd,
+  DriverTable,
+  DriverAdd,
+  ConductorTable,
+  ConductorAdd,
+  StatisticsCards,
+} from './components';
 import type {
   BusInformationType,
   DriverInformationType,

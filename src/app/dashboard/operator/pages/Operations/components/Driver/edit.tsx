@@ -10,9 +10,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Save } from 'lucide-react';
-import { handleEditDriver } from '../utils/edit';
+import { handleEditDriver } from '../../utils/edit';
 
-import type { DriverInformationType, BusInformationType } from '../type';
+import type { DriverInformationType, BusInformationType } from '../../type';
 
 const DriverEdit = ({
   isOpen,

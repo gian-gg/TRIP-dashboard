@@ -9,24 +9,24 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { getInitials } from '@/lib/misc';
-import ConductorModal from './ConductorModal';
-import ConductorEdit from './ConductorEdit';
-import type { ConductorInformationType, BusInformationType } from '../type';
+import DriverModal from './view';
+import DriverEdit from './edit';
+import type { DriverInformationType, BusInformationType } from '../../type';
 
-export function ConductorTable({
-  conductors,
+export function DriverTable({
+  drivers,
   buses,
   refreshData,
 }: {
-  conductors: ConductorInformationType[];
+  drivers: DriverInformationType[];
   buses: BusInformationType[];
   refreshData: () => void;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedConductor, setSelectedConductor] =
-    useState<ConductorInformationType | null>(null);
-  const getStatusBadge = (status: ConductorInformationType['status']) => {
+  const [selectedDriver, setSelectedDriver] =
+    useState<DriverInformationType | null>(null);
+  const getStatusBadge = (status: DriverInformationType['status']) => {
     return (
       <Badge
         variant={status === 'active' ? 'default' : 'secondary'}
@@ -39,19 +39,19 @@ export function ConductorTable({
 
   return (
     <>
-      <ConductorModal
+      <DriverModal
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
-        selectedConductor={selectedConductor}
+        selectedDriver={selectedDriver}
         setIsEditModalOpen={setIsEditModalOpen}
         refreshData={refreshData}
       />
 
-      {selectedConductor && (
-        <ConductorEdit
+      {selectedDriver && (
+        <DriverEdit
           isOpen={isEditModalOpen}
           setIsOpen={setIsEditModalOpen}
-          currentConductorData={selectedConductor}
+          currentDriverData={selectedDriver}
           currentBusData={buses}
           refreshData={refreshData}
         />
@@ -61,47 +61,47 @@ export function ConductorTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Conductor</TableHead>
-              <TableHead>Email</TableHead>
+              <TableHead>Driver</TableHead>
+              <TableHead>License Number</TableHead>
               <TableHead>Contact Number</TableHead>
               <TableHead>Bus ID</TableHead>
               <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {conductors.length === 0 ? (
+            {drivers.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-24 text-center">
-                  No conductors found.
+                  No drivers found.
                 </TableCell>
               </TableRow>
             ) : (
-              conductors.map((conductor) => (
+              drivers.map((driver) => (
                 <TableRow
-                  key={conductor.conductor_id}
+                  key={driver.driver_id}
                   className="cursor-pointer"
                   onClick={() => {
-                    setSelectedConductor(conductor);
+                    setSelectedDriver(driver);
                     setIsModalOpen(true);
                   }}
                 >
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold">
-                        {getInitials(conductor.name)}
+                        {getInitials(driver.full_name)}
                       </div>
                       <div>
-                        <div className="font-medium">{conductor.name}</div>
+                        <div className="font-medium">{driver.full_name}</div>
                         <div className="text-muted-foreground text-xs">
-                          ID: {conductor.conductor_id}
+                          ID: {driver.driver_id}
                         </div>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>{conductor.email}</TableCell>
-                  <TableCell>{conductor.contact_number}</TableCell>
-                  <TableCell>{conductor.bus_id || 'N/A'}</TableCell>
-                  <TableCell>{getStatusBadge(conductor.status)}</TableCell>
+                  <TableCell>{driver.license_number}</TableCell>
+                  <TableCell>{driver.contact_number}</TableCell>
+                  <TableCell>{driver.bus_id || 'N/A'}</TableCell>
+                  <TableCell>{getStatusBadge(driver.status)}</TableCell>
                 </TableRow>
               ))
             )}

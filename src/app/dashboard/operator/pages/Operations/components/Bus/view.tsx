@@ -9,12 +9,12 @@ import {
 } from '@/components/ui/dialog';
 import { formatTimeTo12Hour } from '@/lib/misc';
 import { Pencil, Trash } from 'lucide-react';
-import { handleDeleteBus } from '../utils/delete';
+import { handleDeleteBus } from '../../utils/delete';
 import type {
   BusInformationType,
   ConductorInformationType,
   DriverInformationType,
-} from '../type';
+} from '../../type';
 
 const busModal = ({
   isModalOpen,

@@ -9,9 +9,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Plus } from 'lucide-react';
-import { handleAddDriver } from '../utils/add';
+import { handleAddBus } from '../../utils/add';
 
-const DriverAdd = ({
+const BusAdd = ({
   isOpen,
   setIsOpen,
   companyId,
@@ -26,14 +26,14 @@ const DriverAdd = ({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add New Driver</DialogTitle>
+          <DialogTitle>Add New Bus</DialogTitle>
         </DialogHeader>
         <DialogDescription>
-          Enter the details for the new driver.
+          Enter the details for the new bus.
         </DialogDescription>
         <form
           onSubmit={async (e) => {
-            await handleAddDriver(e, () => {
+            await handleAddBus(e, () => {
               refreshData();
               setIsOpen(false);
             });
@@ -46,36 +46,14 @@ const DriverAdd = ({
             readOnly
             required
           />
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4">
             <div>
-              <Label htmlFor="full_name">Full Name *</Label>
+              <Label htmlFor="bus_id">Bus ID *</Label>
               <Input
                 type="text"
-                id="full_name"
-                name="full_name"
-                placeholder="John Doe"
-                required
-                className="mt-2 border border-gray-400"
-              />
-            </div>
-            <div>
-              <Label htmlFor="license_number">License Number *</Label>
-              <Input
-                type="text"
-                id="license_number"
-                name="license_number"
-                placeholder="DL-123456"
-                required
-                className="mt-2 border border-gray-400"
-              />
-            </div>
-            <div className="md:col-span-2">
-              <Label htmlFor="contact_number">Contact Number *</Label>
-              <Input
-                type="text"
-                id="contact_number"
-                name="contact_number"
-                placeholder="9123456789"
+                id="bus_id"
+                name="bus_id"
+                placeholder="e.g., BUS-001"
                 required
                 className="mt-2 border border-gray-400"
               />
@@ -84,7 +62,7 @@ const DriverAdd = ({
           <div className="mt-4 flex justify-end gap-3">
             <Button variant="default" className="px-2 md:px-4" type="submit">
               <Plus className="mr-0 md:mr-2" />
-              <span>Add Driver</span>
+              <span>Add Bus</span>
             </Button>
             <Button
               variant="outline"
@@ -101,4 +79,4 @@ const DriverAdd = ({
   );
 };
 
-export default DriverAdd;
+export default BusAdd;

@@ -8,8 +8,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Pencil, Trash } from 'lucide-react';
-import { handleDeleteDriver } from '../utils/delete';
-import type { DriverInformationType } from '../type';
+import { handleDeleteDriver } from '../../utils/delete';
+import type { DriverInformationType } from '../../type';
 
 const DriverModal = ({
   isModalOpen,

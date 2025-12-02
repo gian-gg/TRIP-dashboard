@@ -8,8 +8,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Pencil, Trash } from 'lucide-react';
-import { handleDeleteConductor } from '../utils/delete';
-import type { ConductorInformationType } from '../type';
+import { handleDeleteConductor } from '../../utils/delete';
+import type { ConductorInformationType } from '../../type';
 
 const ConductorModal = ({
   isModalOpen,
